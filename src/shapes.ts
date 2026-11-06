@@ -29,38 +29,40 @@ function freeEdge(shape: NailShape, width: number): string {
     }
 
     case 'square': {
-      // Short, straight sides, flat tip with slightly softened corners.
+      // Short, straight sides, flat tip with softly rounded corners.
       const length = width * 0.35
-      const corner = width * 0.12
+      const corner = width * 0.2
       return [
         `L ${-half} ${-length + corner}`,
-        `Q ${-half} ${-length} ${-half + corner} ${-length}`,
+        `C ${-half} ${-length + corner * 0.45} ${-half + corner * 0.45} ${-length} ${-half + corner} ${-length}`,
         `L ${half - corner} ${-length}`,
-        `Q ${half} ${-length} ${half} ${-length + corner}`,
+        `C ${half - corner * 0.45} ${-length} ${half} ${-length + corner * 0.45} ${half} ${-length + corner}`,
         `L ${half} 0`,
       ].join(' ')
     }
 
     case 'almond': {
-      // Longer; the sides curve in to a soft point, like the shape of an almond.
+      // Longer; the sides curve in to a soft rounded point, like the shape of an almond.
+      // Each side leaves the nail straight up (no corner) and arrives flat at the tip.
       const length = width * 1.1
       return [
-        `C ${-half} ${-length * 0.5} ${-half * 0.35} ${-length * 0.95} 0 ${-length}`,
-        `C ${half * 0.35} ${-length * 0.95} ${half} ${-length * 0.5} ${half} 0`,
+        `C ${-half} ${-length * 0.45} ${-half * 0.35} ${-length} 0 ${-length}`,
+        `C ${half * 0.35} ${-length} ${half} ${-length * 0.45} ${half} 0`,
       ].join(' ')
     }
 
     case 'coffin': {
-      // Longest; straight sides taper to a narrow flat tip (also called ballerina).
+      // Longest; the sides taper in a gentle curve to a narrow flat tip with rounded
+      // corners (also called ballerina).
       const length = width * 1.2
       const tip = width * 0.27 // half the width of the flat tip
-      const corner = width * 0.06
+      const corner = width * 0.1
       return [
-        `L ${-tip} ${-length + corner}`,
-        `Q ${-tip} ${-length} ${-tip + corner} ${-length}`,
+        `C ${-half} ${-length * 0.35} ${-tip - width * 0.04} ${-length * 0.75} ${-tip} ${-length + corner}`,
+        `C ${-tip} ${-length + corner * 0.45} ${-tip + corner * 0.45} ${-length} ${-tip + corner} ${-length}`,
         `L ${tip - corner} ${-length}`,
-        `Q ${tip} ${-length} ${tip} ${-length + corner}`,
-        `L ${half} 0`,
+        `C ${tip - corner * 0.45} ${-length} ${tip} ${-length + corner * 0.45} ${tip} ${-length + corner}`,
+        `C ${tip + width * 0.04} ${-length * 0.75} ${half} ${-length * 0.35} ${half} 0`,
       ].join(' ')
     }
   }

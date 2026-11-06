@@ -49,6 +49,7 @@ function ShapePicker({ value, targetLabel, onChange }: ShapePickerProps) {
                   fill="#F6DCD6"
                   stroke="rgba(150, 90, 80, 0.6)"
                   strokeWidth={1}
+                  strokeLinejoin="round"
                 />
               </svg>
               {label}
