@@ -81,9 +81,9 @@ type NailShape = 'round' | 'square' | 'almond' | 'coffin'
 type Sticker = {
   id: string
   type: 'heart' | 'star' | 'dot' | 'sparkle' | 'line' | 'flower'
-  x: number
+  x: number              // offset from the centre of the nail (0, 0 = centred)
   y: number
-  scale: number
+  scale: number           // 1 = default size, about 70% of the nail's width
   color: string
 }
 

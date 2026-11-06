@@ -17,11 +17,13 @@ const WIDTH = HAND_WIDTH * 2 + GAP
 
 type HandsProps = {
   state: AppState
+  showTargets: boolean // show the dots that mark where shape and colour changes will go
   onSelectNail: (nailId: number) => void
 }
 
-function Hands({ state, onSelectNail }: HandsProps) {
+function Hands({ state, showTargets, onSelectNail }: HandsProps) {
   const targetedNailIds = state.nails
+    .filter(() => showTargets)
     .filter((nail) => isTargeted(state, nail.id))
     .map((nail) => nail.id)
 
