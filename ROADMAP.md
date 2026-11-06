@@ -18,7 +18,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E2-S2 (choose a nail shape) is done. Next: **E2-S3, base colour.**
+E2-S3 (base colour) is done. Next: **E2-S4, multi-select and apply to all.**
 
 ---
 
@@ -59,12 +59,12 @@ As a user, I can choose a nail shape for the selected nails, so the set matches 
 Done when: four shape buttons with previews are shown, picking one changes the selected nails (or all nails if none are selected), and the choice is held in state through `SET_SHAPE`.
 Depends on: E1-S4, E2-S1.
 
-### E2-S3: Base colour. P0. Next
+### E2-S3: Base colour. P0. Done
 As a user, I can pick a colour for the selected nails, so I can paint the base.
 Done when: a `react-colorful` picker sets the base colour on the selected nails through `SET_BASE_COLOR` and the nail fill updates immediately.
 Depends on: E1-S4.
 
-### E2-S4: Multi-select and apply to all. P0. Backlog
+### E2-S4: Multi-select and apply to all. P0. Next
 As a user, I can select several nails or all of them, so I don't repeat the same change ten times.
 Done when: shift-click (and a tap equivalent on touch) adds or removes nails from the selection, and an "Apply to all" action applies the current shape and colour to every nail.
 Depends on: E2-S2, E2-S3.
