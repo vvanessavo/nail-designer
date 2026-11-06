@@ -18,7 +18,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E2-S1 (nail shape paths) is done. Next: **E2-S2, choose a nail shape.**
+E2-S2 (choose a nail shape) is done. Next: **E2-S3, base colour.**
 
 ---
 
@@ -54,12 +54,12 @@ Depends on: E1-S4.
 Technical foundation for choosing shapes.
 Done when: round, square, almond, and coffin paths exist in `src/shapes.ts` and each renders correctly in place of a nail.
 
-### E2-S2: Choose a nail shape. P0. Next
+### E2-S2: Choose a nail shape. P0. Done
 As a user, I can choose a nail shape for the selected nails, so the set matches what I want.
 Done when: four shape buttons with previews are shown, picking one changes the selected nails (or all nails if none are selected), and the choice is held in state through `SET_SHAPE`.
 Depends on: E1-S4, E2-S1.
 
-### E2-S3: Base colour. P0. Backlog
+### E2-S3: Base colour. P0. Next
 As a user, I can pick a colour for the selected nails, so I can paint the base.
 Done when: a `react-colorful` picker sets the base colour on the selected nails through `SET_BASE_COLOR` and the nail fill updates immediately.
 Depends on: E1-S4.

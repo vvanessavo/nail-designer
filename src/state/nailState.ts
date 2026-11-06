@@ -34,6 +34,7 @@ export type AppState = {
 export type Action =
   | { type: 'SELECT_NAIL'; nailId: number }
   | { type: 'SET_SKIN_TONE'; skinTone: string }
+  | { type: 'SET_SHAPE'; shape: NailShape }
 
 const NAIL_COUNT = 10
 
@@ -55,6 +56,11 @@ export const initialState: AppState = {
   selectedNailIds: [],
 }
 
+// Changes apply to the selected nails, or to every nail when none are selected.
+export function isTargeted(state: AppState, nailId: number): boolean {
+  return state.selectedNailIds.length === 0 || state.selectedNailIds.includes(nailId)
+}
+
 // Takes the current state and an action, and returns the new state.
 // It never changes the old state; it builds a new object instead.
 export function nailReducer(state: AppState, action: Action): AppState {
@@ -64,5 +70,12 @@ export function nailReducer(state: AppState, action: Action): AppState {
       return { ...state, selectedNailIds: [action.nailId] }
     case 'SET_SKIN_TONE':
       return { ...state, skinTone: action.skinTone }
+    case 'SET_SHAPE':
+      return {
+        ...state,
+        nails: state.nails.map((nail) =>
+          isTargeted(state, nail.id) ? { ...nail, shape: action.shape } : nail,
+        ),
+      }
   }
 }

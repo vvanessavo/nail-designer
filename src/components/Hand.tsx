@@ -85,6 +85,7 @@ function FingerShape({ finger, nail, skinTone, isSelected, onSelectNail }: Finge
       <g transform={`translate(0 ${fingertipLine})`}>
         <path
           id={`nail-${nail.id}`}
+          data-shape={nail.shape}
           d={nailShapePath(nail.shape, nailWidth, bedLength)}
           fill={nail.baseColor}
           stroke={isSelected ? SELECTED_EDGE : NAIL_EDGE}
