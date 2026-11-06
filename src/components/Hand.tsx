@@ -4,6 +4,7 @@
 const SKIN_TONE = '#E8B896'
 const NAIL_COLOR = '#F6DCD6'
 const NAIL_EDGE = 'rgba(150, 90, 80, 0.3)'
+const SELECTED_EDGE = '#E11D48' // Tailwind rose-600
 
 // Width of the area one hand takes up, used to place and flip the hands.
 export const HAND_WIDTH = 270
@@ -61,10 +62,12 @@ function nailPath(width: number, height: number): string {
 
 type FingerShapeProps = {
   finger: Finger
-  nailId: string
+  nailNumber: number
+  isSelected: boolean
+  onSelectNail: (nailNumber: number) => void
 }
 
-function FingerShape({ finger, nailId }: FingerShapeProps) {
+function FingerShape({ finger, nailNumber, isSelected, onSelectNail }: FingerShapeProps) {
   const { x, y, tipWidth, length, angle, nailRatio } = finger
   // Real nails cover about 78% of the fingertip's width.
   const nailWidth = tipWidth * 0.78
@@ -74,20 +77,23 @@ function FingerShape({ finger, nailId }: FingerShapeProps) {
   const nailTop = -length - freeEdge
 
   return (
-    <g transform={`translate(${x} ${y}) rotate(${angle})`}>
+    // The whole finger is clickable, so the target is big enough for a fingertip on a phone.
+    <g
+      transform={`translate(${x} ${y}) rotate(${angle})`}
+      onClick={() => onSelectNail(nailNumber)}
+      className="cursor-pointer"
+    >
       <path
         d={fingerPath(finger)}
         fill={SKIN_TONE}
       />
       <g transform={`translate(0 ${nailTop})`}>
         <path
-          id={nailId}
+          id={`nail-${nailNumber}`}
           d={nailPath(nailWidth, nailHeight)}
           fill={NAIL_COLOR}
-          stroke={NAIL_EDGE}
-          strokeWidth={1}
-          onClick={() => console.log(`${nailId} clicked`)}
-          className="cursor-pointer"
+          stroke={isSelected ? SELECTED_EDGE : NAIL_EDGE}
+          strokeWidth={isSelected ? 2.5 : 1}
         />
         {/* Shine streak. pointerEvents="none" lets clicks pass through to the nail. */}
         <rect
@@ -109,14 +115,29 @@ type HandProps = {
   firstNail: number // number of the left-most nail on screen
   mirrored: boolean // true draws a right hand
   x: number // left edge of the hand's area
+  selectedNail: number | null
+  onSelectNail: (nailNumber: number) => void
 }
 
-function Hand({ firstNail, mirrored, x }: HandProps) {
+function Hand({ firstNail, mirrored, x, selectedNail, onSelectNail }: HandProps) {
   // Nails are numbered left to right on screen. A left hand reads pinky to thumb,
   // a flipped right hand reads thumb to pinky.
-  const nailIdFor = (fingerIndex: number) => {
+  const nailNumberFor = (fingerIndex: number) => {
     const offset = mirrored ? FINGERS.length - 1 - fingerIndex : fingerIndex
-    return `nail-${firstNail + offset}`
+    return firstNail + offset
+  }
+
+  const renderFinger = (finger: Finger, fingerIndex: number) => {
+    const nailNumber = nailNumberFor(fingerIndex)
+    return (
+      <FingerShape
+        key={nailNumber}
+        finger={finger}
+        nailNumber={nailNumber}
+        isSelected={nailNumber === selectedNail}
+        onSelectNail={onSelectNail}
+      />
+    )
   }
 
   // scale(-1 1) flips the drawing left-to-right; the translate puts it back in view.
@@ -126,21 +147,12 @@ function Hand({ firstNail, mirrored, x }: HandProps) {
 
   return (
     <g transform={transform}>
-      <FingerShape
-        finger={FINGERS[THUMB_INDEX]}
-        nailId={nailIdFor(THUMB_INDEX)}
-      />
+      {renderFinger(FINGERS[THUMB_INDEX], THUMB_INDEX)}
       <path
         d="M 36 252 C 34 236 44 228 62 226 L 152 226 C 162 228 166 236 166 250 C 172 285 166 325 150 355 L 146 400 L 70 400 L 64 355 C 44 325 34 290 36 252 Z"
         fill={SKIN_TONE}
       />
-      {FINGERS.slice(0, THUMB_INDEX).map((finger, index) => (
-        <FingerShape
-          key={index}
-          finger={finger}
-          nailId={nailIdFor(index)}
-        />
-      ))}
+      {FINGERS.slice(0, THUMB_INDEX).map(renderFinger)}
     </g>
   )
 }

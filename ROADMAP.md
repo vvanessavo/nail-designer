@@ -18,7 +18,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-Currently on branch `feature/nail-state`: **E1-S3, select a nail.**
+E1-S3 (select a nail) is done and merged. Next: **E1-S4, app state model.**
 
 ---
 
@@ -32,7 +32,7 @@ Done when: Vite, React, TypeScript, and Tailwind run, dependencies are installed
 As a user, I see a hand with each nail as its own element, so I can work on one nail at a time.
 Done when: two SVG hands render side by side with ten nails, ids `nail-0` to `nail-9` numbered left to right on screen, and clicking each nail registers which one it is.
 
-### E1-S3: Select a nail. P0. In progress
+### E1-S3: Select a nail. P0. Done
 As a user, I can click a nail and see it is selected, so I know which nail my changes will apply to.
 Done when: clicking a nail highlights it, clicking another moves the highlight, and selection is held in React state.
 
