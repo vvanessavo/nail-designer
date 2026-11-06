@@ -1,12 +1,15 @@
-// A hand drawn in SVG: a palm, four fingers and a thumb, each with a clickable nail.
-// Nails keep their ids nail-0 (pinky) to nail-4 (thumb).
+// One hand drawn in SVG: a palm, four fingers and a thumb, each with a clickable nail.
+// It's drawn as a left hand (thumb on the right). A right hand is the same drawing flipped.
 
 const SKIN_TONE = '#E8B896'
 const NAIL_COLOR = '#F6DCD6'
 const NAIL_EDGE = 'rgba(150, 90, 80, 0.3)'
 
+// Width of the area one hand takes up, used to place and flip the hands.
+export const HAND_WIDTH = 270
+export const HAND_HEIGHT = 400
+
 type Finger = {
-  nailId: string
   x: number // where the finger joins the palm
   y: number
   baseWidth: number
@@ -15,23 +18,17 @@ type Finger = {
   angle: number // degrees, 0 = straight up
 }
 
-// Fingers touch at the base and fan out a little, like a relaxed hand.
+// Pinky, ring, middle, index, thumb. Fingers touch at the base and fan out a little.
 const FINGERS: Finger[] = [
-  { nailId: 'nail-0', x: 80, y: 238, baseWidth: 38, tipWidth: 29, length: 92, angle: -13 },
-  { nailId: 'nail-1', x: 118, y: 222, baseWidth: 42, tipWidth: 33, length: 128, angle: -5 },
-  { nailId: 'nail-2', x: 160, y: 218, baseWidth: 44, tipWidth: 34, length: 142, angle: 1 },
-  { nailId: 'nail-3', x: 202, y: 224, baseWidth: 42, tipWidth: 33, length: 126, angle: 8 },
+  { x: 46, y: 228, baseWidth: 31, tipWidth: 23, length: 90, angle: -12 },
+  { x: 78, y: 214, baseWidth: 34, tipWidth: 26, length: 124, angle: -4 },
+  { x: 112, y: 210, baseWidth: 35, tipWidth: 27, length: 138, angle: 1 },
+  { x: 146, y: 216, baseWidth: 34, tipWidth: 26, length: 122, angle: 8 },
+  { x: 160, y: 296, baseWidth: 40, tipWidth: 29, length: 98, angle: 40 },
 ]
 
-const THUMB: Finger = {
-  nailId: 'nail-4',
-  x: 224,
-  y: 318,
-  baseWidth: 52,
-  tipWidth: 37,
-  length: 98,
-  angle: 48,
-}
+// Draw the palm before the thumb's neighbours but after the thumb, so it covers the joins.
+const THUMB_INDEX = 4
 
 // A finger that gets narrower towards a rounded tip. Drawn pointing straight up from (0, 0).
 function fingerPath({ baseWidth, tipWidth, length }: Finger): string {
@@ -46,28 +43,31 @@ function fingerPath({ baseWidth, tipWidth, length }: Finger): string {
   ].join(' ')
 }
 
-// A natural nail: rounded tip, curved cuticle at the bottom. Top-centre at (0, 0).
+// A nail with a rounded tip and a rounded U-shaped base (no sharp corners).
+// Top-centre at (0, 0).
 function nailPath(width: number, height: number): string {
   const half = width / 2
+  const bottomCurve = width * 0.35
   return [
-    `M ${-half} ${height}`,
-    `L ${-half} ${half}`,
+    `M ${-half} ${half}`,
     `A ${half} ${half} 0 0 1 ${half} ${half}`,
-    `L ${half} ${height}`,
-    `Q 0 ${height + 6} ${-half} ${height}`,
+    `L ${half} ${height - bottomCurve}`,
+    `A ${half} ${bottomCurve} 0 0 1 ${-half} ${height - bottomCurve}`,
     'Z',
   ].join(' ')
 }
 
 type FingerShapeProps = {
   finger: Finger
+  nailId: string
 }
 
-function FingerShape({ finger }: FingerShapeProps) {
-  const { nailId, x, y, tipWidth, length, angle } = finger
-  const nailWidth = tipWidth * 0.78
-  const nailHeight = nailWidth * 1.3
-  const nailTop = -length + 3
+function FingerShape({ finger, nailId }: FingerShapeProps) {
+  const { x, y, tipWidth, length, angle } = finger
+  const nailWidth = tipWidth * 0.82
+  const nailHeight = nailWidth * 1.85
+  // Start the nail above the fingertip so it grows past the skin.
+  const nailTop = -length - 13
 
   return (
     <g transform={`translate(${x} ${y}) rotate(${angle})`}>
@@ -88,7 +88,7 @@ function FingerShape({ finger }: FingerShapeProps) {
         {/* Shine streak. pointerEvents="none" lets clicks pass through to the nail. */}
         <rect
           x={-nailWidth * 0.28}
-          y={nailHeight * 0.2}
+          y={nailHeight * 0.18}
           width={nailWidth * 0.13}
           height={nailHeight * 0.45}
           rx={nailWidth * 0.065}
@@ -101,49 +101,43 @@ function FingerShape({ finger }: FingerShapeProps) {
   )
 }
 
-function Hand() {
-  return (
-    <svg
-      viewBox="0 0 330 420"
-      className="w-full max-w-xs drop-shadow-lg"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <defs>
-        {/* Fades the wrist out instead of cutting it off with a hard edge. */}
-        <linearGradient
-          id="wrist-fade"
-          x1="0"
-          y1="0"
-          x2="0"
-          y2="1"
-        >
-          <stop offset="0.8" stopColor="white" />
-          <stop offset="1" stopColor="black" />
-        </linearGradient>
-        <mask id="hand-mask">
-          <rect
-            width="330"
-            height="420"
-            fill="url(#wrist-fade)"
-          />
-        </mask>
-      </defs>
+type HandProps = {
+  firstNail: number // number of the left-most nail on screen
+  mirrored: boolean // true draws a right hand
+  x: number // left edge of the hand's area
+}
 
-      <g mask="url(#hand-mask)">
-        {/* Thumb goes first so the palm covers where it joins. */}
-        <FingerShape finger={THUMB} />
-        <path
-          d="M 66 262 C 64 244 74 236 96 234 L 210 234 C 224 236 230 246 230 262 C 244 300 236 345 210 375 L 200 420 L 96 420 L 88 375 C 66 340 58 295 64 250 Z"
-          fill={SKIN_TONE}
+function Hand({ firstNail, mirrored, x }: HandProps) {
+  // Nails are numbered left to right on screen. A left hand reads pinky to thumb,
+  // a flipped right hand reads thumb to pinky.
+  const nailIdFor = (fingerIndex: number) => {
+    const offset = mirrored ? FINGERS.length - 1 - fingerIndex : fingerIndex
+    return `nail-${firstNail + offset}`
+  }
+
+  // scale(-1 1) flips the drawing left-to-right; the translate puts it back in view.
+  const transform = mirrored
+    ? `translate(${x + HAND_WIDTH} 0) scale(-1 1)`
+    : `translate(${x} 0)`
+
+  return (
+    <g transform={transform}>
+      <FingerShape
+        finger={FINGERS[THUMB_INDEX]}
+        nailId={nailIdFor(THUMB_INDEX)}
+      />
+      <path
+        d="M 36 252 C 34 236 44 228 62 226 L 152 226 C 162 228 166 236 166 250 C 172 285 166 325 150 355 L 146 400 L 70 400 L 64 355 C 44 325 34 290 36 252 Z"
+        fill={SKIN_TONE}
+      />
+      {FINGERS.slice(0, THUMB_INDEX).map((finger, index) => (
+        <FingerShape
+          key={index}
+          finger={finger}
+          nailId={nailIdFor(index)}
         />
-        {FINGERS.map((finger) => (
-          <FingerShape
-            key={finger.nailId}
-            finger={finger}
-          />
-        ))}
-      </g>
-    </svg>
+      ))}
+    </g>
   )
 }
 
