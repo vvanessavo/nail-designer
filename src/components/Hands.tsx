@@ -20,7 +20,7 @@ function Hands({ state, onSelectNail }: HandsProps) {
   return (
     <svg
       viewBox={`0 0 ${WIDTH} ${HAND_HEIGHT}`}
-      className="w-full max-w-2xl drop-shadow-lg"
+      className="h-full w-full max-w-2xl drop-shadow-lg"
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>

@@ -56,7 +56,9 @@ function Toolbar({ tabs }: ToolbarProps) {
           id={`panel-${openTab.id}`}
           role="tabpanel"
           aria-labelledby={`tab-${openTab.id}`}
-          className="mx-auto max-w-2xl border-t border-rose-100 px-4 py-4"
+          // Capped at 45% of the screen height (scrolls inside if taller), so the hands
+          // always stay visible below the toolbar.
+          className="mx-auto max-h-[45dvh] max-w-2xl overflow-y-auto border-t border-rose-100 px-4 py-4"
         >
           {openTab.content}
         </div>

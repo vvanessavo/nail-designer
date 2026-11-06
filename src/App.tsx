@@ -72,9 +72,11 @@ function App() {
   ]
 
   return (
-    <div className="flex min-h-screen flex-col bg-rose-50">
+    // The app fills exactly one screen (h-dvh): toolbar on top, hands in the space left
+    // below it. min-h-0 lets that space shrink when a panel opens, and the hands shrink with it.
+    <div className="flex h-dvh flex-col bg-rose-50">
       <Toolbar tabs={tabs} />
-      <main className="flex flex-1 items-center justify-center p-4">
+      <main className="flex min-h-0 flex-1 items-center justify-center p-4">
         <Hands
           state={state}
           onSelectNail={(nailId) => dispatch({ type: 'SELECT_NAIL', nailId })}

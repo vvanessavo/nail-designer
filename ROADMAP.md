@@ -11,14 +11,14 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 | Release | Epic | Outcome | Status |
 |---|---|---|---|
 | 0.1 | E1: Hand and state | A hand on screen, nails selectable, skin tone changes | Done |
-| 0.2 | E2: Shape and colour | Choose a nail shape and paint a base colour | In progress |
-| 0.3 | E3: Stickers | Place, move, and resize stickers on nails | Backlog |
+| 0.2 | E2: Shape and colour | Choose a nail shape and paint a base colour | Done |
+| 0.3 | E3: Stickers | Place, move, and resize stickers on nails | Next |
 | 0.4 | E4: French tip, finish, undo | A complete design tool | Backlog |
 | 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | Backlog |
 
 ## Now
 
-E2-S4 (multi-select and apply to all) is done. Next: **E2-S5, toolbar layout**, the last story in Release 0.2.
+Release 0.2 (E2: Shape and colour) is done. Next: **E3-S1, Move nails to react-konva**, which starts Release 0.3.
 
 ---
 
@@ -70,16 +70,16 @@ Done when: shift-click (and a tap equivalent on touch) adds or removes nails fro
 Built as: an "Each nail / All nails" switch at the top of the Shape and Colour tabs (`applyToAll` in state). In Each nail mode every tap (or shift-click) adds or removes a nail, with a count and a Clear link. A dot marks the nails a change will go to.
 Depends on: E2-S2, E2-S3.
 
-### E2-S5: Toolbar layout. P0. Next
+### E2-S5: Toolbar layout. P0. Done
 As a user, I find all the controls in one consistent place.
 Done when: shape and colour controls live in one toolbar, usable at phone width and from 768px up with no overlap.
-Started early: the ribbon-style toolbar (`src/components/Toolbar.tsx`) exists with a Skin tone tab. Each new control is added as a tab.
+Built as: a ribbon-style toolbar (`src/components/Toolbar.tsx`), one tab per feature. Checked at 320, 390, 768 and 1280px wide: nothing off-screen, open panels capped at 45% of the screen height (scroll inside), and the hands shrink to stay fully visible.
 
 ---
 
 ## E3: Stickers (Release 0.3)
 
-### E3-S1: Move nails to react-konva. P0. Backlog
+### E3-S1: Move nails to react-konva. P0. Next
 Technical enabler. Do this before any other E3 story.
 Done when: the nails render in a `react-konva` Stage and Layer, clicking and selection work as before, shape and colour from E2 still work, and nail ids and state shape are unchanged.
 Depends on: E2 complete.
