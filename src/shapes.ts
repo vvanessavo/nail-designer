@@ -29,14 +29,11 @@ function freeEdge(shape: NailShape, width: number): string {
     }
 
     case 'square': {
-      // Short, straight sides, flat tip with softly rounded corners.
+      // Short, straight sides and a flat tip with sharp corners.
       const length = width * 0.35
-      const corner = width * 0.2
       return [
-        `L ${-half} ${-length + corner}`,
-        `C ${-half} ${-length + corner * 0.45} ${-half + corner * 0.45} ${-length} ${-half + corner} ${-length}`,
-        `L ${half - corner} ${-length}`,
-        `C ${half - corner * 0.45} ${-length} ${half} ${-length + corner * 0.45} ${half} ${-length + corner}`,
+        `L ${-half} ${-length}`,
+        `L ${half} ${-length}`,
         `L ${half} 0`,
       ].join(' ')
     }
@@ -52,16 +49,13 @@ function freeEdge(shape: NailShape, width: number): string {
     }
 
     case 'coffin': {
-      // Longest; the sides taper in a gentle curve to a narrow flat tip with rounded
+      // Longest; the sides taper in a gentle curve to a narrow flat tip with sharp
       // corners (also called ballerina).
       const length = width * 1.2
       const tip = width * 0.27 // half the width of the flat tip
-      const corner = width * 0.1
       return [
-        `C ${-half} ${-length * 0.35} ${-tip - width * 0.04} ${-length * 0.75} ${-tip} ${-length + corner}`,
-        `C ${-tip} ${-length + corner * 0.45} ${-tip + corner * 0.45} ${-length} ${-tip + corner} ${-length}`,
-        `L ${tip - corner} ${-length}`,
-        `C ${tip - corner * 0.45} ${-length} ${tip} ${-length + corner * 0.45} ${tip} ${-length + corner}`,
+        `C ${-half} ${-length * 0.35} ${-tip - width * 0.04} ${-length * 0.75} ${-tip} ${-length}`,
+        `L ${tip} ${-length}`,
         `C ${tip + width * 0.04} ${-length * 0.75} ${half} ${-length * 0.35} ${half} 0`,
       ].join(' ')
     }
