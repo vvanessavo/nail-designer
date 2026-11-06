@@ -18,7 +18,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E3-S1 (move nails to react-konva) is done. Next: **E3-S2, sticker assets.**
+E3-S2 (sticker assets) is done. Next: **E3-S3, place a sticker.**
 
 ---
 
@@ -84,10 +84,11 @@ Technical enabler. Do this before any other E3 story.
 Done when: the nails render in a `react-konva` Stage and Layer, clicking and selection work as before, shape and colour from E2 still work, and nail ids and state shape are unchanged.
 Depends on: E2 complete.
 
-### E3-S2: Sticker assets. P0. Next
+### E3-S2: Sticker assets. P0. Done
 Done when: six simple SVG stickers exist (star, heart, dot, sparkle, line, flower), single colour, stored in `src/assets/stickers/`.
+Built as: one `<path>` per file on a 24 x 24 grid. `src/stickers.ts` loads them and exposes each outline, so Konva can draw a sticker in any colour.
 
-### E3-S3: Place a sticker. P0. Backlog
+### E3-S3: Place a sticker. P0. Next
 As a user, I can add a sticker to a nail, so I can decorate it.
 Done when: a sticker panel shows the six stickers, picking one and then choosing a nail places it at the centre of that nail, and it is saved in that nail's `stickers` in state.
 Depends on: E3-S1, E3-S2.
