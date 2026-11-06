@@ -72,6 +72,7 @@ Depends on: E2-S2, E2-S3.
 ### E2-S5: Toolbar layout. P0. Backlog
 As a user, I find all the controls in one consistent place.
 Done when: shape and colour controls live in one toolbar, usable at phone width and from 768px up with no overlap.
+Started early: the ribbon-style toolbar (`src/components/Toolbar.tsx`) exists with a Skin tone tab. Each new control is added as a tab.
 
 ---
 
@@ -158,3 +159,4 @@ Depends on: E5-S4.
 | 2026-11-06 | Plan organised by epics and prioritised stories instead of daily tasks |
 | 2026-11-06 | MVP uses one hand with 5 nails; a second hand is post-MVP |
 | 2026-11-06 | Changed: MVP shows two hands with 10 nails (`nail-0` to `nail-9`, left to right). Replaces the decision above |
+| 2026-11-06 | Controls live in a ribbon-style toolbar at the top (like Word or Canva): one tab per feature, the tab expands into its options when clicked |

@@ -24,9 +24,8 @@ type SkinTonePickerProps = {
 function SkinTonePicker({ value, onChange }: SkinTonePickerProps) {
   return (
     <fieldset className="flex flex-col items-center gap-2">
-      <legend className="mb-2 text-center text-sm font-medium text-stone-600">
-        Skin tone
-      </legend>
+      {/* The tab already says "Skin tone", so the label is only for screen readers. */}
+      <legend className="sr-only">Skin tone</legend>
       <div className="flex justify-center gap-2">
         {SKIN_TONES.map((tone) => {
           const isSelected = tone.hex === value
