@@ -10,15 +10,15 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 | Release | Epic | Outcome | Status |
 |---|---|---|---|
-| 0.1 | E1: Hand and state | A hand on screen, nails selectable, skin tone changes | In progress |
-| 0.2 | E2: Shape and colour | Choose a nail shape and paint a base colour | Backlog |
+| 0.1 | E1: Hand and state | A hand on screen, nails selectable, skin tone changes | Done |
+| 0.2 | E2: Shape and colour | Choose a nail shape and paint a base colour | Next |
 | 0.3 | E3: Stickers | Place, move, and resize stickers on nails | Backlog |
 | 0.4 | E4: French tip, finish, undo | A complete design tool | Backlog |
 | 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | Backlog |
 
 ## Now
 
-E1-S4 (app state model) is done and merged. Next: **E1-S5, skin tone picker.**
+Release 0.1 (E1: Hand and state) is done. Next: **E2-S1, nail shape paths.**
 
 ---
 
@@ -41,7 +41,7 @@ Technical foundation for every later story.
 Done when: `Nail` and `AppState` types exist in `src/state/nailState.ts`, a `useReducer` handles `SELECT_NAIL` and `SET_SKIN_TONE`, and the hand reads from that state.
 Depends on: E1-S3.
 
-### E1-S5: Skin tone picker. P0. Next
+### E1-S5: Skin tone picker. P0. Done
 As a user, I can pick a skin tone so the hand looks like mine.
 Done when: 6 to 8 swatches covering fair to deep are shown, picking one updates the hand colour immediately, and the nails stay visible against every tone.
 Depends on: E1-S4.
@@ -50,7 +50,7 @@ Depends on: E1-S4.
 
 ## E2: Shape and colour (Release 0.2)
 
-### E2-S1: Nail shape paths. P0. Backlog
+### E2-S1: Nail shape paths. P0. Next
 Technical foundation for choosing shapes.
 Done when: round, square, almond, and coffin paths exist in `shapes.ts` and each renders correctly in place of a nail.
 
