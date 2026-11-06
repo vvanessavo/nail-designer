@@ -5,11 +5,10 @@ import { HexColorInput, HexColorPicker } from 'react-colorful'
 
 type ColourPickerProps = {
   value: string // hex, e.g. "#f6dcd6"
-  targetLabel: string // e.g. "all nails" or "the selected nail"
   onChange: (hex: string) => void
 }
 
-function ColourPicker({ value, targetLabel, onChange }: ColourPickerProps) {
+function ColourPicker({ value, onChange }: ColourPickerProps) {
   return (
     <div className="flex flex-col items-center gap-3">
       <HexColorPicker
@@ -26,7 +25,6 @@ function ColourPicker({ value, targetLabel, onChange }: ColourPickerProps) {
           className="w-24 rounded-md border border-stone-300 px-2 py-1 font-mono text-sm uppercase text-stone-800"
         />
       </label>
-      <p className="text-xs text-stone-500">Applies to {targetLabel}</p>
     </div>
   )
 }

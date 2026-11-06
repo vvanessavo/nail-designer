@@ -27,6 +27,7 @@ export type AppState = {
   skinTone: string // hex
   nails: Nail[]
   selectedNailIds: number[]
+  applyToAll: boolean // true: changes go on every nail; false: only on the selected nails
 }
 
 // Every change to the state is described as an action. The reducer below decides what each
@@ -36,6 +37,7 @@ export type Action =
   | { type: 'SET_SKIN_TONE'; skinTone: string }
   | { type: 'SET_SHAPE'; shape: NailShape }
   | { type: 'SET_BASE_COLOR'; color: string }
+  | { type: 'SET_APPLY_TO_ALL'; applyToAll: boolean }
 
 const NAIL_COUNT = 10
 
@@ -55,11 +57,13 @@ export const initialState: AppState = {
   skinTone: '#E8B896',
   nails: Array.from({ length: NAIL_COUNT }, (_, id) => createNail(id)),
   selectedNailIds: [],
+  applyToAll: true,
 }
 
-// Changes apply to the selected nails, or to every nail when none are selected.
+// Whether a change (shape, colour...) will apply to this nail: every nail in "All nails"
+// mode, otherwise only the selected ones.
 export function isTargeted(state: AppState, nailId: number): boolean {
-  return state.selectedNailIds.length === 0 || state.selectedNailIds.includes(nailId)
+  return state.applyToAll || state.selectedNailIds.includes(nailId)
 }
 
 // Takes the current state and an action, and returns the new state.
@@ -67,8 +71,11 @@ export function isTargeted(state: AppState, nailId: number): boolean {
 export function nailReducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'SELECT_NAIL':
-      // One nail at a time for now. Selecting several nails comes in E2.
-      return { ...state, selectedNailIds: [action.nailId] }
+      // One nail at a time for now. Tapping a nail means you want to work on that nail,
+      // so it also switches to "Each nail" mode.
+      return { ...state, selectedNailIds: [action.nailId], applyToAll: false }
+    case 'SET_APPLY_TO_ALL':
+      return { ...state, applyToAll: action.applyToAll }
     case 'SET_SKIN_TONE':
       return { ...state, skinTone: action.skinTone }
     case 'SET_SHAPE':

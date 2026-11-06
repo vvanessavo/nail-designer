@@ -1,4 +1,5 @@
 import { useReducer } from 'react'
+import ApplyToToggle from './components/ApplyToToggle'
 import ColourPicker from './components/ColourPicker'
 import Hands from './components/Hands'
 import ShapePicker from './components/ShapePicker'
@@ -11,13 +12,23 @@ function App() {
   // actions, e.g. dispatch({ type: 'SELECT_NAIL', nailId: 3 }).
   const [state, dispatch] = useReducer(nailReducer, initialState)
 
-  // The nails a change will apply to: the selected ones, or all of them if none are selected.
+  // The nails a change will apply to: all of them, or only the selected ones.
   const targetNails = state.nails.filter((nail) => isTargeted(state, nail.id))
-  const targetLabel = state.selectedNailIds.length === 0 ? 'all nails' : 'the selected nail'
+  const firstTarget = targetNails.at(0)
   // Highlight a shape only if every target nail already has it.
-  const targetShape = targetNails.every((nail) => nail.shape === targetNails[0].shape)
-    ? targetNails[0].shape
-    : null
+  const targetShape =
+    firstTarget && targetNails.every((nail) => nail.shape === firstTarget.shape)
+      ? firstTarget.shape
+      : null
+
+  // The "Each nail / All nails" switch, shown at the top of the Shape and Colour tabs.
+  const applyToToggle = (
+    <ApplyToToggle
+      applyToAll={state.applyToAll}
+      hasSelection={state.selectedNailIds.length > 0}
+      onChange={(applyToAll) => dispatch({ type: 'SET_APPLY_TO_ALL', applyToAll })}
+    />
+  )
 
   // One entry per tab in the toolbar. New features (shape, colour, stickers...) go here.
   const tabs: ToolbarTab[] = [
@@ -35,22 +46,26 @@ function App() {
       id: 'shape',
       label: 'Shape',
       content: (
-        <ShapePicker
-          value={targetShape}
-          targetLabel={targetLabel}
-          onChange={(shape) => dispatch({ type: 'SET_SHAPE', shape })}
-        />
+        <div className="flex flex-col items-center gap-4">
+          {applyToToggle}
+          <ShapePicker
+            value={targetShape}
+            onChange={(shape) => dispatch({ type: 'SET_SHAPE', shape })}
+          />
+        </div>
       ),
     },
     {
       id: 'colour',
       label: 'Colour',
       content: (
-        <ColourPicker
-          value={targetNails[0].baseColor}
-          targetLabel={targetLabel}
-          onChange={(color) => dispatch({ type: 'SET_BASE_COLOR', color })}
-        />
+        <div className="flex flex-col items-center gap-4">
+          {applyToToggle}
+          <ColourPicker
+            value={(firstTarget ?? state.nails[0]).baseColor}
+            onChange={(color) => dispatch({ type: 'SET_BASE_COLOR', color })}
+          />
+        </div>
       ),
     },
   ]

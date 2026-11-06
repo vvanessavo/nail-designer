@@ -18,7 +18,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E2-S3 (base colour) is done. Next: **E2-S4, multi-select and apply to all.**
+E2-S3 (base colour) is done. Next: **E2-S4, multi-select** (the apply-to-all switch is already in).
 
 ---
 
@@ -67,6 +67,7 @@ Depends on: E1-S4.
 ### E2-S4: Multi-select and apply to all. P0. Next
 As a user, I can select several nails or all of them, so I don't repeat the same change ten times.
 Done when: shift-click (and a tap equivalent on touch) adds or removes nails from the selection, and an "Apply to all" action applies the current shape and colour to every nail.
+Partly done early: an "Each nail / All nails" switch sits at the top of the Shape and Colour tabs (`applyToAll` in state), and a dot marks the nails a change will go to. Still to do: selecting several nails at once.
 Depends on: E2-S2, E2-S3.
 
 ### E2-S5: Toolbar layout. P0. Backlog
@@ -160,3 +161,4 @@ Depends on: E5-S4.
 | 2026-11-06 | MVP uses one hand with 5 nails; a second hand is post-MVP |
 | 2026-11-06 | Changed: MVP shows two hands with 10 nails (`nail-0` to `nail-9`, left to right). Replaces the decision above |
 | 2026-11-06 | Controls live in a ribbon-style toolbar at the top (like Word or Canva): one tab per feature, the tab expands into its options when clicked |
+| 2026-11-06 | An "Each nail / All nails" switch decides where shape and colour changes go; tapping a nail switches to Each nail. Targeted nails are marked with a small dark dot above the tip instead of a red outline |

@@ -3,15 +3,15 @@
 // Colours and selection come from the app state (src/state/nailState.ts).
 
 import type { Nail } from '../state/nailState'
-import { nailShapePath } from '../shapes'
+import { freeEdgeLength, nailShapePath } from '../shapes'
 
 const NAIL_EDGE = 'rgba(150, 90, 80, 0.5)'
-const SELECTED_EDGE = '#E11D48' // Tailwind rose-600
+const DOT_COLOR = '#292524' // Tailwind stone-800
 
 // Width of the area one hand takes up, used to place and flip the hands.
 export const HAND_WIDTH = 270
 // The drawing runs from about y 80 (tips of the longest nails) to 400 (wrist); Hands crops off the empty top.
-export const HAND_TOP = 78
+export const HAND_TOP = 68
 export const HAND_HEIGHT = 400 - HAND_TOP
 
 type Finger = {
@@ -57,11 +57,11 @@ type FingerShapeProps = {
   finger: Finger
   nail: Nail
   skinTone: string
-  isSelected: boolean
+  isTargeted: boolean // changes will apply to this nail, shown with a dot
   onSelectNail: (nailId: number) => void
 }
 
-function FingerShape({ finger, nail, skinTone, isSelected, onSelectNail }: FingerShapeProps) {
+function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail }: FingerShapeProps) {
   const { x, y, tipWidth, length, angle, nailRatio } = finger
   // Real nails cover about 78% of the fingertip's width.
   const nailWidth = tipWidth * 0.78
@@ -86,11 +86,25 @@ function FingerShape({ finger, nail, skinTone, isSelected, onSelectNail }: Finge
         <path
           id={`nail-${nail.id}`}
           data-shape={nail.shape}
+          data-targeted={isTargeted}
           d={nailShapePath(nail.shape, nailWidth, bedLength)}
           fill={nail.baseColor}
-          stroke={isSelected ? SELECTED_EDGE : NAIL_EDGE}
-          strokeWidth={isSelected ? 2.5 : 1}
+          stroke={NAIL_EDGE}
+          strokeWidth={1}
         />
+        {/* A small dot just past the nail tip marks the nails your changes will go to.
+            Dark with a white rim, so it shows against any polish or background. */}
+        {isTargeted && (
+          <circle
+            cx={0}
+            cy={-freeEdgeLength(nail.shape, nailWidth) - 9}
+            r={4.5}
+            fill={DOT_COLOR}
+            stroke="white"
+            strokeWidth={1.5}
+            pointerEvents="none"
+          />
+        )}
       </g>
     </g>
   )
@@ -102,11 +116,11 @@ type HandProps = {
   x: number // left edge of the hand's area
   skinTone: string
   nails: Nail[]
-  selectedNailIds: number[]
+  targetedNailIds: number[]
   onSelectNail: (nailId: number) => void
 }
 
-function Hand({ firstNail, mirrored, x, skinTone, nails, selectedNailIds, onSelectNail }: HandProps) {
+function Hand({ firstNail, mirrored, x, skinTone, nails, targetedNailIds, onSelectNail }: HandProps) {
   // Nails are numbered left to right on screen. A left hand reads pinky to thumb,
   // a flipped right hand reads thumb to pinky.
   const nailNumberFor = (fingerIndex: number) => {
@@ -122,7 +136,7 @@ function Hand({ firstNail, mirrored, x, skinTone, nails, selectedNailIds, onSele
         finger={finger}
         nail={nail}
         skinTone={skinTone}
-        isSelected={selectedNailIds.includes(nail.id)}
+        isTargeted={targetedNailIds.includes(nail.id)}
         onSelectNail={onSelectNail}
       />
     )
