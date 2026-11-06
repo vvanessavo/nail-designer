@@ -1,7 +1,8 @@
 import Hand, { HAND_HEIGHT, HAND_WIDTH } from './Hand'
 
-// Space between the two hands' thumbs.
-const GAP = 20
+// Space between the two hands' drawing areas. It's negative so the areas overlap:
+// each area has empty space beside the thumb, and this pulls the thumbs close together.
+const GAP = -45
 const WIDTH = HAND_WIDTH * 2 + GAP
 
 // Both hands side by side: left hand has nail-0 to nail-4, right hand nail-5 to nail-9.
