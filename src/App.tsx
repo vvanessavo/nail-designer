@@ -1,16 +1,41 @@
-import { useReducer } from 'react'
+import { useReducer, useState } from 'react'
 import ApplyToToggle from './components/ApplyToToggle'
 import ColourPicker from './components/ColourPicker'
 import Hands from './components/Hands'
 import ShapePicker from './components/ShapePicker'
 import SkinTonePicker from './components/SkinTonePicker'
+import StickerPanel from './components/StickerPanel'
 import Toolbar, { type ToolbarTab } from './components/Toolbar'
 import { initialState, isTargeted, nailReducer } from './state/nailState'
+import type { StickerType } from './stickers'
+
+// New stickers start in gold, which shows up on most polish colours.
+const STICKER_COLOR = '#D4AF37'
+
+// A unique id for each sticker, so React and Konva can tell them apart.
+function newStickerId(): string {
+  return `sticker-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+}
 
 function App() {
   // useReducer keeps all the app's state in one object and changes it only through
   // actions, e.g. dispatch({ type: 'SELECT_NAIL', nailId: 3 }).
   const [state, dispatch] = useReducer(nailReducer, initialState)
+  // The sticker picked in the Stickers tab and waiting to be placed. While one is picked,
+  // tapping a nail places it instead of choosing that nail.
+  const [pickedSticker, setPickedSticker] = useState<StickerType | null>(null)
+
+  const handleNailTap = (nailId: number) => {
+    if (pickedSticker) {
+      dispatch({
+        type: 'ADD_STICKER',
+        nailId,
+        sticker: { id: newStickerId(), type: pickedSticker, x: 0, y: 0, scale: 1, color: STICKER_COLOR },
+      })
+    } else {
+      dispatch({ type: 'SELECT_NAIL', nailId })
+    }
+  }
 
   // The nails a change will apply to: all of them, or only the selected ones.
   const targetNails = state.nails.filter((nail) => isTargeted(state, nail.id))
@@ -69,6 +94,16 @@ function App() {
         </div>
       ),
     },
+    {
+      id: 'stickers',
+      label: 'Stickers',
+      content: (
+        <StickerPanel
+          picked={pickedSticker}
+          onPick={setPickedSticker}
+        />
+      ),
+    },
   ]
 
   return (
@@ -79,7 +114,9 @@ function App() {
       <main className="flex min-h-0 flex-1 items-center justify-center p-4">
         <Hands
           state={state}
-          onSelectNail={(nailId) => dispatch({ type: 'SELECT_NAIL', nailId })}
+          // While a sticker is picked, a tap places it, so the selection dots are hidden.
+          showTargets={pickedSticker === null}
+          onSelectNail={handleNailTap}
         />
       </main>
     </div>

@@ -7,9 +7,9 @@ export type NailShape = 'round' | 'square' | 'almond' | 'coffin'
 export type Sticker = {
   id: string
   type: 'heart' | 'star' | 'dot' | 'sparkle' | 'line' | 'flower'
-  x: number
+  x: number // offset from the centre of the nail, in drawing units (0 = centred)
   y: number
-  scale: number
+  scale: number // 1 = the default size, about 70% of the nail's width
   color: string
 }
 
@@ -39,6 +39,7 @@ export type Action =
   | { type: 'SET_BASE_COLOR'; color: string }
   | { type: 'SET_APPLY_TO_ALL'; applyToAll: boolean }
   | { type: 'CLEAR_SELECTION' }
+  | { type: 'ADD_STICKER'; nailId: number; sticker: Sticker }
 
 const NAIL_COUNT = 10
 
@@ -87,6 +88,15 @@ export function nailReducer(state: AppState, action: Action): AppState {
       }
     case 'CLEAR_SELECTION':
       return { ...state, selectedNailIds: [] }
+    case 'ADD_STICKER':
+      return {
+        ...state,
+        nails: state.nails.map((nail) =>
+          nail.id === action.nailId
+            ? { ...nail, stickers: [...nail.stickers, action.sticker] }
+            : nail,
+        ),
+      }
     case 'SET_APPLY_TO_ALL':
       return { ...state, applyToAll: action.applyToAll }
     case 'SET_SKIN_TONE':

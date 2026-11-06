@@ -10,9 +10,16 @@ import type Konva from 'konva'
 import { Circle, Group, Path } from 'react-konva'
 import type { Nail } from '../state/nailState'
 import { freeEdgeLength, nailShapePath } from '../shapes'
+import { STICKER_SIZE, STICKERS } from '../stickers'
 
 const NAIL_EDGE = 'rgba(150, 90, 80, 0.5)'
 const DOT_COLOR = '#292524' // Tailwind stone-800
+
+// A sticker at scale 1 is this fraction of the nail's width.
+const STICKER_WIDTH_RATIO = 0.7
+
+// The outline for each sticker type, looked up by name.
+const STICKER_PATHS = Object.fromEntries(STICKERS.map((sticker) => [sticker.type, sticker.path]))
 
 // Width of the area one hand takes up, used to place and flip the hands.
 export const HAND_WIDTH = 270
@@ -82,6 +89,11 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail }: Finge
   const fingertipLine = -length + nailWidth * 0.15
   // How far the nail runs down the finger to the cuticle.
   const bedLength = nailWidth * (nailRatio - 0.15)
+  // The middle of the nail, from the tip of the free edge down to the cuticle.
+  // Stickers are positioned relative to this point.
+  const nailCentreY = (bedLength - freeEdgeLength(nail.shape, nailWidth)) / 2
+  // Turns a sticker's 24 x 24 outline into the right size for this nail.
+  const stickerScale = (nailWidth * STICKER_WIDTH_RATIO) / STICKER_SIZE
 
   return (
     // The whole finger is clickable, so the target is big enough for a fingertip on a phone.
@@ -108,6 +120,24 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail }: Finge
           stroke={NAIL_EDGE}
           strokeWidth={1}
         />
+        {nail.stickers.map((sticker) => (
+          <Path
+            key={sticker.id}
+            id={sticker.id}
+            name="sticker"
+            stickerType={sticker.type}
+            data={STICKER_PATHS[sticker.type]}
+            x={sticker.x}
+            y={nailCentreY + sticker.y}
+            // offset moves the outline's middle (12, 12) onto the sticker's position.
+            offsetX={STICKER_SIZE / 2}
+            offsetY={STICKER_SIZE / 2}
+            scaleX={stickerScale * sticker.scale}
+            scaleY={stickerScale * sticker.scale}
+            fill={sticker.color}
+            listening={false}
+          />
+        ))}
         {/* A small dot just past the nail tip marks the nails your changes will go to.
             Dark with a white rim, so it shows against any polish or background. */}
         {isTargeted && (

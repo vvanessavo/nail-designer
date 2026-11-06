@@ -18,7 +18,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E3-S2 (sticker assets) is done. Next: **E3-S3, place a sticker.**
+E3-S3 (place a sticker) is done. Next: **E3-S4, move, resize, and rotate a sticker.**
 
 ---
 
@@ -88,12 +88,12 @@ Depends on: E2 complete.
 Done when: six simple SVG stickers exist (star, heart, dot, sparkle, line, flower), single colour, stored in `src/assets/stickers/`.
 Built as: one `<path>` per file on a 24 x 24 grid. `src/stickers.ts` loads them and exposes each outline, so Konva can draw a sticker in any colour.
 
-### E3-S3: Place a sticker. P0. Next
+### E3-S3: Place a sticker. P0. Done
 As a user, I can add a sticker to a nail, so I can decorate it.
 Done when: a sticker panel shows the six stickers, picking one and then choosing a nail places it at the centre of that nail, and it is saved in that nail's `stickers` in state.
 Depends on: E3-S1, E3-S2.
 
-### E3-S4: Move, resize, and rotate a sticker. P0. Backlog
+### E3-S4: Move, resize, and rotate a sticker. P0. Next
 As a user, I can adjust a sticker, so it sits exactly where I imagined.
 Done when: a placed sticker can be dragged, scaled, and rotated with the Konva Transformer, with mouse and touch, and the new position is saved in state.
 Depends on: E3-S3.
