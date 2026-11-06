@@ -4,7 +4,7 @@
 
 import type { Nail } from '../state/nailState'
 
-const NAIL_EDGE = 'rgba(150, 90, 80, 0.3)'
+const NAIL_EDGE = 'rgba(150, 90, 80, 0.5)'
 const SELECTED_EDGE = '#E11D48' // Tailwind rose-600
 
 // Width of the area one hand takes up, used to place and flip the hands.
