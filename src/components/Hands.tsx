@@ -5,8 +5,13 @@ import Hand, { HAND_HEIGHT, HAND_WIDTH } from './Hand'
 const GAP = -45
 const WIDTH = HAND_WIDTH * 2 + GAP
 
+type HandsProps = {
+  selectedNail: number | null
+  onSelectNail: (nailNumber: number) => void
+}
+
 // Both hands side by side: left hand has nail-0 to nail-4, right hand nail-5 to nail-9.
-function Hands() {
+function Hands({ selectedNail, onSelectNail }: HandsProps) {
   return (
     <svg
       viewBox={`0 0 ${WIDTH} ${HAND_HEIGHT}`}
@@ -39,11 +44,15 @@ function Hands() {
           firstNail={0}
           mirrored={false}
           x={0}
+          selectedNail={selectedNail}
+          onSelectNail={onSelectNail}
         />
         <Hand
           firstNail={5}
           mirrored={true}
           x={HAND_WIDTH + GAP}
+          selectedNail={selectedNail}
+          onSelectNail={onSelectNail}
         />
       </g>
     </svg>
