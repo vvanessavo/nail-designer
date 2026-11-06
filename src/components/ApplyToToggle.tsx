@@ -1,10 +1,12 @@
 // A two-way switch: send changes to each nail on its own, or to all nails at once.
-// Shown at the top of the Shape and Colour tabs.
+// Shown at the top of the Shape and Colour tabs. In "Each nail" mode it also says how many
+// nails are chosen and offers a Clear link.
 
 type ApplyToToggleProps = {
   applyToAll: boolean
-  hasSelection: boolean // whether a nail has been tapped yet
+  selectedCount: number // how many nails are chosen
   onChange: (applyToAll: boolean) => void
+  onClear: () => void
 }
 
 const OPTIONS = [
@@ -12,7 +14,7 @@ const OPTIONS = [
   { applyToAll: true, label: 'All nails' },
 ]
 
-function ApplyToToggle({ applyToAll, hasSelection, onChange }: ApplyToToggleProps) {
+function ApplyToToggle({ applyToAll, selectedCount, onChange, onClear }: ApplyToToggleProps) {
   return (
     <div className="flex flex-col items-center gap-1">
       <div
@@ -37,8 +39,21 @@ function ApplyToToggle({ applyToAll, hasSelection, onChange }: ApplyToToggleProp
           )
         })}
       </div>
-      {!applyToAll && !hasSelection && (
-        <p className="text-xs text-stone-500">Tap a nail to choose it</p>
+      {!applyToAll && (
+        <p className="flex items-center gap-2 text-xs text-stone-500">
+          {selectedCount === 0
+            ? 'Tap nails to choose them'
+            : `${selectedCount} ${selectedCount === 1 ? 'nail' : 'nails'} chosen · tap a nail again to remove it`}
+          {selectedCount > 0 && (
+            <button
+              type="button"
+              onClick={onClear}
+              className="cursor-pointer font-medium text-rose-700 underline underline-offset-2"
+            >
+              Clear
+            </button>
+          )}
+        </p>
       )}
     </div>
   )

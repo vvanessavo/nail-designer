@@ -38,6 +38,7 @@ export type Action =
   | { type: 'SET_SHAPE'; shape: NailShape }
   | { type: 'SET_BASE_COLOR'; color: string }
   | { type: 'SET_APPLY_TO_ALL'; applyToAll: boolean }
+  | { type: 'CLEAR_SELECTION' }
 
 const NAIL_COUNT = 10
 
@@ -71,9 +72,21 @@ export function isTargeted(state: AppState, nailId: number): boolean {
 export function nailReducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'SELECT_NAIL':
-      // One nail at a time for now. Tapping a nail means you want to work on that nail,
-      // so it also switches to "Each nail" mode.
-      return { ...state, selectedNailIds: [action.nailId], applyToAll: false }
+      // In "All nails" mode, tapping a nail means you want to work on that nail on its own:
+      // switch to "Each nail" with just that nail chosen.
+      if (state.applyToAll) {
+        return { ...state, selectedNailIds: [action.nailId], applyToAll: false }
+      }
+      // In "Each nail" mode, a tap adds the nail to the selection, or removes it if it was
+      // already chosen. That's how you pick several nails.
+      return {
+        ...state,
+        selectedNailIds: state.selectedNailIds.includes(action.nailId)
+          ? state.selectedNailIds.filter((id) => id !== action.nailId)
+          : [...state.selectedNailIds, action.nailId],
+      }
+    case 'CLEAR_SELECTION':
+      return { ...state, selectedNailIds: [] }
     case 'SET_APPLY_TO_ALL':
       return { ...state, applyToAll: action.applyToAll }
     case 'SET_SKIN_TONE':

@@ -25,8 +25,9 @@ function App() {
   const applyToToggle = (
     <ApplyToToggle
       applyToAll={state.applyToAll}
-      hasSelection={state.selectedNailIds.length > 0}
+      selectedCount={state.selectedNailIds.length}
       onChange={(applyToAll) => dispatch({ type: 'SET_APPLY_TO_ALL', applyToAll })}
+      onClear={() => dispatch({ type: 'CLEAR_SELECTION' })}
     />
   )
 
