@@ -11,6 +11,18 @@
 
 import type { NailShape } from './state/nailState'
 
+// How far each shape's free edge grows past the fingertip, as a fraction of the nail's width.
+const FREE_EDGE_LENGTH: Record<NailShape, number> = {
+  round: 0.45,
+  square: 0.35,
+  almond: 1.1,
+  coffin: 1.2,
+}
+
+export function freeEdgeLength(shape: NailShape, width: number): number {
+  return width * FREE_EDGE_LENGTH[shape]
+}
+
 // Builds the free edge, from the left side of the nail (-half, 0) to the right side (half, 0).
 // `width` is the nail's width; lengths are fractions of it so every finger scales the same way.
 function freeEdge(shape: NailShape, width: number): string {
@@ -19,7 +31,7 @@ function freeEdge(shape: NailShape, width: number): string {
   switch (shape) {
     case 'round': {
       // Short, with an evenly curved tip.
-      const length = width * 0.45
+      const length = freeEdgeLength(shape, width)
       const curve = width * 0.425
       return [
         `L ${-half} ${-length + curve}`,
@@ -30,7 +42,7 @@ function freeEdge(shape: NailShape, width: number): string {
 
     case 'square': {
       // Short, straight sides and a flat tip with sharp corners.
-      const length = width * 0.35
+      const length = freeEdgeLength(shape, width)
       return [
         `L ${-half} ${-length}`,
         `L ${half} ${-length}`,
@@ -41,7 +53,7 @@ function freeEdge(shape: NailShape, width: number): string {
     case 'almond': {
       // Longer; the sides curve in to a soft rounded point, like the shape of an almond.
       // Each side leaves the nail straight up (no corner) and arrives flat at the tip.
-      const length = width * 1.1
+      const length = freeEdgeLength(shape, width)
       return [
         `C ${-half} ${-length * 0.45} ${-half * 0.35} ${-length} 0 ${-length}`,
         `C ${half * 0.35} ${-length} ${half} ${-length * 0.45} ${half} 0`,
@@ -51,7 +63,7 @@ function freeEdge(shape: NailShape, width: number): string {
     case 'coffin': {
       // Longest; the sides taper in a gentle curve to a narrow flat tip with sharp
       // corners (also called ballerina).
-      const length = width * 1.2
+      const length = freeEdgeLength(shape, width)
       const tip = width * 0.27 // half the width of the flat tip
       return [
         `C ${-half} ${-length * 0.35} ${-tip - width * 0.04} ${-length * 0.75} ${-tip} ${-length}`,

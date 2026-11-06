@@ -1,5 +1,5 @@
 import Hand, { HAND_HEIGHT, HAND_TOP, HAND_WIDTH } from './Hand'
-import type { AppState } from '../state/nailState'
+import { isTargeted, type AppState } from '../state/nailState'
 
 // Space between the two hands' drawing areas. It's negative so the areas overlap:
 // each area has empty space beside the thumb, and this pulls the thumbs close together.
@@ -13,6 +13,10 @@ type HandsProps = {
 
 // Both hands side by side: left hand has nail-0 to nail-4, right hand nail-5 to nail-9.
 function Hands({ state, onSelectNail }: HandsProps) {
+  const targetedNailIds = state.nails
+    .filter((nail) => isTargeted(state, nail.id))
+    .map((nail) => nail.id)
+
   return (
     <svg
       viewBox={`0 0 ${WIDTH} ${HAND_HEIGHT}`}
@@ -48,7 +52,7 @@ function Hands({ state, onSelectNail }: HandsProps) {
           x={0}
           skinTone={state.skinTone}
           nails={state.nails}
-          selectedNailIds={state.selectedNailIds}
+          targetedNailIds={targetedNailIds}
           onSelectNail={onSelectNail}
         />
         <Hand
@@ -57,7 +61,7 @@ function Hands({ state, onSelectNail }: HandsProps) {
           x={HAND_WIDTH + GAP}
           skinTone={state.skinTone}
           nails={state.nails}
-          selectedNailIds={state.selectedNailIds}
+          targetedNailIds={targetedNailIds}
           onSelectNail={onSelectNail}
         />
         </g>

@@ -16,11 +16,10 @@ const PREVIEW_BED = 18
 
 type ShapePickerProps = {
   value: NailShape | null // the shape the target nails share, or null if they differ
-  targetLabel: string // e.g. "all nails" or "the selected nail"
   onChange: (shape: NailShape) => void
 }
 
-function ShapePicker({ value, targetLabel, onChange }: ShapePickerProps) {
+function ShapePicker({ value, onChange }: ShapePickerProps) {
   return (
     <fieldset className="flex flex-col items-center gap-2">
       <legend className="sr-only">Nail shape</legend>
@@ -56,7 +55,6 @@ function ShapePicker({ value, targetLabel, onChange }: ShapePickerProps) {
           )
         })}
       </div>
-      <p className="text-xs text-stone-500">Applies to {targetLabel}</p>
     </fieldset>
   )
 }

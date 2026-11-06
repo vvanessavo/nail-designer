@@ -101,6 +101,7 @@ type AppState = {
   skinTone: string        // hex
   nails: Nail[]
   selectedNailIds: number[]
+  applyToAll: boolean     // true: changes go on every nail; false: only the selected nails
 }
 ```
 
