@@ -16,15 +16,16 @@ type Finger = {
   tipWidth: number
   length: number
   angle: number // degrees, 0 = straight up
+  nailRatio: number // nail bed length ÷ nail width (real fingers ~1.15, thumb ~1.0)
 }
 
 // Pinky, ring, middle, index, thumb. Fingers touch at the base and fan out a little.
 const FINGERS: Finger[] = [
-  { x: 46, y: 228, baseWidth: 31, tipWidth: 23, length: 90, angle: -12 },
-  { x: 78, y: 214, baseWidth: 34, tipWidth: 26, length: 124, angle: -4 },
-  { x: 112, y: 210, baseWidth: 35, tipWidth: 27, length: 138, angle: 1 },
-  { x: 146, y: 216, baseWidth: 34, tipWidth: 26, length: 122, angle: 8 },
-  { x: 160, y: 296, baseWidth: 40, tipWidth: 29, length: 98, angle: 40 },
+  { x: 46, y: 228, baseWidth: 31, tipWidth: 23, length: 90, angle: -12, nailRatio: 1.1 },
+  { x: 78, y: 214, baseWidth: 34, tipWidth: 26, length: 124, angle: -4, nailRatio: 1.15 },
+  { x: 112, y: 210, baseWidth: 35, tipWidth: 27, length: 138, angle: 1, nailRatio: 1.2 },
+  { x: 146, y: 216, baseWidth: 34, tipWidth: 26, length: 122, angle: 8, nailRatio: 1.15 },
+  { x: 160, y: 296, baseWidth: 40, tipWidth: 29, length: 98, angle: 40, nailRatio: 1.0 },
 ]
 
 // Draw the palm before the thumb's neighbours but after the thumb, so it covers the joins.
@@ -43,14 +44,15 @@ function fingerPath({ baseWidth, tipWidth, length }: Finger): string {
   ].join(' ')
 }
 
-// A nail with a rounded tip and a rounded U-shaped base (no sharp corners).
-// Top-centre at (0, 0).
+// A natural nail: gently curved tip, nearly straight sides, and a U-shaped cuticle
+// with rounded bottom corners. Top-centre at (0, 0).
 function nailPath(width: number, height: number): string {
   const half = width / 2
-  const bottomCurve = width * 0.35
+  const topCurve = width * 0.28
+  const bottomCurve = width * 0.32
   return [
-    `M ${-half} ${half}`,
-    `A ${half} ${half} 0 0 1 ${half} ${half}`,
+    `M ${-half} ${topCurve}`,
+    `A ${half} ${topCurve} 0 0 1 ${half} ${topCurve}`,
     `L ${half} ${height - bottomCurve}`,
     `A ${half} ${bottomCurve} 0 0 1 ${-half} ${height - bottomCurve}`,
     'Z',
@@ -63,11 +65,13 @@ type FingerShapeProps = {
 }
 
 function FingerShape({ finger, nailId }: FingerShapeProps) {
-  const { x, y, tipWidth, length, angle } = finger
-  const nailWidth = tipWidth * 0.82
-  const nailHeight = nailWidth * 1.85
-  // Start the nail above the fingertip so it grows past the skin.
-  const nailTop = -length - 13
+  const { x, y, tipWidth, length, angle, nailRatio } = finger
+  // Real nails cover about 78% of the fingertip's width.
+  const nailWidth = tipWidth * 0.78
+  // A short free edge grows past the fingertip, like a natural nail.
+  const freeEdge = nailWidth * 0.25
+  const nailHeight = nailWidth * nailRatio + freeEdge
+  const nailTop = -length - freeEdge
 
   return (
     <g transform={`translate(${x} ${y}) rotate(${angle})`}>
