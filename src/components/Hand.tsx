@@ -143,7 +143,13 @@ function Hand({ firstNail, mirrored, x, skinTone, nails, selectedNailIds, onSele
     <g transform={transform}>
       {renderFinger(FINGERS[THUMB_INDEX], THUMB_INDEX)}
       <path
-        d="M 36 252 C 34 236 44 228 62 226 L 152 226 C 162 228 166 236 166 250 C 172 285 166 325 150 355 L 146 400 L 70 400 L 64 355 C 44 325 34 290 36 252 Z"
+        d="M 36 252 C 34 236 44 228 62 226 L 150 226 C 157 228 160 238 160 252 C 168 285 166 325 150 355 L 146 400 L 70 400 L 64 355 C 44 325 34 290 36 252 Z"
+        fill={skinTone}
+      />
+      {/* The skin between the thumb and index finger: one smooth curve that follows the
+          side of the index finger down and flows into the top edge of the thumb. */}
+      <path
+        d="M 161.6 220 C 159.2 242 175.1 252.8 190 236.5 L 140 300 L 150 220 Z"
         fill={skinTone}
       />
       {FINGERS.slice(0, THUMB_INDEX).map(renderFinger)}
