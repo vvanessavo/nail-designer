@@ -40,7 +40,7 @@ function ApplyToToggle({ applyToAll, selectedCount, onChange, onClear }: ApplyTo
         })}
       </div>
       {!applyToAll && (
-        <p className="flex items-center gap-2 text-xs text-stone-500">
+        <p className="flex flex-wrap items-center justify-center gap-x-2 text-center text-xs text-stone-500">
           {selectedCount === 0
             ? 'Tap nails to choose them'
             : `${selectedCount} ${selectedCount === 1 ? 'nail' : 'nails'} chosen · tap a nail again to remove it`}

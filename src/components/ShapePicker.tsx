@@ -21,9 +21,10 @@ type ShapePickerProps = {
 
 function ShapePicker({ value, onChange }: ShapePickerProps) {
   return (
-    <fieldset className="flex flex-col items-center gap-2">
+    <fieldset className="flex w-full flex-col items-center gap-2">
       <legend className="sr-only">Nail shape</legend>
-      <div className="flex justify-center gap-2">
+      {/* The four buttons share the width, up to 72px each, so they fit any phone. */}
+      <div className="grid w-full max-w-80 grid-cols-4 gap-2">
         {SHAPES.map(({ shape, label }) => {
           const isSelected = shape === value
           return (
@@ -32,7 +33,7 @@ function ShapePicker({ value, onChange }: ShapePickerProps) {
               type="button"
               onClick={() => onChange(shape)}
               aria-pressed={isSelected}
-              className={`flex w-18 shrink-0 cursor-pointer flex-col items-center gap-1 rounded-xl border bg-white px-2 py-2 text-xs font-medium transition ${
+              className={`flex min-w-0 cursor-pointer flex-col items-center gap-1 rounded-xl border bg-white px-2 py-2 text-xs font-medium transition ${
                 isSelected
                   ? 'border-rose-600 text-rose-700 ring-1 ring-rose-600'
                   : 'border-stone-200 text-stone-600 hover:border-stone-400'

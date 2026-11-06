@@ -26,7 +26,8 @@ function SkinTonePicker({ value, onChange }: SkinTonePickerProps) {
     <fieldset className="flex flex-col items-center gap-2">
       {/* The tab already says "Skin tone", so the label is only for screen readers. */}
       <legend className="sr-only">Skin tone</legend>
-      <div className="flex justify-center gap-2">
+      {/* 2 rows of 4 on phones, 1 row of 8 from 640px wide. */}
+      <div className="grid grid-cols-4 gap-2 sm:grid-cols-8">
         {SKIN_TONES.map((tone) => {
           const isSelected = tone.hex === value
           return (
