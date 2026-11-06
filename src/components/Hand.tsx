@@ -33,7 +33,7 @@ const FINGERS: Finger[] = [
   { x: 81.5, y: 220, baseWidth: 29, tipWidth: 24, length: 104, angle: -3, nailRatio: 1.15 },
   { x: 111.5, y: 216, baseWidth: 31, tipWidth: 25, length: 110, angle: 1, nailRatio: 1.2 },
   { x: 142, y: 222, baseWidth: 30, tipWidth: 24, length: 101, angle: 7, nailRatio: 1.15 },
-  { x: 140, y: 320, baseWidth: 40, tipWidth: 27, length: 120, angle: 45, nailRatio: 1.0 },
+  { x: 168, y: 290.3, baseWidth: 40, tipWidth: 27, length: 76, angle: 30, nailRatio: 1.0 },
 ]
 
 // Draw the palm before the thumb's neighbours but after the thumb, so it covers the joins.
@@ -149,13 +149,18 @@ function Hand({ firstNail, mirrored, x, skinTone, nails, selectedNailIds, onSele
     <g transform={transform}>
       {renderFinger(FINGERS[THUMB_INDEX], THUMB_INDEX)}
       <path
-        d="M 41 245 C 40 228 46 218 60 217 L 140 215 C 150 216 154 228 153 245 L 150 290 C 148 320 140 345 132 360 L 130 400 L 66 400 L 62 360 C 46 335 38 290 41 245 Z"
+        d="M 41 245 C 40 228 46 218 60 217 L 140 215 C 150 216 154 228 153 245 L 150 290 C 152 330 146 365 136 386 L 132 400 L 66 400 L 62 360 C 46 335 38 290 41 245 Z"
         fill={skinTone}
       />
       {/* The skin between the thumb and index finger: one smooth curve that follows the
           side of the index finger down and flows into the top edge of the thumb. */}
       <path
-        d="M 154.3 240 C 153.5 255 155 270 162 270 C 170 270 178.4 260.3 185 254.2 L 160 300 L 140 300 L 140 240 Z"
+        d="M 154.3 240 C 153.5 255 154.5 268 160 268 C 163.5 268 166.7 261.7 170 256.7 L 168 295 L 140 300 L 140 240 Z"
+        fill={skinTone}
+      />
+      {/* The fleshy base of the thumb: a rounded bulge from the thumb down into the wrist. */}
+      <path
+        d="M 186.7 290 C 176.6 309.6 158 366 136 386 L 120 370 L 150 290 Z"
         fill={skinTone}
       />
       {FINGERS.slice(0, THUMB_INDEX).map(renderFinger)}
