@@ -11,14 +11,14 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 | Release | Epic | Outcome | Status |
 |---|---|---|---|
 | 0.1 | E1: Hand and state | A hand on screen, nails selectable, skin tone changes | Done |
-| 0.2 | E2: Shape and colour | Choose a nail shape and paint a base colour | Next |
+| 0.2 | E2: Shape and colour | Choose a nail shape and paint a base colour | In progress |
 | 0.3 | E3: Stickers | Place, move, and resize stickers on nails | Backlog |
 | 0.4 | E4: French tip, finish, undo | A complete design tool | Backlog |
 | 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | Backlog |
 
 ## Now
 
-Release 0.1 (E1: Hand and state) is done. Next: **E2-S1, nail shape paths.**
+E2-S1 (nail shape paths) is done. Next: **E2-S2, choose a nail shape.**
 
 ---
 
@@ -50,11 +50,11 @@ Depends on: E1-S4.
 
 ## E2: Shape and colour (Release 0.2)
 
-### E2-S1: Nail shape paths. P0. Next
+### E2-S1: Nail shape paths. P0. Done
 Technical foundation for choosing shapes.
-Done when: round, square, almond, and coffin paths exist in `shapes.ts` and each renders correctly in place of a nail.
+Done when: round, square, almond, and coffin paths exist in `src/shapes.ts` and each renders correctly in place of a nail.
 
-### E2-S2: Choose a nail shape. P0. Backlog
+### E2-S2: Choose a nail shape. P0. Next
 As a user, I can choose a nail shape for the selected nails, so the set matches what I want.
 Done when: four shape buttons with previews are shown, picking one changes the selected nails (or all nails if none are selected), and the choice is held in state through `SET_SHAPE`.
 Depends on: E1-S4, E2-S1.

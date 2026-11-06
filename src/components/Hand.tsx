@@ -3,14 +3,15 @@
 // Colours and selection come from the app state (src/state/nailState.ts).
 
 import type { Nail } from '../state/nailState'
+import { nailShapePath } from '../shapes'
 
 const NAIL_EDGE = 'rgba(150, 90, 80, 0.5)'
 const SELECTED_EDGE = '#E11D48' // Tailwind rose-600
 
 // Width of the area one hand takes up, used to place and flip the hands.
 export const HAND_WIDTH = 270
-// The drawing runs from about y 90 (fingertips) to 400 (wrist); Hands crops off the empty top.
-export const HAND_TOP = 88
+// The drawing runs from about y 80 (tips of the longest nails) to 400 (wrist); Hands crops off the empty top.
+export const HAND_TOP = 78
 export const HAND_HEIGHT = 400 - HAND_TOP
 
 type Finger = {
@@ -52,21 +53,6 @@ function fingerPath({ baseWidth, tipWidth, length }: Finger): string {
   ].join(' ')
 }
 
-// A natural nail: gently curved tip, nearly straight sides, and a U-shaped cuticle
-// with rounded bottom corners. Top-centre at (0, 0).
-function nailPath(width: number, height: number): string {
-  const half = width / 2
-  const topCurve = width * 0.28
-  const bottomCurve = width * 0.32
-  return [
-    `M ${-half} ${topCurve}`,
-    `A ${half} ${topCurve} 0 0 1 ${half} ${topCurve}`,
-    `L ${half} ${height - bottomCurve}`,
-    `A ${half} ${bottomCurve} 0 0 1 ${-half} ${height - bottomCurve}`,
-    'Z',
-  ].join(' ')
-}
-
 type FingerShapeProps = {
   finger: Finger
   nail: Nail
@@ -79,10 +65,11 @@ function FingerShape({ finger, nail, skinTone, isSelected, onSelectNail }: Finge
   const { x, y, tipWidth, length, angle, nailRatio } = finger
   // Real nails cover about 78% of the fingertip's width.
   const nailWidth = tipWidth * 0.78
-  // A short free edge grows past the fingertip, like a natural nail.
-  const freeEdge = nailWidth * 0.25
-  const nailHeight = nailWidth * nailRatio + freeEdge
-  const nailTop = -length - freeEdge
+  // The fingertip line, where the free edge starts: just below the top of the finger,
+  // where its rounded tip starts to narrow.
+  const fingertipLine = -length + nailWidth * 0.15
+  // How far the nail runs down the finger to the cuticle.
+  const bedLength = nailWidth * (nailRatio - 0.15)
 
   return (
     // The whole finger is clickable, so the target is big enough for a fingertip on a phone.
@@ -95,10 +82,10 @@ function FingerShape({ finger, nail, skinTone, isSelected, onSelectNail }: Finge
         d={fingerPath(finger)}
         fill={skinTone}
       />
-      <g transform={`translate(0 ${nailTop})`}>
+      <g transform={`translate(0 ${fingertipLine})`}>
         <path
           id={`nail-${nail.id}`}
-          d={nailPath(nailWidth, nailHeight)}
+          d={nailShapePath(nail.shape, nailWidth, bedLength)}
           fill={nail.baseColor}
           stroke={isSelected ? SELECTED_EDGE : NAIL_EDGE}
           strokeWidth={isSelected ? 2.5 : 1}
