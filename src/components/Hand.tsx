@@ -90,7 +90,6 @@ function FingerShape({ finger, nail, skinTone, isSelected, onSelectNail }: Finge
           fill={nail.baseColor}
           stroke={isSelected ? SELECTED_EDGE : NAIL_EDGE}
           strokeWidth={isSelected ? 2.5 : 1}
-          strokeLinejoin="round"
         />
       </g>
     </g>
