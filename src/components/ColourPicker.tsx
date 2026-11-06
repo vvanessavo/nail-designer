@@ -9,21 +9,20 @@ type Preset = {
   hex: string
 }
 
-// Popular polish colours, from soft neutrals to bold darks.
+// Every colour of the rainbow, plus brown, black and white. "Natural" is the nails'
+// starting colour, so a fresh design shows a preset as chosen rather than "Custom".
 const PRESETS: Preset[] = [
-  { name: 'Natural', hex: '#F6DCD6' }, // the nails' starting colour
-  { name: 'Nude', hex: '#E8C4B0' },
-  { name: 'Ballet pink', hex: '#F4C2C2' },
-  { name: 'Milky white', hex: '#F5F0EB' },
-  { name: 'Hot pink', hex: '#E0457B' },
-  { name: 'Coral', hex: '#F27D6B' },
-  { name: 'Classic red', hex: '#B0123A' },
-  { name: 'Cherry', hex: '#7A0C1E' },
-  { name: 'Lilac', hex: '#C3A6D8' },
-  { name: 'Sky blue', hex: '#9CC6E8' },
-  { name: 'Sage', hex: '#A3B79A' },
-  { name: 'Navy', hex: '#1F2A4D' },
+  { name: 'Natural', hex: '#F6DCD6' },
+  { name: 'Red', hex: '#D7263D' },
+  { name: 'Orange', hex: '#F28C28' },
+  { name: 'Yellow', hex: '#F6D13A' },
+  { name: 'Green', hex: '#3BAA5C' },
+  { name: 'Blue', hex: '#2F6FDE' },
+  { name: 'Indigo', hex: '#3F3A9E' },
+  { name: 'Violet', hex: '#8E44AD' },
+  { name: 'Brown', hex: '#7B4A2D' },
   { name: 'Black', hex: '#1C1C1C' },
+  { name: 'White', hex: '#FFFFFF' },
 ]
 
 const SWATCH = 'h-9 w-9 shrink-0 cursor-pointer rounded-full border border-black/10 transition'
@@ -44,7 +43,7 @@ function ColourPicker({ value, onChange }: ColourPickerProps) {
       <div
         role="group"
         aria-label="Polish colours"
-        className="grid grid-cols-7 gap-2"
+        className="grid grid-cols-6 gap-2"
       >
         {PRESETS.map((preset) => {
           const isSelected = preset.hex.toLowerCase() === value.toLowerCase()
