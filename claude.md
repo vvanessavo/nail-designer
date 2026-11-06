@@ -44,7 +44,7 @@ Claude is the Builder: write, edit, run, and test the code yourself rather than 
 
 - React + TypeScript (Vite)
 - Tailwind CSS (via `@tailwindcss/vite`), `className` not `class`
-- `react-konva` + `konva` for the drawing canvas (arrives with E3; the hand is plain SVG until then)
+- `react-konva` + `konva` for the drawing canvas: the hands and nails are drawn on a Konva `Stage` (since E3-S1). Nail shapes are Konva `Path`s with ids `nail-0` to `nail-9`; find them with `stage.findOne('#nail-3')`
 - `react-colorful` for colour picking
 - State: `useState` / `useReducer` only. No Zustand, Redux, or backend for the MVP.
 - ESLint (Vite template default)
