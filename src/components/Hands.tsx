@@ -1,9 +1,9 @@
-import Hand, { HAND_HEIGHT, HAND_WIDTH } from './Hand'
+import Hand, { HAND_HEIGHT, HAND_TOP, HAND_WIDTH } from './Hand'
 import type { AppState } from '../state/nailState'
 
 // Space between the two hands' drawing areas. It's negative so the areas overlap:
 // each area has empty space beside the thumb, and this pulls the thumbs close together.
-const GAP = -45
+const GAP = -35
 const WIDTH = HAND_WIDTH * 2 + GAP
 
 type HandsProps = {
@@ -41,6 +41,7 @@ function Hands({ state, onSelectNail }: HandsProps) {
       </defs>
 
       <g mask="url(#hands-mask)">
+        <g transform={`translate(0 ${-HAND_TOP})`}>
         <Hand
           firstNail={0}
           mirrored={false}
@@ -59,6 +60,7 @@ function Hands({ state, onSelectNail }: HandsProps) {
           selectedNailIds={state.selectedNailIds}
           onSelectNail={onSelectNail}
         />
+        </g>
       </g>
     </svg>
   )

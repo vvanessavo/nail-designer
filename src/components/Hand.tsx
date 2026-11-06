@@ -9,7 +9,9 @@ const SELECTED_EDGE = '#E11D48' // Tailwind rose-600
 
 // Width of the area one hand takes up, used to place and flip the hands.
 export const HAND_WIDTH = 270
-export const HAND_HEIGHT = 400
+// The drawing runs from about y 90 (fingertips) to 400 (wrist); Hands crops off the empty top.
+export const HAND_TOP = 88
+export const HAND_HEIGHT = 400 - HAND_TOP
 
 type Finger = {
   x: number // where the finger joins the palm
@@ -21,13 +23,17 @@ type Finger = {
   nailRatio: number // nail bed length ÷ nail width (real fingers ~1.15, thumb ~1.0)
 }
 
-// Pinky, ring, middle, index, thumb. Fingers touch at the base and fan out a little.
+// Pinky, ring, middle, index, thumb, sized from real hand proportions:
+// - palm (knuckles to wrist, y 222 to 355) is about 0.8 times as wide as it is long
+// - middle finger is about 0.8 of the palm's length; index ~0.92, ring ~0.95, pinky ~0.76 of the middle
+// - knuckles form an arc (middle highest, pinky lowest), fingers touch at the base and fan out
+// - the thumb grows from low on the palm, near the wrist, and its tip reaches the index knuckle
 const FINGERS: Finger[] = [
-  { x: 46, y: 228, baseWidth: 31, tipWidth: 23, length: 90, angle: -12, nailRatio: 1.1 },
-  { x: 78, y: 214, baseWidth: 34, tipWidth: 26, length: 124, angle: -4, nailRatio: 1.15 },
-  { x: 112, y: 210, baseWidth: 35, tipWidth: 27, length: 138, angle: 1, nailRatio: 1.2 },
-  { x: 146, y: 216, baseWidth: 34, tipWidth: 26, length: 122, angle: 8, nailRatio: 1.15 },
-  { x: 160, y: 296, baseWidth: 40, tipWidth: 29, length: 98, angle: 40, nailRatio: 1.0 },
+  { x: 54, y: 232, baseWidth: 26, tipWidth: 21, length: 84, angle: -10, nailRatio: 1.1 },
+  { x: 81.5, y: 220, baseWidth: 29, tipWidth: 24, length: 104, angle: -3, nailRatio: 1.15 },
+  { x: 111.5, y: 216, baseWidth: 31, tipWidth: 25, length: 110, angle: 1, nailRatio: 1.2 },
+  { x: 142, y: 222, baseWidth: 30, tipWidth: 24, length: 101, angle: 7, nailRatio: 1.15 },
+  { x: 140, y: 320, baseWidth: 40, tipWidth: 27, length: 120, angle: 45, nailRatio: 1.0 },
 ]
 
 // Draw the palm before the thumb's neighbours but after the thumb, so it covers the joins.
@@ -143,13 +149,13 @@ function Hand({ firstNail, mirrored, x, skinTone, nails, selectedNailIds, onSele
     <g transform={transform}>
       {renderFinger(FINGERS[THUMB_INDEX], THUMB_INDEX)}
       <path
-        d="M 36 252 C 34 236 44 228 62 226 L 150 226 C 157 228 160 238 160 252 C 168 285 166 325 150 355 L 146 400 L 70 400 L 64 355 C 44 325 34 290 36 252 Z"
+        d="M 41 245 C 40 228 46 218 60 217 L 140 215 C 150 216 154 228 153 245 L 150 290 C 148 320 140 345 132 360 L 130 400 L 66 400 L 62 360 C 46 335 38 290 41 245 Z"
         fill={skinTone}
       />
       {/* The skin between the thumb and index finger: one smooth curve that follows the
           side of the index finger down and flows into the top edge of the thumb. */}
       <path
-        d="M 161.6 220 C 159.2 242 175.1 252.8 190 236.5 L 140 300 L 150 220 Z"
+        d="M 154.3 240 C 153.5 255 155 270 162 270 C 170 270 178.4 260.3 185 254.2 L 160 300 L 140 300 L 140 240 Z"
         fill={skinTone}
       />
       {FINGERS.slice(0, THUMB_INDEX).map(renderFinger)}
