@@ -97,17 +97,6 @@ function FingerShape({ finger, nail, skinTone, isSelected, onSelectNail }: Finge
           stroke={isSelected ? SELECTED_EDGE : NAIL_EDGE}
           strokeWidth={isSelected ? 2.5 : 1}
         />
-        {/* Shine streak. pointerEvents="none" lets clicks pass through to the nail. */}
-        <rect
-          x={-nailWidth * 0.28}
-          y={nailHeight * 0.18}
-          width={nailWidth * 0.13}
-          height={nailHeight * 0.45}
-          rx={nailWidth * 0.065}
-          fill="white"
-          opacity={0.6}
-          pointerEvents="none"
-        />
       </g>
     </g>
   )
