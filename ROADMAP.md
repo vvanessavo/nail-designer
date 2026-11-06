@@ -1,75 +1,160 @@
-# Roadmap: Nail Designer MVP
+# Roadmap and Backlog: Nail Designer MVP
 
-25 working days across 5 weeks. One goal per day. Tick the box when the day's goal works in the browser and is merged to `main`.
+What we're building and why is in `PRD.md`. How Claude works in this repo is in `CLAUDE.md`. This file holds the build order, the user stories, and their status.
 
-**Current day: Day 3** (branch `feature/nail-state`)
+Priority: **P0** must have for the MVP, **P1** should have, **P2** stretch.
+Status: `Done`, `In progress`, `Next`, `Backlog`.
+Build the epics in order. Within an epic, build stories in order unless a story says otherwise.
 
-## Week 1: Foundation, hand on screen
+## Release plan
 
-Goal: a hand renders, nails are clickable, skin tone changes the hand colour.
+| Release | Epic | Outcome | Status |
+|---|---|---|---|
+| 0.1 | E1: Hand and state | A hand on screen, nails selectable, skin tone changes | In progress |
+| 0.2 | E2: Shape and colour | Choose a nail shape and paint a base colour | Backlog |
+| 0.3 | E3: Stickers | Place, move, and resize stickers on nails | Backlog |
+| 0.4 | E4: French tip, finish, undo | A complete design tool | Backlog |
+| 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | Backlog |
 
-- [x] **Day 1:** Project scaffold. Vite + React + TypeScript, Tailwind, dependencies installed.
-- [x] **Day 2:** Hand SVG. Five nails with ids `nail-0` to `nail-4`, rendered in `App.tsx`, each logs a click.
-- [ ] **Day 3:** Nail selection with `useState`. Clicking a nail highlights it.
-- [ ] **Day 4:** Core state model. `Nail` and `AppState` types, `useReducer` with `SET_SKIN_TONE` and `SELECT_NAIL`.
-- [ ] **Day 5:** Skin tone picker. 6 to 8 swatches, hand colour updates live.
+## Now
 
-Milestone: clickable hand with live skin tone.
+Currently on branch `feature/nail-state`: **E1-S3, select a nail.**
 
-## Week 2: Nail shapes and base colour
+---
 
-Goal: pick a nail shape and paint a base colour on one nail or all nails.
+## E1: Hand and state (Release 0.1)
 
-- [ ] **Day 6:** Four nail shape paths (round, square, almond, coffin) stored in `shapes.ts`.
-- [ ] **Day 7:** Shape switcher. `SET_SHAPE` action, four thumbnail buttons, applies to selected or all nails.
-- [ ] **Day 8:** Colour picker with `react-colorful`. `SET_BASE_COLOR` action, nail fill updates.
-- [ ] **Day 9:** Multi-select (shift-click) and an "Apply to all" button.
-- [ ] **Day 10:** Toolbar layout housing shape and colour controls. Works at tablet width (768px and up).
+### E1-S1: Project scaffold. P0. Done
+Developer setup so the app can be built and run.
+Done when: Vite, React, TypeScript, and Tailwind run, dependencies are installed, and the dev server starts.
 
-Milestone: a fully colourable hand with real nail shapes.
+### E1-S2: Hand template. P0. Done
+As a user, I see a hand with each nail as its own element, so I can work on one nail at a time.
+Done when: two SVG hands render side by side with ten nails, ids `nail-0` to `nail-9` numbered left to right on screen, and clicking each nail registers which one it is.
 
-## Week 3: Sticker system
+### E1-S3: Select a nail. P0. In progress
+As a user, I can click a nail and see it is selected, so I know which nail my changes will apply to.
+Done when: clicking a nail highlights it, clicking another moves the highlight, and selection is held in React state.
 
-Goal: place, move, and resize stickers on individual nails.
+### E1-S4: App state model. P0. Next
+Technical foundation for every later story.
+Done when: `Nail` and `AppState` types exist in `src/state/nailState.ts`, a `useReducer` handles `SELECT_NAIL` and `SET_SKIN_TONE`, and the hand reads from that state.
+Depends on: E1-S3.
 
-- [ ] **Day 11:** Migrate the nails to a `react-konva` Stage and Layer.
-- [ ] **Day 12:** Six sticker SVG assets: star, heart, dot, sparkle, line, flower.
-- [ ] **Day 13:** Sticker panel. Pick a sticker, click a nail, it places at the centre.
-- [ ] **Day 14:** Drag, scale, and rotate stickers with the Konva Transformer.
-- [ ] **Day 15:** Clip stickers to the nail boundary with `clipFunc`.
+### E1-S5: Skin tone picker. P0. Backlog
+As a user, I can pick a skin tone so the hand looks like mine.
+Done when: 6 to 8 swatches covering fair to deep are shown, picking one updates the hand colour immediately, and the nails stay visible against every tone.
+Depends on: E1-S4.
 
-Milestone: decorate nails with moveable stickers.
+---
 
-## Week 4: French tip and finish
+## E2: Shape and colour (Release 0.2)
 
-Goal: French tip overlay, matte/shiny toggle, editable stickers, undo.
+### E2-S1: Nail shape paths. P0. Backlog
+Technical foundation for choosing shapes.
+Done when: round, square, almond, and coffin paths exist in `shapes.ts` and each renders correctly in place of a nail.
 
-- [ ] **Day 16:** French tip arch shape as a Konva shape, toggled by `hasFrenchTip`.
-- [ ] **Day 17:** French tip controls. Tip colour picker and thickness slider.
-- [ ] **Day 18:** Matte / shiny toggle using a CSS filter on the canvas container.
-- [ ] **Day 19:** Edit sticker colour and delete a selected sticker.
-- [ ] **Day 20:** Undo / redo with a history stack. Cmd+Z and Cmd+Shift+Z.
+### E2-S2: Choose a nail shape. P0. Backlog
+As a user, I can choose a nail shape for the selected nails, so the set matches what I want.
+Done when: four shape buttons with previews are shown, picking one changes the selected nails (or all nails if none are selected), and the choice is held in state through `SET_SHAPE`.
+Depends on: E1-S4, E2-S1.
 
-Milestone: a complete design tool.
+### E2-S3: Base colour. P0. Backlog
+As a user, I can pick a colour for the selected nails, so I can paint the base.
+Done when: a `react-colorful` picker sets the base colour on the selected nails through `SET_BASE_COLOR` and the nail fill updates immediately.
+Depends on: E1-S4.
 
-## Week 5: Export, polish, ship
+### E2-S4: Multi-select and apply to all. P0. Backlog
+As a user, I can select several nails or all of them, so I don't repeat the same change ten times.
+Done when: shift-click (and a tap equivalent on touch) adds or removes nails from the selection, and an "Apply to all" action applies the current shape and colour to every nail.
+Depends on: E2-S2, E2-S3.
 
-Goal: shareable, good-looking, exports a real PNG, works on touch devices.
+### E2-S5: Toolbar layout. P0. Backlog
+As a user, I find all the controls in one consistent place.
+Done when: shape and colour controls live in one toolbar, usable at phone width and from 768px up with no overlap.
 
-- [ ] **Day 21:** PNG export with `stage.toDataURL()` at 2x resolution.
-- [ ] **Day 22:** Touch and mobile support. Test and fix every interaction.
-- [ ] **Day 23:** Visual polish. Palette, typography, hover and selected states.
-- [ ] **Day 24:** Deploy to Vercel and test the live link on a phone.
-- [ ] **Day 25:** User test with 3 people, fix the top 3 pain points.
+---
 
-Milestone: MVP shipped.
+## E3: Stickers (Release 0.3)
 
-## Known hard days
+### E3-S1: Move nails to react-konva. P0. Backlog
+Technical enabler. Do this before any other E3 story.
+Done when: the nails render in a `react-konva` Stage and Layer, clicking and selection work as before, shape and colour from E2 still work, and nail ids and state shape are unchanged.
+Depends on: E2 complete.
 
-- **Day 11:** Moving from React-rendered SVG to a canvas library is a conceptual shift. Read the `react-konva` docs before coding.
-- **Day 14:** The Konva Transformer is where beginners get stuck. Start from a working example.
-- **Day 25:** The most important day. Watch people use it without helping.
+### E3-S2: Sticker assets. P0. Backlog
+Done when: six simple SVG stickers exist (star, heart, dot, sparkle, line, flower), single colour, stored in `src/assets/stickers/`.
 
-## Slack
+### E3-S3: Place a sticker. P0. Backlog
+As a user, I can add a sticker to a nail, so I can decorate it.
+Done when: a sticker panel shows the six stickers, picking one and then choosing a nail places it at the centre of that nail, and it is saved in that nail's `stickers` in state.
+Depends on: E3-S1, E3-S2.
 
-Treat Fridays as flex days. The milestone matters more than ticking every card.
+### E3-S4: Move, resize, and rotate a sticker. P0. Backlog
+As a user, I can adjust a sticker, so it sits exactly where I imagined.
+Done when: a placed sticker can be dragged, scaled, and rotated with the Konva Transformer, with mouse and touch, and the new position is saved in state.
+Depends on: E3-S3.
+
+### E3-S5: Keep stickers inside the nail. P0. Backlog
+As a user, my designs never spill outside the nail.
+Done when: sticker content is clipped to the nail shape for every shape, including while moving and scaling near the edges.
+Depends on: E3-S4.
+
+---
+
+## E4: French tip, finish, undo (Release 0.4)
+
+### E4-S1: French tip overlay. P0. Backlog
+As a user, I can add a French tip to a nail, because it's one of the most requested designs.
+Done when: a toggle adds or removes an arched tip overlay on the selected nails, stored as `hasFrenchTip`, and it stays within the nail shape.
+
+### E4-S2: French tip controls. P0. Backlog
+As a user, I can change the tip colour and thickness.
+Done when: a tip colour picker and a thickness slider update the overlay immediately, for the selected nails or all nails.
+Depends on: E4-S1.
+
+### E4-S3: Matte and shiny finish. P1. Backlog
+As a user, I can switch between matte and shiny, so I can see how the finish looks.
+Done when: a toggle changes the finish visibly and the state is held in `finish`.
+
+### E4-S4: Edit and delete a sticker. P1. Backlog
+As a user, I can recolour or remove a sticker I've placed.
+Done when: selecting a sticker shows a colour picker and a delete control, and both update state and display immediately.
+Depends on: E3-S4.
+
+### E4-S5: Undo. P1. Backlog
+As a user, I can undo a mistake.
+Done when: Cmd+Z (and an on-screen undo button for touch) reverts the last change. Redo is a stretch (P2).
+
+---
+
+## E5: Export and launch (Release 1.0)
+
+### E5-S1: Export as PNG. P0. Backlog
+As a user, I can save my design as an image, so I can show it to my artist or keep it.
+Done when: an export button downloads a sharp PNG (2x resolution) of the finished hand with no selection highlights or toolbar in it.
+
+### E5-S2: Touch and mobile support. P0. Backlog
+As a user on a phone or tablet, every feature works.
+Done when: every interaction from E1 to E5 has been tested on a phone and a tablet, with no tap-versus-drag conflicts.
+
+### E5-S3: Visual polish. P1. Backlog
+Done when: the app has an intentional palette and typography, clear hover and selected states, and consistent spacing.
+
+### E5-S4: Deploy. P0. Backlog
+Done when: the app is live on Vercel at a shareable link and works on a phone.
+
+### E5-S5: User test. P0. Backlog
+Done when: 3 people have used the app without help, observations are written down, and the top 3 issues are fixed. Compare results against the success metrics in `PRD.md`.
+Depends on: E5-S4.
+
+---
+
+## Decisions log
+
+| Date | Decision |
+|---|---|
+| 2026-11-06 | Claude builds the app end to end; the owner reviews and steers |
+| 2026-11-06 | Plan organised by epics and prioritised stories instead of daily tasks |
+| 2026-11-06 | MVP uses one hand with 5 nails; a second hand is post-MVP |
+| 2026-11-06 | Changed: MVP shows two hands with 10 nails (`nail-0` to `nail-9`, left to right). Replaces the decision above |
