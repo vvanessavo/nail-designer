@@ -1,7 +1,13 @@
-// One hand drawn in SVG: a palm, four fingers and a thumb, each with a clickable nail.
+// One hand drawn with react-konva: a palm, four fingers and a thumb, each with a clickable nail.
 // It's drawn as a left hand (thumb on the right). A right hand is the same drawing flipped.
 // Colours and selection come from the app state (src/state/nailState.ts).
+//
+// Konva's <Path> takes the same outline text as an SVG path ("M 0 0 L 10 10 ..."), so every
+// outline is unchanged from the SVG version. SVG transforms become <Group> props:
+// translate(x y) -> x, y   rotate(a) -> rotation   scale(-1 1) -> scaleX={-1}
 
+import type Konva from 'konva'
+import { Circle, Group, Path } from 'react-konva'
 import type { Nail } from '../state/nailState'
 import { freeEdgeLength, nailShapePath } from '../shapes'
 
@@ -61,6 +67,12 @@ type FingerShapeProps = {
   onSelectNail: (nailId: number) => void
 }
 
+// Shows a pointing-hand cursor while the mouse is over a finger.
+function setCursor(event: Konva.KonvaEventObject<MouseEvent>, cursor: string) {
+  const stage = event.target.getStage()
+  if (stage) stage.container().style.cursor = cursor
+}
+
 function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail }: FingerShapeProps) {
   const { x, y, tipWidth, length, angle, nailRatio } = finger
   // Real nails cover about 78% of the fingertip's width.
@@ -73,21 +85,25 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail }: Finge
 
   return (
     // The whole finger is clickable, so the target is big enough for a fingertip on a phone.
-    <g
-      transform={`translate(${x} ${y}) rotate(${angle})`}
-      onClick={() => onSelectNail(nail.id)}
-      className="cursor-pointer"
+    // onPointerClick fires for mouse clicks, finger taps and pen taps alike.
+    <Group
+      x={x}
+      y={y}
+      rotation={angle}
+      onPointerClick={() => onSelectNail(nail.id)}
+      onMouseEnter={(event) => setCursor(event, 'pointer')}
+      onMouseLeave={(event) => setCursor(event, 'default')}
     >
-      <path
-        d={fingerPath(finger)}
+      <Path
+        data={fingerPath(finger)}
         fill={skinTone}
       />
-      <g transform={`translate(0 ${fingertipLine})`}>
-        <path
+      <Group y={fingertipLine}>
+        <Path
           id={`nail-${nail.id}`}
-          data-shape={nail.shape}
-          data-targeted={isTargeted}
-          d={nailShapePath(nail.shape, nailWidth, bedLength)}
+          nailShape={nail.shape}
+          targeted={isTargeted}
+          data={nailShapePath(nail.shape, nailWidth, bedLength)}
           fill={nail.baseColor}
           stroke={NAIL_EDGE}
           strokeWidth={1}
@@ -95,18 +111,18 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail }: Finge
         {/* A small dot just past the nail tip marks the nails your changes will go to.
             Dark with a white rim, so it shows against any polish or background. */}
         {isTargeted && (
-          <circle
-            cx={0}
-            cy={-freeEdgeLength(nail.shape, nailWidth) - 9}
-            r={4.5}
+          <Circle
+            x={0}
+            y={-freeEdgeLength(nail.shape, nailWidth) - 9}
+            radius={4.5}
             fill={DOT_COLOR}
             stroke="white"
             strokeWidth={1.5}
-            pointerEvents="none"
+            listening={false}
           />
         )}
-      </g>
-    </g>
+      </Group>
+    </Group>
   )
 }
 
@@ -142,31 +158,34 @@ function Hand({ firstNail, mirrored, x, skinTone, nails, targetedNailIds, onSele
     )
   }
 
-  // scale(-1 1) flips the drawing left-to-right; the translate puts it back in view.
-  const transform = mirrored
-    ? `translate(${x + HAND_WIDTH} 0) scale(-1 1)`
-    : `translate(${x} 0)`
-
+  // scaleX={-1} flips the drawing left-to-right; moving it right by HAND_WIDTH puts it
+  // back in view.
   return (
-    <g transform={transform}>
+    <Group
+      x={mirrored ? x + HAND_WIDTH : x}
+      scaleX={mirrored ? -1 : 1}
+    >
       {renderFinger(FINGERS[THUMB_INDEX], THUMB_INDEX)}
-      <path
-        d="M 41 245 C 40 228 46 218 60 217 L 140 215 C 150 216 154 228 153 245 L 150 290 C 152 330 146 365 136 386 L 132 400 L 66 400 L 62 360 C 46 335 38 290 41 245 Z"
+      <Path
+        data="M 41 245 C 40 228 46 218 60 217 L 140 215 C 150 216 154 228 153 245 L 150 290 C 152 330 146 365 136 386 L 132 400 L 66 400 L 62 360 C 46 335 38 290 41 245 Z"
         fill={skinTone}
+        listening={false}
       />
       {/* The skin between the thumb and index finger: one smooth curve that follows the
           side of the index finger down and flows into the top edge of the thumb. */}
-      <path
-        d="M 154.3 240 C 153.5 255 154.5 268 160 268 C 163.5 268 166.7 261.7 170 256.7 L 168 295 L 140 300 L 140 240 Z"
+      <Path
+        data="M 154.3 240 C 153.5 255 154.5 268 160 268 C 163.5 268 166.7 261.7 170 256.7 L 168 295 L 140 300 L 140 240 Z"
         fill={skinTone}
+        listening={false}
       />
       {/* The fleshy base of the thumb: a rounded bulge from the thumb down into the wrist. */}
-      <path
-        d="M 186.7 290 C 176.6 309.6 158 366 136 386 L 120 370 L 150 290 Z"
+      <Path
+        data="M 186.7 290 C 176.6 309.6 158 366 136 386 L 120 370 L 150 290 Z"
         fill={skinTone}
+        listening={false}
       />
       {FINGERS.slice(0, THUMB_INDEX).map(renderFinger)}
-    </g>
+    </Group>
   )
 }
 
