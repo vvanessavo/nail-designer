@@ -18,7 +18,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E2-S3 (base colour) is done. Next: **E2-S4, multi-select** (the apply-to-all switch is already in).
+E2-S4 (multi-select and apply to all) is done. Next: **E2-S5, toolbar layout**, the last story in Release 0.2.
 
 ---
 
@@ -64,13 +64,13 @@ As a user, I can pick a colour for the selected nails, so I can paint the base.
 Done when: a `react-colorful` picker sets the base colour on the selected nails through `SET_BASE_COLOR` and the nail fill updates immediately.
 Depends on: E1-S4.
 
-### E2-S4: Multi-select and apply to all. P0. Next
+### E2-S4: Multi-select and apply to all. P0. Done
 As a user, I can select several nails or all of them, so I don't repeat the same change ten times.
 Done when: shift-click (and a tap equivalent on touch) adds or removes nails from the selection, and an "Apply to all" action applies the current shape and colour to every nail.
-Partly done early: an "Each nail / All nails" switch sits at the top of the Shape and Colour tabs (`applyToAll` in state), and a dot marks the nails a change will go to. Still to do: selecting several nails at once.
+Built as: an "Each nail / All nails" switch at the top of the Shape and Colour tabs (`applyToAll` in state). In Each nail mode every tap (or shift-click) adds or removes a nail, with a count and a Clear link. A dot marks the nails a change will go to.
 Depends on: E2-S2, E2-S3.
 
-### E2-S5: Toolbar layout. P0. Backlog
+### E2-S5: Toolbar layout. P0. Next
 As a user, I find all the controls in one consistent place.
 Done when: shape and colour controls live in one toolbar, usable at phone width and from 768px up with no overlap.
 Started early: the ribbon-style toolbar (`src/components/Toolbar.tsx`) exists with a Skin tone tab. Each new control is added as a tab.
@@ -162,3 +162,4 @@ Depends on: E5-S4.
 | 2026-11-06 | Changed: MVP shows two hands with 10 nails (`nail-0` to `nail-9`, left to right). Replaces the decision above |
 | 2026-11-06 | Controls live in a ribbon-style toolbar at the top (like Word or Canva): one tab per feature, the tab expands into its options when clicked |
 | 2026-11-06 | An "Each nail / All nails" switch decides where shape and colour changes go; tapping a nail switches to Each nail. Targeted nails are marked with a small dark dot above the tip instead of a red outline |
+| 2026-11-06 | Multi-select on touch: in Each nail mode a tap adds or removes a nail (no long-press), with a Clear link; tapping a nail in All nails mode starts a fresh selection with that nail |
