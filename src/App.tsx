@@ -1,4 +1,5 @@
 import { useReducer } from 'react'
+import ColourPicker from './components/ColourPicker'
 import Hands from './components/Hands'
 import ShapePicker from './components/ShapePicker'
 import SkinTonePicker from './components/SkinTonePicker'
@@ -38,6 +39,17 @@ function App() {
           value={targetShape}
           targetLabel={targetLabel}
           onChange={(shape) => dispatch({ type: 'SET_SHAPE', shape })}
+        />
+      ),
+    },
+    {
+      id: 'colour',
+      label: 'Colour',
+      content: (
+        <ColourPicker
+          value={targetNails[0].baseColor}
+          targetLabel={targetLabel}
+          onChange={(color) => dispatch({ type: 'SET_BASE_COLOR', color })}
         />
       ),
     },

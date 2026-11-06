@@ -35,6 +35,7 @@ export type Action =
   | { type: 'SELECT_NAIL'; nailId: number }
   | { type: 'SET_SKIN_TONE'; skinTone: string }
   | { type: 'SET_SHAPE'; shape: NailShape }
+  | { type: 'SET_BASE_COLOR'; color: string }
 
 const NAIL_COUNT = 10
 
@@ -75,6 +76,13 @@ export function nailReducer(state: AppState, action: Action): AppState {
         ...state,
         nails: state.nails.map((nail) =>
           isTargeted(state, nail.id) ? { ...nail, shape: action.shape } : nail,
+        ),
+      }
+    case 'SET_BASE_COLOR':
+      return {
+        ...state,
+        nails: state.nails.map((nail) =>
+          isTargeted(state, nail.id) ? { ...nail, baseColor: action.color } : nail,
         ),
       }
   }
