@@ -18,7 +18,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E1-S3 (select a nail) is done and merged. Next: **E1-S4, app state model.**
+E1-S4 (app state model) is done and merged. Next: **E1-S5, skin tone picker.**
 
 ---
 
@@ -36,12 +36,12 @@ Done when: two SVG hands render side by side with ten nails, ids `nail-0` to `na
 As a user, I can click a nail and see it is selected, so I know which nail my changes will apply to.
 Done when: clicking a nail highlights it, clicking another moves the highlight, and selection is held in React state.
 
-### E1-S4: App state model. P0. Next
+### E1-S4: App state model. P0. Done
 Technical foundation for every later story.
 Done when: `Nail` and `AppState` types exist in `src/state/nailState.ts`, a `useReducer` handles `SELECT_NAIL` and `SET_SKIN_TONE`, and the hand reads from that state.
 Depends on: E1-S3.
 
-### E1-S5: Skin tone picker. P0. Backlog
+### E1-S5: Skin tone picker. P0. Next
 As a user, I can pick a skin tone so the hand looks like mine.
 Done when: 6 to 8 swatches covering fair to deep are shown, picking one updates the hand colour immediately, and the nails stay visible against every tone.
 Depends on: E1-S4.
