@@ -18,7 +18,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E3-S3 (place a sticker) is done. Next: **E3-S4, move, resize, and rotate a sticker.**
+E3-S4 (move, resize, and rotate a sticker) is done. Next: **E3-S5, keep stickers inside the nail.**
 
 ---
 
@@ -93,12 +93,13 @@ As a user, I can add a sticker to a nail, so I can decorate it.
 Done when: a sticker panel shows the six stickers, picking one and then choosing a nail places it at the centre of that nail, and it is saved in that nail's `stickers` in state.
 Depends on: E3-S1, E3-S2.
 
-### E3-S4: Move, resize, and rotate a sticker. P0. Next
+### E3-S4: Move, resize, and rotate a sticker. P0. Done
 As a user, I can adjust a sticker, so it sits exactly where I imagined.
 Done when: a placed sticker can be dragged, scaled, and rotated with the Konva Transformer, with mouse and touch, and the new position is saved in state.
+Built as: in the Stickers tab (nothing picked), tap a sticker to show handles. Drag inside the box to move (centre stays on the nail), corners resize from the middle (0.3x to 1.6x), the top handle turns it (snaps to straight). Tap elsewhere to put the handles away.
 Depends on: E3-S3.
 
-### E3-S5: Keep stickers inside the nail. P0. Backlog
+### E3-S5: Keep stickers inside the nail. P0. Next
 As a user, my designs never spill outside the nail.
 Done when: sticker content is clipped to the nail shape for every shape, including while moving and scaling near the edges.
 Depends on: E3-S4.

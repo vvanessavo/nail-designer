@@ -83,7 +83,8 @@ type Sticker = {
   type: 'heart' | 'star' | 'dot' | 'sparkle' | 'line' | 'flower'
   x: number              // offset from the centre of the nail (0, 0 = centred)
   y: number
-  scale: number           // 1 = default size, about 70% of the nail's width
+  scale: number           // 1 = default size, about 70% of the nail's width (0.3 to 1.6)
+  rotation: number        // degrees, clockwise
   color: string
 }
 
