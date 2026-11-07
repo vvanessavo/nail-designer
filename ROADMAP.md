@@ -103,6 +103,11 @@ As a user, my designs never spill outside the nail.
 Done when: sticker content is clipped to the nail shape for every shape, including while moving and scaling near the edges.
 Depends on: E3-S4.
 
+### E3-S6: Zoom in on a hand. P1. Backlog
+As a user on a phone, I can zoom in on one hand, so nails and stickers are big enough to see and work on.
+Done when: a zoom control (and pinch on touch) enlarges the hands, I can pan to the hand or nail I'm working on, a reset button returns to the full view, and taps, sticker placement and sticker editing still hit the right nail while zoomed.
+Depends on: E3-S3. Best built after E3-S4 so dragging stickers and panning don't conflict.
+
 ---
 
 ## E4: French tip, finish, undo (Release 0.4)
@@ -164,3 +169,4 @@ Depends on: E5-S4.
 | 2026-11-06 | Controls live in a ribbon-style toolbar at the top (like Word or Canva): one tab per feature, the tab expands into its options when clicked |
 | 2026-11-06 | An "Each nail / All nails" switch decides where shape and colour changes go; tapping a nail switches to Each nail. Targeted nails are marked with a small dark dot above the tip instead of a red outline |
 | 2026-11-06 | Multi-select on touch: in Each nail mode a tap adds or removes a nail (no long-press), with a Clear link; tapping a nail in All nails mode starts a fresh selection with that nail |
+| 2026-11-07 | Added E3-S6, zoom in on a hand: both hands share a phone's width, so nails and stickers are small; zooming makes decorating practical |
