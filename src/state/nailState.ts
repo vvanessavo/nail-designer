@@ -10,6 +10,7 @@ export type Sticker = {
   x: number // offset from the centre of the nail, in drawing units (0 = centred)
   y: number
   scale: number // 1 = the default size, about 70% of the nail's width
+  rotation: number // degrees, turning clockwise
   color: string
 }
 
@@ -30,6 +31,9 @@ export type AppState = {
   applyToAll: boolean // true: changes go on every nail; false: only on the selected nails
 }
 
+// The parts of a sticker that moving, resizing and turning can change.
+export type StickerChanges = Partial<Pick<Sticker, 'x' | 'y' | 'scale' | 'rotation'>>
+
 // Every change to the state is described as an action. The reducer below decides what each
 // action does, so all state changes live in one place.
 export type Action =
@@ -40,6 +44,7 @@ export type Action =
   | { type: 'SET_APPLY_TO_ALL'; applyToAll: boolean }
   | { type: 'CLEAR_SELECTION' }
   | { type: 'ADD_STICKER'; nailId: number; sticker: Sticker }
+  | { type: 'UPDATE_STICKER'; nailId: number; stickerId: string; changes: StickerChanges }
 
 const NAIL_COUNT = 10
 
@@ -94,6 +99,20 @@ export function nailReducer(state: AppState, action: Action): AppState {
         nails: state.nails.map((nail) =>
           nail.id === action.nailId
             ? { ...nail, stickers: [...nail.stickers, action.sticker] }
+            : nail,
+        ),
+      }
+    case 'UPDATE_STICKER':
+      return {
+        ...state,
+        nails: state.nails.map((nail) =>
+          nail.id === action.nailId
+            ? {
+                ...nail,
+                stickers: nail.stickers.map((sticker) =>
+                  sticker.id === action.stickerId ? { ...sticker, ...action.changes } : sticker,
+                ),
+              }
             : nail,
         ),
       }

@@ -1,18 +1,27 @@
 // The Stickers tab: pick a sticker, then tap nails to place it.
 // The picked sticker stays picked so it can go on several nails; tap it again to put it down.
+// With nothing picked, tapping a placed sticker shows handles to move, resize and turn it.
 
 import { useEffect } from 'react'
 import { STICKER_SIZE, STICKERS, type StickerType } from '../stickers'
 
 type StickerPanelProps = {
   picked: StickerType | null // the sticker waiting to be placed, if any
+  hasSelectedSticker: boolean // a placed sticker is showing its handles
   onPick: (type: StickerType | null) => void
+  onOpenChange: (open: boolean) => void // tells App when this tab opens and closes
 }
 
-function StickerPanel({ picked, onPick }: StickerPanelProps) {
-  // When this panel closes (the tab is closed or another tab opens), put the sticker down,
-  // so tapping a nail goes back to choosing nails instead of placing stickers.
-  useEffect(() => () => onPick(null), [onPick])
+function StickerPanel({ picked, hasSelectedSticker, onPick, onOpenChange }: StickerPanelProps) {
+  // Tell App the Stickers tab is open. When this panel closes (the tab is closed or another
+  // tab opens), put any picked sticker down, so tapping a nail goes back to choosing nails.
+  useEffect(() => {
+    onOpenChange(true)
+    return () => {
+      onOpenChange(false)
+      onPick(null)
+    }
+  }, [onOpenChange, onPick])
 
   const pickedLabel = STICKERS.find((sticker) => sticker.type === picked)?.label
 
@@ -56,7 +65,9 @@ function StickerPanel({ picked, onPick }: StickerPanelProps) {
       <p className="text-center text-xs text-stone-500">
         {pickedLabel
           ? `Tap a nail to add the ${pickedLabel.toLowerCase()}. Tap the ${pickedLabel.toLowerCase()} again when you're done.`
-          : 'Choose a sticker, then tap a nail'}
+          : hasSelectedSticker
+            ? 'Drag the sticker to move it. Drag a corner to resize it, or the top handle to turn it.'
+            : 'Choose a sticker, then tap a nail. Tap a sticker on a nail to move, resize or turn it.'}
       </p>
     </div>
   )

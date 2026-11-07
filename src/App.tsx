@@ -1,4 +1,4 @@
-import { useReducer, useState } from 'react'
+import { useCallback, useReducer, useState } from 'react'
 import ApplyToToggle from './components/ApplyToToggle'
 import ColourPicker from './components/ColourPicker'
 import Hands from './components/Hands'
@@ -6,7 +6,7 @@ import ShapePicker from './components/ShapePicker'
 import SkinTonePicker from './components/SkinTonePicker'
 import StickerPanel from './components/StickerPanel'
 import Toolbar, { type ToolbarTab } from './components/Toolbar'
-import { initialState, isTargeted, nailReducer } from './state/nailState'
+import { initialState, isTargeted, nailReducer, type StickerChanges } from './state/nailState'
 import type { StickerType } from './stickers'
 
 // New stickers start in gold, which shows up on most polish colours.
@@ -24,18 +24,56 @@ function App() {
   // The sticker picked in the Stickers tab and waiting to be placed. While one is picked,
   // tapping a nail places it instead of choosing that nail.
   const [pickedSticker, setPickedSticker] = useState<StickerType | null>(null)
+  // Whether the Stickers tab is open. While it is, the hands are in "sticker mode": placed
+  // stickers can be tapped to edit them, and nail taps don't choose nails.
+  const [stickersTabOpen, setStickersTabOpen] = useState(false)
+  // The placed sticker showing its move / resize / turn handles, if any.
+  const [selectedStickerId, setSelectedStickerId] = useState<string | null>(null)
+
+  // useCallback keeps these functions the same between renders, because StickerPanel
+  // runs an effect that depends on them.
+  const handlePickSticker = useCallback((type: StickerType | null) => {
+    setPickedSticker(type)
+    if (type) setSelectedStickerId(null) // placing new stickers, so stop editing one
+  }, [])
+  const handleStickersTabOpen = useCallback((open: boolean) => {
+    setStickersTabOpen(open)
+    if (!open) setSelectedStickerId(null)
+  }, [])
 
   const handleNailTap = (nailId: number) => {
     if (pickedSticker) {
       dispatch({
         type: 'ADD_STICKER',
         nailId,
-        sticker: { id: newStickerId(), type: pickedSticker, x: 0, y: 0, scale: 1, color: STICKER_COLOR },
+        sticker: {
+          id: newStickerId(),
+          type: pickedSticker,
+          x: 0,
+          y: 0,
+          scale: 1,
+          rotation: 0,
+          color: STICKER_COLOR,
+        },
       })
+    } else if (stickersTabOpen) {
+      // In sticker mode, tapping a nail (not a sticker) just puts the handles away.
+      setSelectedStickerId(null)
     } else {
       dispatch({ type: 'SELECT_NAIL', nailId })
     }
   }
+
+  // Stickers can be edited while the Stickers tab is open and no sticker is picked to place.
+  const stickerEditing =
+    stickersTabOpen && pickedSticker === null
+      ? {
+          selectedId: selectedStickerId,
+          onSelect: setSelectedStickerId,
+          onChange: (nailId: number, stickerId: string, changes: StickerChanges) =>
+            dispatch({ type: 'UPDATE_STICKER', nailId, stickerId, changes }),
+        }
+      : null
 
   // The nails a change will apply to: all of them, or only the selected ones.
   const targetNails = state.nails.filter((nail) => isTargeted(state, nail.id))
@@ -100,7 +138,9 @@ function App() {
       content: (
         <StickerPanel
           picked={pickedSticker}
-          onPick={setPickedSticker}
+          hasSelectedSticker={selectedStickerId !== null}
+          onPick={handlePickSticker}
+          onOpenChange={handleStickersTabOpen}
         />
       ),
     },
@@ -114,9 +154,11 @@ function App() {
       <main className="flex min-h-0 flex-1 items-center justify-center p-4">
         <Hands
           state={state}
-          // While a sticker is picked, a tap places it, so the selection dots are hidden.
-          showTargets={pickedSticker === null}
+          // In the Stickers tab, taps place or edit stickers, so the nail selection dots are hidden.
+          showTargets={!stickersTabOpen}
           onSelectNail={handleNailTap}
+          onTapBackground={() => setSelectedStickerId(null)}
+          stickerEditing={stickerEditing}
         />
       </main>
     </div>

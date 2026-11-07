@@ -8,7 +8,7 @@
 
 import type Konva from 'konva'
 import { Circle, Group, Path } from 'react-konva'
-import type { Nail } from '../state/nailState'
+import type { Nail, StickerChanges } from '../state/nailState'
 import { freeEdgeLength, nailShapePath } from '../shapes'
 import { STICKER_SIZE, STICKERS } from '../stickers'
 
@@ -17,6 +17,9 @@ const DOT_COLOR = '#292524' // Tailwind stone-800
 
 // A sticker at scale 1 is this fraction of the nail's width.
 const STICKER_WIDTH_RATIO = 0.7
+// Smallest and largest a sticker can be resized to, compared with its default size.
+const MIN_STICKER_SCALE = 0.3
+const MAX_STICKER_SCALE = 1.6
 
 // The outline for each sticker type, looked up by name.
 const STICKER_PATHS = Object.fromEntries(STICKERS.map((sticker) => [sticker.type, sticker.path]))
@@ -66,12 +69,20 @@ function fingerPath({ baseWidth, tipWidth, length }: Finger): string {
   ].join(' ')
 }
 
+// Set while stickers can be edited (Stickers tab open, no sticker picked up to place).
+export type StickerEditing = {
+  selectedId: string | null // the sticker showing the move / resize / turn handles
+  onSelect: (stickerId: string) => void
+  onChange: (nailId: number, stickerId: string, changes: StickerChanges) => void
+}
+
 type FingerShapeProps = {
   finger: Finger
   nail: Nail
   skinTone: string
   isTargeted: boolean // changes will apply to this nail, shown with a dot
   onSelectNail: (nailId: number) => void
+  stickerEditing: StickerEditing | null
 }
 
 // Shows a pointing-hand cursor while the mouse is over a finger.
@@ -80,7 +91,7 @@ function setCursor(event: Konva.KonvaEventObject<MouseEvent>, cursor: string) {
   if (stage) stage.container().style.cursor = cursor
 }
 
-function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail }: FingerShapeProps) {
+function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, stickerEditing }: FingerShapeProps) {
   const { x, y, tipWidth, length, angle, nailRatio } = finger
   // Real nails cover about 78% of the fingertip's width.
   const nailWidth = tipWidth * 0.78
@@ -94,6 +105,30 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail }: Finge
   const nailCentreY = (bedLength - freeEdgeLength(nail.shape, nailWidth)) / 2
   // Turns a sticker's 24 x 24 outline into the right size for this nail.
   const stickerScale = (nailWidth * STICKER_WIDTH_RATIO) / STICKER_SIZE
+  // The nail's top (tip of the free edge) and bottom (cuticle), relative to the fingertip line.
+  const nailTop = -freeEdgeLength(nail.shape, nailWidth)
+
+  // While dragging, keep the sticker's middle on the nail so it can't get lost on the skin.
+  const keepOnNail = (event: Konva.KonvaEventObject<DragEvent>) => {
+    const node = event.target
+    node.x(Math.max(-nailWidth / 2, Math.min(nailWidth / 2, node.x())))
+    node.y(Math.max(nailTop, Math.min(bedLength, node.y())))
+  }
+
+  // After a drag or a resize / turn, save where the sticker ended up. The Konva node's
+  // position is relative to the nail's group, so convert it back to "offset from the
+  // nail's centre" and "size relative to the default".
+  const saveSticker = (stickerId: string, node: Konva.Node) => {
+    stickerEditing?.onChange(nail.id, stickerId, {
+      x: node.x(),
+      y: node.y() - nailCentreY,
+      scale: Math.max(
+        MIN_STICKER_SCALE,
+        Math.min(MAX_STICKER_SCALE, Math.abs(node.scaleX()) / stickerScale),
+      ),
+      rotation: node.rotation(),
+    })
+  }
 
   return (
     // The whole finger is clickable, so the target is big enough for a fingertip on a phone.
@@ -129,13 +164,28 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail }: Finge
             data={STICKER_PATHS[sticker.type]}
             x={sticker.x}
             y={nailCentreY + sticker.y}
-            // offset moves the outline's middle (12, 12) onto the sticker's position.
+            // offset moves the outline's middle (12, 12) onto the sticker's position,
+            // so it also turns around its middle.
             offsetX={STICKER_SIZE / 2}
             offsetY={STICKER_SIZE / 2}
             scaleX={stickerScale * sticker.scale}
             scaleY={stickerScale * sticker.scale}
+            rotation={sticker.rotation}
             fill={sticker.color}
-            listening={false}
+            // Stickers only respond to taps and drags while they can be edited. Otherwise
+            // taps pass through to the finger and choose the nail as usual.
+            listening={stickerEditing !== null}
+            draggable={stickerEditing !== null}
+            // A little extra invisible edge makes small stickers easier to grab.
+            hitStrokeWidth={8}
+            onPointerClick={(event) => {
+              event.cancelBubble = true // don't also count as a tap on the finger
+              stickerEditing?.onSelect(sticker.id)
+            }}
+            onDragStart={() => stickerEditing?.onSelect(sticker.id)}
+            onDragMove={keepOnNail}
+            onDragEnd={(event) => saveSticker(sticker.id, event.target)}
+            onTransformEnd={(event) => saveSticker(sticker.id, event.target)}
           />
         ))}
         {/* A small dot just past the nail tip marks the nails your changes will go to.
@@ -164,9 +214,19 @@ type HandProps = {
   nails: Nail[]
   targetedNailIds: number[]
   onSelectNail: (nailId: number) => void
+  stickerEditing: StickerEditing | null
 }
 
-function Hand({ firstNail, mirrored, x, skinTone, nails, targetedNailIds, onSelectNail }: HandProps) {
+function Hand({
+  firstNail,
+  mirrored,
+  x,
+  skinTone,
+  nails,
+  targetedNailIds,
+  onSelectNail,
+  stickerEditing,
+}: HandProps) {
   // Nails are numbered left to right on screen. A left hand reads pinky to thumb,
   // a flipped right hand reads thumb to pinky.
   const nailNumberFor = (fingerIndex: number) => {
@@ -184,6 +244,7 @@ function Hand({ firstNail, mirrored, x, skinTone, nails, targetedNailIds, onSele
         skinTone={skinTone}
         isTargeted={targetedNailIds.includes(nail.id)}
         onSelectNail={onSelectNail}
+        stickerEditing={stickerEditing}
       />
     )
   }
