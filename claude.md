@@ -86,9 +86,10 @@ Add new folders only when a story needs them. The data model is in `PRD.md`; onc
 Claude has full Git access: it may create branches, commit, and merge into `main`.
 
 - `main` always runs. Never commit directly to `main` except the merge itself.
-- One branch per feature or group of related stories, named `feature/<short-name>` (for example `feature/nail-state`).
+- One branch per roadmap story, named feature/<short-name>. Small tweaks asked for while a story is in progress go on that story's branch as extra commits. Unrelated tweaks between stories share one branch (for example feature/hand-polish).
 - Commit small and often, with a plain-language message in the imperative: `add nail selection state`.
 - Before merging: `npm run build` and `npm run lint` pass, and the app works in the browser.
 - Merge the feature branch into `main`, then tell the owner what was merged.
 - Never force-push, rewrite history, or run `git reset --hard` without asking first.
-- Ask before deleting branches, and ask before pushing to a remote.
+- After merging, push main to GitHub and delete the merged feature branch locally and on GitHub.
+- Ask before deleting any branch that isn't fully merged into main.
