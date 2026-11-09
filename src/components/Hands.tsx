@@ -196,7 +196,9 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
       role="img"
       aria-label="Two hands. Tap a nail to choose it."
       // touch-none stops the browser from zooming or scrolling the page on a pinch here.
-      className="relative flex h-full w-full max-w-2xl touch-none items-center justify-center"
+      // select-none and the touch-callout setting stop a long press from selecting things or
+      // popping up the phone's "save image" menu.
+      className="relative flex h-full w-full max-w-2xl touch-none items-center justify-center select-none [-webkit-touch-callout:none]"
     >
       {stageWidth > 0 && stageHeight > 0 && (
         // drop-shadow is on this wrapper, not the box, so it doesn't also shade the zoom buttons.
@@ -295,6 +297,9 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
                 rotationSnaps={[0, 90, 180, 270]}
                 rotationSnapTolerance={8}
                 anchorSize={12}
+              // An invisible 14px band around each handle makes it about 26px to grab, easier
+              // for a fingertip, without drawing it bigger.
+              anchorStyleFunc={(anchor) => anchor.hitStrokeWidth(14)}
                 anchorCornerRadius={6}
                 anchorStroke="#E11D48"
                 anchorFill="white"

@@ -18,7 +18,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E5-S1 (export as PNG) is done. Next: **E5-S2, touch and mobile support** (test every feature on a real phone and tablet).
+**E5-S2, touch and mobile support** is in progress: every feature passes a simulated touch run on 5 phone and tablet sizes, and the mobile fixes are merged. Waiting on the owner's test on a real phone and tablet.
 
 ---
 
@@ -151,9 +151,10 @@ As a user, I can save my design as an image, so I can show it to my artist or ke
 Done when: an export button downloads a sharp PNG (2x resolution) of the finished hand with no selection highlights or toolbar in it.
 Built as: a Save button at the right end of the toolbar downloads `my-nail-design.png` (`src/exportImage.ts`). It always shows both hands in full, whatever the zoom, on the app's pink background with a small margin, without the selection dots or sticker handles. It's 4 pixels per drawing unit (2180 x 1488 px): at least twice the size the hands show on any screen.
 
-### E5-S2: Touch and mobile support. P0. Backlog
+### E5-S2: Touch and mobile support. P0. In progress
 As a user on a phone or tablet, every feature works.
 Done when: every interaction from E1 to E5 has been tested on a phone and a tablet, with no tap-versus-drag conflicts.
+So far: an automated touch run of every interaction (31 checks) passes on 5 simulated sizes, from a 320px phone to an iPad in landscape: taps, multi-select, colour picker drag, panel and tab-row swipes, slider, sticker place / drag / resize / turn / recolour / delete, zoom, pan, pinch, undo and save. Pans, pinches and sticker drags never count as nail taps. Fixes: no double-tap page zoom, no long-press menu on the hands, no grey tap flash, and a bigger invisible grab area on the sticker handles (about 26px). Still to do: the owner tries it on a real phone and tablet.
 
 ### E5-S3: Visual polish. P1. Backlog
 Done when: the app has an intentional palette and typography, clear hover and selected states, and consistent spacing.
