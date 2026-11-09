@@ -12,13 +12,13 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 |---|---|---|---|
 | 0.1 | E1: Hand and state | A hand on screen, nails selectable, skin tone changes | Done |
 | 0.2 | E2: Shape and colour | Choose a nail shape and paint a base colour | Done |
-| 0.3 | E3: Stickers | Place, move, and resize stickers on nails | In progress |
+| 0.3 | E3: Stickers | Place, move, and resize stickers on nails | Done |
 | 0.4 | E4: French tip, finish, undo | A complete design tool | Backlog |
 | 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | Backlog |
 
 ## Now
 
-E3-S5 (keep stickers inside the nail) is done. Next: **E3-S6, zoom in on a hand** (P1, the last E3 story).
+E3 (stickers) is done, including E3-S6 (zoom). Next: **E4-S1, French tip overlay.**
 
 ---
 
@@ -105,9 +105,10 @@ Done when: sticker content is clipped to the nail shape for every shape, includi
 Built as: each nail's stickers sit in a Konva `Group` clipped to the nail's own outline. While dragging, the sticker's middle can't leave the nail outline: past the edge it stops at the edge. The handles are drawn outside the clip, so they stay visible.
 Depends on: E3-S4.
 
-### E3-S6: Zoom in on a hand. P1. Backlog
+### E3-S6: Zoom in on a hand. P1. Done
 As a user on a phone, I can zoom in on one hand, so nails and stickers are big enough to see and work on.
 Done when: a zoom control (and pinch on touch) enlarges the hands, I can pan to the hand or nail I'm working on, a reset button returns to the full view, and taps, sticker placement and sticker editing still hit the right nail while zoomed.
+Built as: −, + and Reset buttons in the bottom-right corner of the hands area (up to 4x). Pinch on touch, and trackpad pinch or Ctrl + scroll on a computer, zoom around the fingers or mouse. While zoomed, dragging anywhere except a sticker pans. The canvas now fills the whole area below the toolbar, so a zoomed view uses all of the screen. A pinch or pan never counts as a tap.
 Depends on: E3-S3. Best built after E3-S4 so dragging stickers and panning don't conflict.
 
 ---
@@ -172,3 +173,4 @@ Depends on: E5-S4.
 | 2026-11-06 | An "Each nail / All nails" switch decides where shape and colour changes go; tapping a nail switches to Each nail. Targeted nails are marked with a small dark dot above the tip instead of a red outline |
 | 2026-11-06 | Multi-select on touch: in Each nail mode a tap adds or removes a nail (no long-press), with a Clear link; tapping a nail in All nails mode starts a fresh selection with that nail |
 | 2026-11-07 | Added E3-S6, zoom in on a hand: both hands share a phone's width, so nails and stickers are small; zooming makes decorating practical |
+| 2026-11-09 | Zoom lives in the hands area (buttons bottom-right), not the toolbar, so it's available in every tab. While zoomed, a one-finger drag pans; stickers are moved by dragging them directly |
