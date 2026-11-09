@@ -18,7 +18,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E4-S2 (French tip colour and thickness) is done. Next: **E4-S3, matte and shiny finish.**
+E4-S3 (matte and shiny finish) is done. Next: **E4-S4, edit and delete a sticker.**
 
 ---
 
@@ -126,9 +126,10 @@ Done when: a tip colour picker and a thickness slider update the overlay immedia
 Built as: under the French tip switch, once the target nails have a tip: a Thin to Thick slider (`SET_FRENCH_TIP_THICKNESS`, new `frenchTipThickness` field, 0.3 to 1.3, starts at 0.8) and the same colour swatches and custom picker as the Colour tab (`SET_FRENCH_TIP_COLOR`).
 Depends on: E4-S1.
 
-### E4-S3: Matte and shiny finish. P1. Backlog
+### E4-S3: Matte and shiny finish. P1. Done
 As a user, I can switch between matte and shiny, so I can see how the finish looks.
 Done when: a toggle changes the finish visibly and the state is held in `finish`.
+Built as: a Shiny / Matte switch in the Colour tab, under the swatches (`SET_FINISH`). Shiny draws two white highlight streaks that fade down the nail; matte draws a faint white haze that flattens the colour. Both go over the tip and stickers, like a top coat. Nails start shiny.
 
 ### E4-S4: Edit and delete a sticker. P1. Backlog
 As a user, I can recolour or remove a sticker I've placed.
@@ -175,4 +176,5 @@ Depends on: E5-S4.
 | 2026-11-06 | An "Each nail / All nails" switch decides where shape and colour changes go; tapping a nail switches to Each nail. Targeted nails are marked with a small dark dot above the tip instead of a red outline |
 | 2026-11-06 | Multi-select on touch: in Each nail mode a tap adds or removes a nail (no long-press), with a Clear link; tapping a nail in All nails mode starts a fresh selection with that nail |
 | 2026-11-07 | Added E3-S6, zoom in on a hand: both hands share a phone's width, so nails and stickers are small; zooming makes decorating practical |
+| 2026-11-09 | The finish switch lives in the Colour tab rather than its own tab: it's part of the polish, and fewer tabs fit better on a phone |
 | 2026-11-09 | Zoom lives in the hands area (buttons bottom-right), not the toolbar, so it's available in every tab. While zoomed, a one-finger drag pans; stickers are moved by dragging them directly |
