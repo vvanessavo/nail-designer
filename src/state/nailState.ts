@@ -41,6 +41,7 @@ export type Action =
   | { type: 'SET_SKIN_TONE'; skinTone: string }
   | { type: 'SET_SHAPE'; shape: NailShape }
   | { type: 'SET_BASE_COLOR'; color: string }
+  | { type: 'SET_FRENCH_TIP'; on: boolean }
   | { type: 'SET_APPLY_TO_ALL'; applyToAll: boolean }
   | { type: 'CLEAR_SELECTION' }
   | { type: 'ADD_STICKER'; nailId: number; sticker: Sticker }
@@ -132,6 +133,13 @@ export function nailReducer(state: AppState, action: Action): AppState {
         ...state,
         nails: state.nails.map((nail) =>
           isTargeted(state, nail.id) ? { ...nail, baseColor: action.color } : nail,
+        ),
+      }
+    case 'SET_FRENCH_TIP':
+      return {
+        ...state,
+        nails: state.nails.map((nail) =>
+          isTargeted(state, nail.id) ? { ...nail, hasFrenchTip: action.on } : nail,
         ),
       }
   }

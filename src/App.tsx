@@ -1,6 +1,7 @@
 import { useCallback, useReducer, useState } from 'react'
 import ApplyToToggle from './components/ApplyToToggle'
 import ColourPicker from './components/ColourPicker'
+import FrenchTipSwitch from './components/FrenchTipSwitch'
 import Hands from './components/Hands'
 import ShapePicker from './components/ShapePicker'
 import SkinTonePicker from './components/SkinTonePicker'
@@ -84,7 +85,7 @@ function App() {
       ? firstTarget.shape
       : null
 
-  // The "Each nail / All nails" switch, shown at the top of the Shape and Colour tabs.
+  // The "Each nail / All nails" switch, shown at the top of the Shape, Colour and French tip tabs.
   const applyToToggle = (
     <ApplyToToggle
       applyToAll={state.applyToAll}
@@ -128,6 +129,21 @@ function App() {
           <ColourPicker
             value={(firstTarget ?? state.nails[0]).baseColor}
             onChange={(color) => dispatch({ type: 'SET_BASE_COLOR', color })}
+          />
+        </div>
+      ),
+    },
+    {
+      id: 'french-tip',
+      label: 'French tip',
+      content: (
+        <div className="flex flex-col items-center gap-4">
+          {applyToToggle}
+          <FrenchTipSwitch
+            // Shown as on only if every target nail already has a tip.
+            on={targetNails.length > 0 && targetNails.every((nail) => nail.hasFrenchTip)}
+            disabled={targetNails.length === 0}
+            onChange={(on) => dispatch({ type: 'SET_FRENCH_TIP', on })}
           />
         </div>
       ),
