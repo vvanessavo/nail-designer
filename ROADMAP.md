@@ -15,11 +15,13 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 | 0.3 | E3: Stickers | Place, move, and resize stickers on nails | Done |
 | 0.4 | E4: French tip, finish, undo | A complete design tool | Done |
 | 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | In progress (user test waits for E6) |
-| 1.1 | E6: Richer design | More shapes, length, special bases, copy design, redo, freehand, text | In progress |
+| 1.1 | E6: Richer design | More shapes, length, special bases, copy design, redo, freehand, text, autosave, mirror hands, recent colours | In progress |
+| 1.2 | E7: Start and share | Starter designs, design recipe sheet, share link | Backlog |
+| 1.3 | E8: More nail art (after the user test) | French tip styles, gems and pearls, patterns, trending effects | Backlog |
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. The owner asked for the E6 features before the user test. E6-S1 (more shapes) is done. Next: **E6-S2, nail length**. E5-S5 (user test) follows E6.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. The owner asked for the E6 and E7 features before the user test. E6-S1 (more shapes) is done. Next: **E6-S2, nail length**. Order: E6, then E7, then E5-S5 (user test), then E8.
 
 ---
 
@@ -206,6 +208,63 @@ Done when: a Draw tab with a pen colour and thickness lets me draw lines on a na
 As a user, I can put short text (initials, a word) on a nail.
 Done when: I can type up to about 10 characters, place it on a nail, and move, resize, turn, recolour and delete it like a sticker; it stays clipped to the nail.
 
+### E6-S8: Autosave and My designs. P1. Backlog
+As a user, my design is never lost when I refresh or close the tab, and I can keep several designs.
+Done when: the current design is saved in the browser (localStorage) after every change and comes back on reload; a "My designs" list lets me save the current design under a name, open, rename and delete saved designs, and start a new one. Nothing leaves the device.
+
+### E6-S9: Mirror to the other hand. P1. Backlog
+As a user, I can copy one hand's design onto the other hand, so both hands match.
+Done when: "Copy left hand to right" and "Copy right hand to left" put each finger's design on the matching finger of the other hand (thumb to thumb, pinky to pinky), with stickers, drawings and text flipped left to right, in one undo step.
+Depends on: E6-S4.
+
+### E6-S10: Recent colours. P1. Backlog
+As a user, I can reuse colours I've just used, so matching nails is one tap.
+Done when: every colour picker (polish, tip, stickers, pen, ombre) shows a row of the last 6 colours used anywhere in the design, newest first.
+
+---
+
+## E7: Start and share (Release 1.2)
+
+Built before the E5-S5 user test, because they change how people start a design and what they leave with.
+
+### E7-S1: Starter designs. P1. Backlog
+As a new user, I can start from a ready-made look, so I get a good result right away.
+Done when: a Start from a design option shows 6 to 8 starter looks with previews (for example classic French, glazed donut chrome, red almond, milky white, leopard accent) and picking one loads it in one undo step, ready to edit.
+Depends on: E6 (uses its shapes and effects).
+
+### E7-S2: Design recipe sheet. P1. Backlog
+As a user, I can save a sheet that tells my nail artist exactly how to recreate the set.
+Done when: Save offers "Picture" and "Picture + recipe"; the recipe version adds, under the hands, a list per nail of shape, length, base colour (name and hex), effect, finish, tip, stickers, gems and text, grouping nails that are the same.
+Answers the PRD open question about a design sheet.
+
+### E7-S3: Share link. P1. Backlog
+As a user, I can send my artist a link that opens my exact design.
+Done when: a Share action creates a link with the whole design packed into it (no server, no account), opening it on any device shows the design ready to view or edit, and on phones it opens the phone's share menu.
+
+---
+
+## E8: More nail art (Release 1.3, after the user test)
+
+Built after E5-S5, so real feedback can reorder or drop these.
+
+### E8-S1: French tip styles. P1. Backlog
+As a user, I can choose the French tip style.
+Done when: the French tip tab offers Classic, Deep, Micro, V, Side, Double line and Reverse (a half-moon at the cuticle), each working with tip colour, thickness, every shape and clipping.
+
+### E8-S2: Gems and pearls. P1. Backlog
+As a user, I can add rhinestones, pearls and studs that look raised and catch the light.
+Done when: a Gems section offers at least round, teardrop and square rhinestones, pearls and metal studs, with a highlight and shadow so they look 3D; they place, move, resize, turn and delete like stickers and appear in the exported picture.
+
+### E8-S3: Patterns. P1. Backlog
+As a user, I can choose a patterned base.
+Done when: marble, tortoiseshell, leopard, checkerboard and a simple floral are offered as base effects, with the pattern's main colours adjustable, clipped to the nail, and visible in the exported picture.
+Depends on: E6-S3.
+
+### E8-S4: Trending effects. P1. Backlog
+As a user, I can try cat-eye, aura and jelly nails.
+Done when: cat-eye (a shimmering band I can move), aura (a soft glow in the middle of the nail in a second colour) and jelly / sheer (see-through polish with an adjustable strength, the natural nail showing through) are offered as base effects.
+Depends on: E6-S3.
+
 ---
 
 ## Decisions log
@@ -221,6 +280,7 @@ Done when: I can type up to about 10 characters, place it on a nail, and move, r
 | 2026-11-06 | Multi-select on touch: in Each nail mode a tap adds or removes a nail (no long-press), with a Clear link; tapping a nail in All nails mode starts a fresh selection with that nail |
 | 2026-11-07 | Added E3-S6, zoom in on a hand: both hands share a phone's width, so nails and stickers are small; zooming makes decorating practical |
 | 2026-11-09 | The owner pulled these later-release features forward, before the user test: more shapes, length, special bases, copy design, redo, freehand drawing, text (epic E6). Grayscale hand, undertone control, layers, 3D and the platform features stay later |
+| 2026-11-09 | The owner added artist-inspired features: autosave and My designs, mirror hands, recent colours (E6), starter designs, recipe sheet, share link (E7, before the user test), and French tip styles, gems, patterns, trending effects (E8, after the user test). Photo try-on, side-by-side comparison and salon pricing are recorded as later |
 | 2026-11-09 | Visual style: "Soft blush" (blush background, rose accent, Nunito), chosen by the owner over "Salon chic" and "Playful pop" |
 | 2026-11-09 | The finish switch lives in the Colour tab rather than its own tab: it's part of the polish, and fewer tabs fit better on a phone |
 | 2026-11-09 | Zoom lives in the hands area (buttons bottom-right), not the toolbar, so it's available in every tab. While zoomed, a one-finger drag pans; stickers are moved by dragging them directly |

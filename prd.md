@@ -61,6 +61,20 @@ Pulled forward from the later releases below, built before the user test (roadma
 - Redo
 - Freehand drawing on a nail
 - Text on a nail
+- Autosave in the browser and a My designs list (no accounts; nothing leaves the device)
+- Mirror one hand's design onto the other
+- Recent colours
+
+### Release 1.2: start and share (owner asked, 2026-11-09)
+- Starter designs to begin from
+- Design recipe sheet: the picture plus a per-nail list of what to recreate (answers the open question in section 9)
+- Share link with the design packed into the URL (no server)
+
+### Release 1.3: more nail art (owner asked, 2026-11-09; after the user test)
+- French tip styles: deep, micro, V, side, double line, reverse
+- Gems: rhinestones, pearls, studs
+- Patterns: marble, tortoiseshell, leopard, checkerboard, floral
+- Trending effects: cat-eye, aura, jelly / sheer
 
 ### Not in the MVP
 Tracked here so they aren't built by accident. Do not build unless the owner asks.
@@ -70,7 +84,8 @@ Tracked here so they aren't built by accident. Do not build unless the owner ask
 | Release 2: richer design | Grayscale hand, undertone control (the rest moved to Release 1.1) |
 | Release 3: freehand | Layers (freehand, text, copy designs and redo moved to Release 1.1) |
 | Release 4: 3D and finishes | 3D nail art (sculpted and stick-on), textured finish |
-| Release 5: platform | Accounts, cloud save, design gallery and sharing, artist tools, native mobile app |
+| Release 5: platform | Accounts, cloud save, design gallery and sharing, artist tools, native mobile app, salon price and time estimates |
+| Later ideas | Try designs on a photo of your own hand (augmented reality), compare two designs side by side |
 
 ## 6. Non-functional requirements
 
@@ -78,7 +93,7 @@ Tracked here so they aren't built by accident. Do not build unless the owner ask
 - Tablet: layout works from 768px wide.
 - Performance: interactions feel instant (selecting a nail, changing a colour).
 - Accessibility basics: controls reachable by keyboard where practical, sufficient text contrast, labels on icon-only buttons.
-- Privacy: no accounts and no data leaves the browser in the MVP.
+- Privacy: no accounts and no data leaves the browser in the MVP. Autosave keeps designs in the browser only; a share link carries the design inside the link itself.
 
 ## 7. Data model
 
