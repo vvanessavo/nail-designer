@@ -21,6 +21,9 @@ const STICKER_WIDTH_RATIO = 0.7
 const MIN_STICKER_SCALE = 0.3
 const MAX_STICKER_SCALE = 1.6
 
+// A small off-screen drawing surface, used only to ask "is this point inside this outline?".
+const outlineChecker = document.createElement('canvas').getContext('2d')
+
 // The outline for each sticker type, looked up by name.
 const STICKER_PATHS = Object.fromEntries(STICKERS.map((sticker) => [sticker.type, sticker.path]))
 
@@ -105,14 +108,36 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
   const nailCentreY = (bedLength - freeEdgeLength(nail.shape, nailWidth)) / 2
   // Turns a sticker's 24 x 24 outline into the right size for this nail.
   const stickerScale = (nailWidth * STICKER_WIDTH_RATIO) / STICKER_SIZE
-  // The nail's top (tip of the free edge) and bottom (cuticle), relative to the fingertip line.
-  const nailTop = -freeEdgeLength(nail.shape, nailWidth)
+  // The nail's outline, used to draw it and to clip its stickers.
+  const nailOutline = nailShapePath(nail.shape, nailWidth, bedLength)
 
-  // While dragging, keep the sticker's middle on the nail so it can't get lost on the skin.
-  const keepOnNail = (event: Konva.KonvaEventObject<DragEvent>) => {
-    const node = event.target
-    node.x(Math.max(-nailWidth / 2, Math.min(nailWidth / 2, node.x())))
-    node.y(Math.max(nailTop, Math.min(bedLength, node.y())))
+  // Is this point (in the nail's own coordinates) inside the nail's outline?
+  const isOnNail = (point: Konva.Vector2d) =>
+    outlineChecker?.isPointInPath(new Path2D(nailOutline), point.x, point.y) ?? true
+
+  // While dragging, keep the sticker's middle inside the nail's outline, so it can't end up
+  // hidden off the edge (the clip would hide most of it). If the finger goes past the edge,
+  // the sticker slides as far as it can toward the finger and stops at the edge.
+  // Konva calls this for every drag position (in screen coordinates) before using it.
+  function keepOnNail(this: Konva.Node, wantedOnScreen: Konva.Vector2d): Konva.Vector2d {
+    const toScreen = this.getParent()?.getAbsoluteTransform()
+    if (!toScreen) return wantedOnScreen
+    const wanted = toScreen.copy().invert().point(wantedOnScreen) // in the nail's coordinates
+    let onNail: Konva.Vector2d = this.getAttr('lastOnNail') ?? { x: 0, y: nailCentreY }
+    if (isOnNail(wanted)) {
+      onNail = wanted
+    } else {
+      // Halve the gap between the last spot on the nail and the wanted spot, ten times,
+      // to find the furthest point along that line that is still on the nail.
+      let offNail = wanted
+      for (let step = 0; step < 10; step++) {
+        const middle = { x: (onNail.x + offNail.x) / 2, y: (onNail.y + offNail.y) / 2 }
+        if (isOnNail(middle)) onNail = middle
+        else offNail = middle
+      }
+    }
+    this.setAttr('lastOnNail', onNail)
+    return toScreen.point(onNail)
   }
 
   // After a drag or a resize / turn, save where the sticker ended up. The Konva node's
@@ -150,44 +175,53 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
           id={`nail-${nail.id}`}
           nailShape={nail.shape}
           targeted={isTargeted}
-          data={nailShapePath(nail.shape, nailWidth, bedLength)}
+          data={nailOutline}
           fill={nail.baseColor}
           stroke={NAIL_EDGE}
           strokeWidth={1}
         />
-        {nail.stickers.map((sticker) => (
-          <Path
-            key={sticker.id}
-            id={sticker.id}
-            name="sticker"
-            stickerType={sticker.type}
-            data={STICKER_PATHS[sticker.type]}
-            x={sticker.x}
-            y={nailCentreY + sticker.y}
-            // offset moves the outline's middle (12, 12) onto the sticker's position,
-            // so it also turns around its middle.
-            offsetX={STICKER_SIZE / 2}
-            offsetY={STICKER_SIZE / 2}
-            scaleX={stickerScale * sticker.scale}
-            scaleY={stickerScale * sticker.scale}
-            rotation={sticker.rotation}
-            fill={sticker.color}
-            // Stickers only respond to taps and drags while they can be edited. Otherwise
-            // taps pass through to the finger and choose the nail as usual.
-            listening={stickerEditing !== null}
-            draggable={stickerEditing !== null}
-            // A little extra invisible edge makes small stickers easier to grab.
-            hitStrokeWidth={8}
-            onPointerClick={(event) => {
-              event.cancelBubble = true // don't also count as a tap on the finger
-              stickerEditing?.onSelect(sticker.id)
-            }}
-            onDragStart={() => stickerEditing?.onSelect(sticker.id)}
-            onDragMove={keepOnNail}
-            onDragEnd={(event) => saveSticker(sticker.id, event.target)}
-            onTransformEnd={(event) => saveSticker(sticker.id, event.target)}
-          />
-        ))}
+        {/* Stickers are clipped to the nail's exact outline, so nothing shows outside the
+            nail, even while a sticker is being dragged or resized near the edge. clipFunc
+            returns the same outline as the nail shape (an SVG path, as a Path2D). */}
+        <Group clipFunc={() => [new Path2D(nailOutline)]}>
+          {nail.stickers.map((sticker) => (
+            <Path
+              key={sticker.id}
+              id={sticker.id}
+              name="sticker"
+              stickerType={sticker.type}
+              data={STICKER_PATHS[sticker.type]}
+              x={sticker.x}
+              y={nailCentreY + sticker.y}
+              // offset moves the outline's middle (12, 12) onto the sticker's position,
+              // so it also turns around its middle.
+              offsetX={STICKER_SIZE / 2}
+              offsetY={STICKER_SIZE / 2}
+              scaleX={stickerScale * sticker.scale}
+              scaleY={stickerScale * sticker.scale}
+              rotation={sticker.rotation}
+              fill={sticker.color}
+              // Stickers only respond to taps and drags while they can be edited. Otherwise
+              // taps pass through to the finger and choose the nail as usual.
+              listening={stickerEditing !== null}
+              draggable={stickerEditing !== null}
+              // A little extra invisible edge makes small stickers easier to grab.
+              hitStrokeWidth={8}
+              onPointerClick={(event) => {
+                event.cancelBubble = true // don't also count as a tap on the finger
+                stickerEditing?.onSelect(sticker.id)
+              }}
+              onDragStart={(event) => {
+                const node: Konva.Node = event.target
+                node.setAttr('lastOnNail', node.position())
+                stickerEditing?.onSelect(sticker.id)
+              }}
+              dragBoundFunc={keepOnNail}
+              onDragEnd={(event) => saveSticker(sticker.id, event.target)}
+              onTransformEnd={(event) => saveSticker(sticker.id, event.target)}
+            />
+          ))}
+        </Group>
         {/* A small dot just past the nail tip marks the nails your changes will go to.
             Dark with a white rim, so it shows against any polish or background. */}
         {isTargeted && (
