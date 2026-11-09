@@ -10,6 +10,14 @@ import type Konva from 'konva'
 import { Circle, Group, Path, Rect } from 'react-konva'
 import type { Nail, StickerChanges } from '../state/nailState'
 import { freeEdgeLength, frenchTipPath, nailShapePath } from '../shapes'
+import {
+  FINGERS,
+  fingertipLineOf,
+  HAND_WIDTH,
+  nailWidthOf,
+  THUMB_INDEX,
+  type Finger,
+} from '../handGeometry'
 import { STICKER_SIZE, STICKERS } from '../stickers'
 
 const NAIL_EDGE = 'rgba(150, 90, 80, 0.5)'
@@ -32,38 +40,6 @@ const outlineChecker = document.createElement('canvas').getContext('2d')
 
 // The outline for each sticker type, looked up by name.
 const STICKER_PATHS = Object.fromEntries(STICKERS.map((sticker) => [sticker.type, sticker.path]))
-
-// Width of the area one hand takes up, used to place and flip the hands.
-export const HAND_WIDTH = 270
-// The drawing runs from about y 80 (tips of the longest nails) to 400 (wrist); Hands crops off the empty top.
-export const HAND_TOP = 68
-export const HAND_HEIGHT = 400 - HAND_TOP
-
-type Finger = {
-  x: number // where the finger joins the palm
-  y: number
-  baseWidth: number
-  tipWidth: number
-  length: number
-  angle: number // degrees, 0 = straight up
-  nailRatio: number // nail bed length ÷ nail width (real fingers ~1.15, thumb ~1.0)
-}
-
-// Pinky, ring, middle, index, thumb, sized from real hand proportions:
-// - palm (knuckles to wrist, y 222 to 355) is about 0.8 times as wide as it is long
-// - middle finger is about 0.8 of the palm's length; index ~0.92, ring ~0.95, pinky ~0.76 of the middle
-// - knuckles form an arc (middle highest, pinky lowest), fingers touch at the base and fan out
-// - the thumb grows from low on the palm, near the wrist, and its tip reaches the index knuckle
-const FINGERS: Finger[] = [
-  { x: 54, y: 232, baseWidth: 26, tipWidth: 21, length: 84, angle: -10, nailRatio: 1.1 },
-  { x: 81.5, y: 220, baseWidth: 29, tipWidth: 24, length: 104, angle: -3, nailRatio: 1.15 },
-  { x: 111.5, y: 216, baseWidth: 31, tipWidth: 25, length: 110, angle: 1, nailRatio: 1.2 },
-  { x: 142, y: 222, baseWidth: 30, tipWidth: 24, length: 101, angle: 7, nailRatio: 1.15 },
-  { x: 168, y: 290.3, baseWidth: 40, tipWidth: 27, length: 76, angle: 30, nailRatio: 1.0 },
-]
-
-// Draw the palm before the thumb's neighbours but after the thumb, so it covers the joins.
-const THUMB_INDEX = 4
 
 // Where one side of a finger crosses the height `y`, in the hand's coordinates.
 // side: -1 for the finger's left edge, 1 for its right edge.
@@ -138,23 +114,20 @@ function setCursor(event: Konva.KonvaEventObject<MouseEvent>, cursor: string) {
 }
 
 function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, stickerEditing }: FingerShapeProps) {
-  const { x, y, tipWidth, length, angle, nailRatio } = finger
-  // Real nails cover about 78% of the fingertip's width.
-  const nailWidth = tipWidth * 0.78
-  // The fingertip line, where the free edge starts: just below the top of the finger,
-  // where its rounded tip starts to narrow.
-  const fingertipLine = -length + nailWidth * 0.15
+  const { x, y, angle, nailRatio } = finger
+  const nailWidth = nailWidthOf(finger)
+  const fingertipLine = fingertipLineOf(finger)
   // How far the nail runs down the finger to the cuticle.
   const bedLength = nailWidth * (nailRatio - 0.15)
   // The middle of the nail, from the tip of the free edge down to the cuticle.
   // Stickers are positioned relative to this point.
-  const nailCentreY = (bedLength - freeEdgeLength(nail.shape, nailWidth)) / 2
+  const nailCentreY = (bedLength - freeEdgeLength(nail.shape, nailWidth, nail.length)) / 2
   // Turns a sticker's 24 x 24 outline into the right size for this nail.
   const stickerScale = (nailWidth * STICKER_WIDTH_RATIO) / STICKER_SIZE
   // The tip of the free edge (the top of the nail), relative to the fingertip line.
-  const nailTop = -freeEdgeLength(nail.shape, nailWidth)
+  const nailTop = -freeEdgeLength(nail.shape, nailWidth, nail.length)
   // The nail's outline, used to draw it and to clip its stickers.
-  const nailOutline = nailShapePath(nail.shape, nailWidth, bedLength)
+  const nailOutline = nailShapePath(nail.shape, nailWidth, bedLength, nail.length)
 
   // Is this point (in the nail's own coordinates) inside the nail's outline?
   const isOnNail = (point: Konva.Vector2d) =>
@@ -230,7 +203,7 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
           {/* The French tip goes under the stickers, and is clipped to the nail like them. */}
           {nail.hasFrenchTip && (
             <Path
-              data={frenchTipPath(nail.shape, nailWidth, nail.frenchTipThickness)}
+              data={frenchTipPath(nail.shape, nailWidth, nail.frenchTipThickness, nail.length)}
               fill={nail.frenchTipColor}
               listening={false}
             />
@@ -329,7 +302,7 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
           <Circle
             name="target-dot" // left out of exported images
             x={0}
-            y={-freeEdgeLength(nail.shape, nailWidth) - 9}
+            y={nailTop - 9}
             radius={4.5}
             fill={DOT_COLOR}
             stroke="white"

@@ -69,6 +69,9 @@ src/
   assets/          hand.svg and sticker SVGs
   components/      UI components (Hands, Hand, Toolbar, StickerPanel, etc.)
   state/           nailState.ts: types and reducer
+  handGeometry.ts  finger positions, nail sizes, drawing size (shared by Hand, Hands, export)
+  shapes.ts        nail outlines and the French tip outline
+  exportImage.ts   saves the design as a PNG
   App.tsx
   main.tsx
   index.css        Tailwind import, the theme (Nunito font, blush colour) and the focus ring

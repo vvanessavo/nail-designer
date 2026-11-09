@@ -21,7 +21,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S1 (more shapes) is done. Next: **E6-S2, nail length**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) is done. Next: **E6-S3, special bases**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -183,10 +183,11 @@ As a user, I can choose stiletto, squoval or natural nails, so more real styles 
 Done when: stiletto (long, sharp point), squoval (square with soft corners) and natural (short, follows the fingertip) sit next to the four existing shapes in the Shape tab, and French tips, stickers and clipping work on all of them.
 Built as: three new cases in `src/shapes.ts` (stiletto 1.4x the nail's width past the fingertip, squoval 0.38x with rounded corners, natural 0.18x with a gentle curve), and a second row in the Shape tab (4 + 3 buttons).
 
-### E6-S2: Nail length. P1. Backlog
+### E6-S2: Nail length. P1. Done
 As a user, I can make nails shorter or longer, so the set matches the length I want.
 Done when: a length slider plus Short / Medium / Long presets in the Shape tab change how far the free edge grows, for the selected or all nails, stored per nail, and tips, stickers and clipping follow the new length.
 Depends on: E6-S1.
+Built as: a `length` field per nail (1 = the shape's usual length, 0.5 to 2), `SET_LENGTH`, and a Length row in the Shape tab with Short (0.6) / Medium (1) / Long (1.5) and a slider. Every outline in `src/shapes.ts` scales with it. The drawing's top moves up when nails get long (`drawingTop` in the new `src/handGeometry.ts`), so tips and dots are never cut off, on screen or in saved pictures; with usual-length nails the layout is unchanged.
 
 ### E6-S3: Special bases. P1. Backlog
 As a user, I can choose an ombre, chrome, pearl or glitter base, so I can try popular effects.

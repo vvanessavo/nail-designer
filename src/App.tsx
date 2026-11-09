@@ -6,6 +6,7 @@ import FinishPicker from './components/FinishPicker'
 import FrenchTipSwitch from './components/FrenchTipSwitch'
 import TipThicknessSlider from './components/TipThicknessSlider'
 import Hands from './components/Hands'
+import LengthPicker from './components/LengthPicker'
 import ShapePicker from './components/ShapePicker'
 import SkinTonePicker from './components/SkinTonePicker'
 import StickerPanel from './components/StickerPanel'
@@ -20,6 +21,7 @@ import {
   type StickerChanges,
 } from './state/nailState'
 import { exportDesign } from './exportImage'
+import { drawingSize } from './handGeometry'
 import type { StickerType } from './stickers'
 
 // Stickers start in gold, which shows up on most polish colours.
@@ -180,6 +182,15 @@ function App() {
             value={targetShape}
             onChange={(shape) => dispatch({ type: 'SET_SHAPE', shape })}
           />
+          <LengthPicker
+            // Show a length only if every target nail already has it.
+            value={
+              firstTarget && targetNails.every((nail) => nail.length === firstTarget.length)
+                ? firstTarget.length
+                : null
+            }
+            onChange={(length) => dispatch({ type: 'SET_LENGTH', length })}
+          />
         </div>
       ),
     },
@@ -276,7 +287,7 @@ function App() {
         actions={
           <SaveButton
             onSave={() => {
-              if (stageRef.current) exportDesign(stageRef.current)
+              if (stageRef.current) exportDesign(stageRef.current, drawingSize(state.nails))
             }}
           />
         }

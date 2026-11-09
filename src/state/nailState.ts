@@ -17,6 +17,7 @@ export type Sticker = {
 export type Nail = {
   id: number // matches the SVG id: nail-0 ... nail-9
   shape: NailShape
+  length: number // 1 = the shape's usual length, 0.5 = half as long, 2 = twice as long
   baseColor: string // hex
   finish: Finish
   hasFrenchTip: boolean
@@ -43,6 +44,7 @@ export type Action =
   | { type: 'SELECT_NAIL'; nailId: number }
   | { type: 'SET_SKIN_TONE'; skinTone: string }
   | { type: 'SET_SHAPE'; shape: NailShape }
+  | { type: 'SET_LENGTH'; length: number }
   | { type: 'SET_BASE_COLOR'; color: string }
   | { type: 'SET_FRENCH_TIP'; on: boolean }
   | { type: 'SET_FINISH'; finish: Finish }
@@ -56,6 +58,15 @@ export type Action =
 
 const NAIL_COUNT = 10
 
+// Shortest and longest a nail can be (see Nail.length), and the Short / Medium / Long presets.
+export const MIN_LENGTH = 0.5
+export const MAX_LENGTH = 2
+export const LENGTH_PRESETS = [
+  { label: 'Short', length: 0.6 },
+  { label: 'Medium', length: 1 },
+  { label: 'Long', length: 1.5 },
+]
+
 // Thinnest and thickest a French tip can be (see frenchTipThickness).
 export const MIN_TIP_THICKNESS = 0.3
 export const MAX_TIP_THICKNESS = 1.3
@@ -64,6 +75,7 @@ function createNail(id: number): Nail {
   return {
     id,
     shape: 'round',
+    length: 1,
     baseColor: '#F6DCD6', // natural pink
     finish: 'shiny',
     hasFrenchTip: false,
@@ -149,6 +161,13 @@ export function nailReducer(state: AppState, action: Action): AppState {
           isTargeted(state, nail.id) ? { ...nail, shape: action.shape } : nail,
         ),
       }
+    case 'SET_LENGTH': {
+      const length = Math.max(MIN_LENGTH, Math.min(MAX_LENGTH, action.length))
+      return {
+        ...state,
+        nails: state.nails.map((nail) => (isTargeted(state, nail.id) ? { ...nail, length } : nail)),
+      }
+    }
     case 'SET_BASE_COLOR':
       return {
         ...state,
