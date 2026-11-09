@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useReducer, useState } from 'react'
+import type Konva from 'konva'
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import ApplyToToggle from './components/ApplyToToggle'
 import ColourPicker from './components/ColourPicker'
 import FinishPicker from './components/FinishPicker'
@@ -8,6 +9,7 @@ import Hands from './components/Hands'
 import ShapePicker from './components/ShapePicker'
 import SkinTonePicker from './components/SkinTonePicker'
 import StickerPanel from './components/StickerPanel'
+import SaveButton from './components/SaveButton'
 import Toolbar, { type ToolbarTab } from './components/Toolbar'
 import UndoButton from './components/UndoButton'
 import {
@@ -17,6 +19,7 @@ import {
   type Action,
   type StickerChanges,
 } from './state/nailState'
+import { exportDesign } from './exportImage'
 import type { StickerType } from './stickers'
 
 // New stickers start in gold, which shows up on most polish colours.
@@ -33,6 +36,8 @@ function App() {
   // undo history (see historyReducer), and `state` is its current design.
   const [history, dispatchHistory] = useReducer(historyReducer, initialHistory)
   const state = history.present
+  // The Konva stage the hands are drawn on, used to export a picture of them.
+  const stageRef = useRef<Konva.Stage>(null)
   const canUndo = history.past.length > 0
   // Every change is stamped with the time, so quick runs of the same change undo together.
   const dispatch = useCallback(
@@ -256,11 +261,21 @@ function App() {
     // The app fills exactly one screen (h-dvh): toolbar on top, hands in the space left
     // below it. min-h-0 lets that space shrink when a panel opens, and the hands shrink with it.
     <div className="flex h-dvh flex-col bg-rose-50">
-      <Toolbar tabs={tabs} />
+      <Toolbar
+        tabs={tabs}
+        actions={
+          <SaveButton
+            onSave={() => {
+              if (stageRef.current) exportDesign(stageRef.current)
+            }}
+          />
+        }
+      />
       <main className="flex min-h-0 flex-1 items-center justify-center p-4">
         {/* Same size as the hands area, so the undo button lines up with the zoom buttons. */}
         <div className="relative flex h-full w-full max-w-2xl justify-center">
           <Hands
+            stageRef={stageRef}
             state={state}
             // In the Stickers tab, taps place or edit stickers, so the nail selection dots are hidden.
             showTargets={!stickersTabOpen}

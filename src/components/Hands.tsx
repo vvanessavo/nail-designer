@@ -9,7 +9,7 @@
 // or a trackpad pinch / Ctrl + scroll. While zoomed in, dragging the hands pans around.
 
 import Konva from 'konva'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type Ref } from 'react'
 import { Group, Layer, Rect, Stage, Transformer } from 'react-konva'
 import Hand, { HAND_HEIGHT, HAND_TOP, HAND_WIDTH, type StickerEditing } from './Hand'
 import { isTargeted, type AppState } from '../state/nailState'
@@ -18,8 +18,12 @@ import { isTargeted, type AppState } from '../state/nailState'
 // each area has empty space beside the thumb, and this pulls the thumbs close together.
 const GAP = -35
 const WIDTH = HAND_WIDTH * 2 + GAP
+// Size of the whole drawing (both hands), in drawing units. Used when exporting an image.
+export const HANDS_WIDTH = WIDTH
+export const HANDS_HEIGHT = HAND_HEIGHT
 
 type HandsProps = {
+  stageRef: Ref<Konva.Stage> // lets App reach the Konva stage, to export an image of it
   state: AppState
   showTargets: boolean // show the dots that mark where shape and colour changes will go
   onSelectNail: (nailId: number) => void
@@ -58,7 +62,7 @@ type Point = { x: number; y: number }
 const distance = (a: Point, b: Point) => Math.hypot(a.x - b.x, a.y - b.y)
 const midpoint = (a: Point, b: Point) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 })
 
-function Hands({ state, showTargets, onSelectNail, onTapBackground, stickerEditing }: HandsProps) {
+function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, stickerEditing }: HandsProps) {
   const targetedNailIds = state.nails
     .filter(() => showTargets)
     .filter((nail) => isTargeted(state, nail.id))
@@ -198,6 +202,7 @@ function Hands({ state, showTargets, onSelectNail, onTapBackground, stickerEditi
         // drop-shadow is on this wrapper, not the box, so it doesn't also shade the zoom buttons.
         <div className="drop-shadow-lg">
           <Stage
+            ref={stageRef}
             width={stageWidth}
             height={stageHeight}
             scaleX={scale}

@@ -14,11 +14,11 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 | 0.2 | E2: Shape and colour | Choose a nail shape and paint a base colour | Done |
 | 0.3 | E3: Stickers | Place, move, and resize stickers on nails | Done |
 | 0.4 | E4: French tip, finish, undo | A complete design tool | Done |
-| 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | Backlog |
+| 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | In progress |
 
 ## Now
 
-E4 (French tip, finish, undo) is done. Next: **E5-S1, export as PNG.**
+E5-S1 (export as PNG) is done. Next: **E5-S2, touch and mobile support** (test every feature on a real phone and tablet).
 
 ---
 
@@ -146,9 +146,10 @@ Built as: `historyReducer` in `src/state/nailState.ts` keeps up to 50 earlier de
 
 ## E5: Export and launch (Release 1.0)
 
-### E5-S1: Export as PNG. P0. Backlog
+### E5-S1: Export as PNG. P0. Done
 As a user, I can save my design as an image, so I can show it to my artist or keep it.
 Done when: an export button downloads a sharp PNG (2x resolution) of the finished hand with no selection highlights or toolbar in it.
+Built as: a Save button at the right end of the toolbar downloads `my-nail-design.png` (`src/exportImage.ts`). It always shows both hands in full, whatever the zoom, on the app's pink background with a small margin, without the selection dots or sticker handles. It's 4 pixels per drawing unit (2180 x 1488 px): at least twice the size the hands show on any screen.
 
 ### E5-S2: Touch and mobile support. P0. Backlog
 As a user on a phone or tablet, every feature works.
