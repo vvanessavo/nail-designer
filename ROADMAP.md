@@ -14,11 +14,12 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 | 0.2 | E2: Shape and colour | Choose a nail shape and paint a base colour | Done |
 | 0.3 | E3: Stickers | Place, move, and resize stickers on nails | Done |
 | 0.4 | E4: French tip, finish, undo | A complete design tool | Done |
-| 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | In progress |
+| 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | In progress (user test waits for E6) |
+| 1.1 | E6: Richer design | More shapes, length, special bases, copy design, redo, freehand, text | Backlog |
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. Next: **E5-S5, user test** with 3 people.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. The owner asked for the E6 features before the user test, so next: **E6-S1, more nail shapes**. E5-S5 (user test) follows E6.
 
 ---
 
@@ -170,6 +171,42 @@ Depends on: E5-S4.
 
 ---
 
+## E6: Richer design (Release 1.1)
+
+Pulled forward from the later releases at the owner's request, built before the E5-S5 user test. Every new feature also works with undo, with touch, and in exported pictures.
+
+### E6-S1: More nail shapes. P1. Backlog
+As a user, I can choose stiletto, squoval or natural nails, so more real styles are possible.
+Done when: stiletto (long, sharp point), squoval (square with soft corners) and natural (short, follows the fingertip) sit next to the four existing shapes in the Shape tab, and French tips, stickers and clipping work on all of them.
+
+### E6-S2: Nail length. P1. Backlog
+As a user, I can make nails shorter or longer, so the set matches the length I want.
+Done when: a length slider plus Short / Medium / Long presets in the Shape tab change how far the free edge grows, for the selected or all nails, stored per nail, and tips, stickers and clipping follow the new length.
+Depends on: E6-S1.
+
+### E6-S3: Special bases. P1. Backlog
+As a user, I can choose an ombre, chrome, pearl or glitter base, so I can try popular effects.
+Done when: the Colour tab offers Plain, Ombre (fades from the base colour to a second colour I pick), Chrome (mirror-like metal shine), Pearl (soft shimmer) and Glitter (sparkly specks), stored per nail, visible on screen and in the exported picture.
+
+### E6-S4: Copy a design to other nails. P1. Backlog
+As a user, I can copy one nail's whole design onto other nails, so I don't rebuild it nail by nail.
+Done when: with one nail chosen, a Copy design action lets me tap other nails (or all) to paste its shape, length, colours, base effect, tip, finish, stickers and drawings onto them, in one undo step.
+
+### E6-S5: Redo. P1. Backlog
+As a user, I can redo something I undid.
+Done when: a Redo button next to Undo, plus Cmd+Shift+Z / Ctrl+Y, steps forward again; making a new change after undoing clears the redo steps.
+Depends on: E4-S5.
+
+### E6-S6: Freehand drawing. P1. Backlog
+As a user, I can draw on a nail with my finger or mouse, so I can make designs no sticker covers.
+Done when: a Draw tab with a pen colour and thickness lets me draw lines on a nail that stay clipped to it, each line can be undone, an eraser or "clear drawing" removes them, and drawing never pans or selects by accident.
+
+### E6-S7: Text on a nail. P1. Backlog
+As a user, I can put short text (initials, a word) on a nail.
+Done when: I can type up to about 10 characters, place it on a nail, and move, resize, turn, recolour and delete it like a sticker; it stays clipped to the nail.
+
+---
+
 ## Decisions log
 
 | Date | Decision |
@@ -182,6 +219,7 @@ Depends on: E5-S4.
 | 2026-11-06 | An "Each nail / All nails" switch decides where shape and colour changes go; tapping a nail switches to Each nail. Targeted nails are marked with a small dark dot above the tip instead of a red outline |
 | 2026-11-06 | Multi-select on touch: in Each nail mode a tap adds or removes a nail (no long-press), with a Clear link; tapping a nail in All nails mode starts a fresh selection with that nail |
 | 2026-11-07 | Added E3-S6, zoom in on a hand: both hands share a phone's width, so nails and stickers are small; zooming makes decorating practical |
+| 2026-11-09 | The owner pulled these later-release features forward, before the user test: more shapes, length, special bases, copy design, redo, freehand drawing, text (epic E6). Grayscale hand, undertone control, layers, 3D and the platform features stay later |
 | 2026-11-09 | Visual style: "Soft blush" (blush background, rose accent, Nunito), chosen by the owner over "Salon chic" and "Playful pop" |
 | 2026-11-09 | The finish switch lives in the Colour tab rather than its own tab: it's part of the polish, and fewer tabs fit better on a phone |
 | 2026-11-09 | Zoom lives in the hands area (buttons bottom-right), not the toolbar, so it's available in every tab. While zoomed, a one-finger drag pans; stickers are moved by dragging them directly |

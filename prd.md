@@ -52,13 +52,23 @@ Goal for the MVP: a user can visualise a complete nail set without Photoshop or 
 - Single-step undo (full undo/redo is a stretch)
 - Visual polish
 
+### Release 1.1: richer design (owner asked, 2026-11-09)
+Pulled forward from the later releases below, built before the user test (roadmap epic E6):
+- More shapes: stiletto, squoval, natural
+- Nail length slider with short / medium / long presets
+- Special bases: ombre, chrome, pearl, glitter
+- Copy one nail's design onto other nails
+- Redo
+- Freehand drawing on a nail
+- Text on a nail
+
 ### Not in the MVP
 Tracked here so they aren't built by accident. Do not build unless the owner asks.
 
 | Later release | Features |
 |---|---|
-| Release 2: richer design | Length slider and presets, more shapes (stiletto, squoval, natural), ombre / chrome / pearl / glitter bases, grayscale hand, undertone control |
-| Release 3: freehand | Freehand drawing tool, text tool, layers, copy/paste designs between nails, full undo/redo |
+| Release 2: richer design | Grayscale hand, undertone control (the rest moved to Release 1.1) |
+| Release 3: freehand | Layers (freehand, text, copy designs and redo moved to Release 1.1) |
 | Release 4: 3D and finishes | 3D nail art (sculpted and stick-on), textured finish |
 | Release 5: platform | Accounts, cloud save, design gallery and sharing, artist tools, native mobile app |
 
