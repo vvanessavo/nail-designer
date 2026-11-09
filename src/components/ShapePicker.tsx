@@ -24,10 +24,13 @@ type ShapePickerProps = {
 
 function ShapePicker({ value, onChange }: ShapePickerProps) {
   return (
-    <fieldset className="flex w-full flex-col items-center gap-2">
+    // min-w-0: a fieldset otherwise refuses to be narrower than its contents, which would
+    // stop the row below from scrolling.
+    <fieldset className="flex w-full min-w-0 flex-col items-center gap-2">
       <legend className="sr-only">Nail shape</legend>
-      {/* Four buttons per row share the width, up to 72px each, so they fit any phone. */}
-      <div className="grid w-full max-w-80 grid-cols-4 gap-2">
+      {/* One row that scrolls sideways when the shapes don't all fit (on a phone).
+          p-1 leaves room for the ring around the chosen shape. */}
+      <div className="flex max-w-full gap-2 overflow-x-auto p-1">
         {SHAPES.map(({ shape, label }) => {
           const isSelected = shape === value
           return (
@@ -36,7 +39,7 @@ function ShapePicker({ value, onChange }: ShapePickerProps) {
               type="button"
               onClick={() => onChange(shape)}
               aria-pressed={isSelected}
-              className={`flex min-w-0 cursor-pointer flex-col items-center gap-1 rounded-xl border bg-white px-2 py-2 text-xs font-semibold transition active:scale-95 ${
+              className={`flex w-18 shrink-0 cursor-pointer flex-col items-center gap-1 rounded-xl border bg-white px-2 py-2 text-xs font-semibold transition active:scale-95 ${
                 isSelected
                   ? 'border-rose-600 text-rose-700 ring-1 ring-rose-600'
                   : 'border-stone-200 text-stone-600 hover:border-stone-400'

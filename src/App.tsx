@@ -192,6 +192,7 @@ function App() {
           <ColourPicker
             value={(firstTarget ?? state.nails[0]).baseColor}
             onChange={(color) => dispatch({ type: 'SET_BASE_COLOR', color })}
+            compact
           />
           <FinishPicker
             // Highlight a finish only if every target nail already has it.
@@ -228,6 +229,7 @@ function App() {
                 label="Tip colours"
                 value={firstTarget.frenchTipColor}
                 onChange={(color) => dispatch({ type: 'SET_FRENCH_TIP_COLOR', color })}
+                compact
               />
             </>
           )}
