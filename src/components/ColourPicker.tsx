@@ -33,7 +33,7 @@ type ColourPickerProps = {
   value: string // hex, e.g. "#f6dcd6"
   onChange: (hex: string) => void
   label?: string // what screen readers call the group of swatches
-  extraPresets?: Preset[] // more swatches after the standard ones, e.g. gold for stickers
+  extraPresets?: Preset[] // more swatches before the standard ones, e.g. gold for stickers
   compact?: boolean // one row of swatches that scrolls sideways, instead of a grid
   disabled?: boolean // greyed out with nothing chosen (e.g. no sticker selected)
 }
@@ -48,7 +48,7 @@ function ColourPicker({
 }: ColourPickerProps) {
   // Whether the full custom picker is open.
   const [showCustom, setShowCustom] = useState(false)
-  const presets = [...PRESETS, ...extraPresets]
+  const presets = [...extraPresets, ...PRESETS]
   const isPreset = presets.some((preset) => preset.hex.toLowerCase() === value.toLowerCase())
   const customOpen = showCustom && !disabled
 
@@ -58,7 +58,7 @@ function ColourPicker({
         role="group"
         aria-label={label}
         // In a sideways-scrolling row, p-1 leaves room for the ring around the chosen swatch.
-        className={`gap-2 ${compact ? 'flex max-w-full overflow-x-auto p-1' : 'grid grid-cols-6'} ${
+        className={`gap-2 ${compact ? 'flex max-w-full overflow-x-auto p-1.5' : 'grid grid-cols-6'} ${
           disabled ? 'opacity-40' : ''
         }`}
       >

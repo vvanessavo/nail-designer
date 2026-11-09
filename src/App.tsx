@@ -22,8 +22,8 @@ import {
 import { exportDesign } from './exportImage'
 import type { StickerType } from './stickers'
 
-// New stickers start in gold, which shows up on most polish colours.
-const STICKER_COLOR = '#D4AF37'
+// Stickers start in gold, which shows up on most polish colours.
+const FIRST_STICKER_COLOR = '#D4AF37'
 
 // A unique id for each sticker, so React and Konva can tell them apart.
 function newStickerId(): string {
@@ -52,6 +52,8 @@ function App() {
   const [stickersTabOpen, setStickersTabOpen] = useState(false)
   // The placed sticker showing its move / resize / turn handles, if any.
   const [selectedStickerId, setSelectedStickerId] = useState<string | null>(null)
+  // The colour new stickers are placed in: the last colour chosen in the Stickers tab.
+  const [stickerColor, setStickerColor] = useState(FIRST_STICKER_COLOR)
 
   // useCallback keeps these functions the same between renders, because StickerPanel
   // runs an effect that depends on them.
@@ -76,7 +78,7 @@ function App() {
           y: 0,
           scale: 1,
           rotation: 0,
-          color: STICKER_COLOR,
+          color: stickerColor,
         },
       })
     } else if (stickersTabOpen) {
@@ -238,10 +240,14 @@ function App() {
       content: (
         <StickerPanel
           picked={pickedSticker}
-          selectedColor={selectedSticker?.color ?? null}
+          // With a sticker selected the colours show and change its colour; otherwise they
+          // choose the colour for the next stickers placed.
+          color={selectedSticker?.color ?? stickerColor}
+          hasSelectedSticker={selectedSticker !== undefined}
           onPick={handlePickSticker}
           onOpenChange={handleStickersTabOpen}
-          onRecolor={(color) => {
+          onColorChange={(color) => {
+            setStickerColor(color)
             if (selectedNail && selectedSticker) {
               dispatch({
                 type: 'UPDATE_STICKER',
