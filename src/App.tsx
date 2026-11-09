@@ -1,6 +1,7 @@
 import { useCallback, useReducer, useState } from 'react'
 import ApplyToToggle from './components/ApplyToToggle'
 import ColourPicker from './components/ColourPicker'
+import FinishPicker from './components/FinishPicker'
 import FrenchTipSwitch from './components/FrenchTipSwitch'
 import TipThicknessSlider from './components/TipThicknessSlider'
 import Hands from './components/Hands'
@@ -133,6 +134,15 @@ function App() {
           <ColourPicker
             value={(firstTarget ?? state.nails[0]).baseColor}
             onChange={(color) => dispatch({ type: 'SET_BASE_COLOR', color })}
+          />
+          <FinishPicker
+            // Highlight a finish only if every target nail already has it.
+            value={
+              firstTarget && targetNails.every((nail) => nail.finish === firstTarget.finish)
+                ? firstTarget.finish
+                : null
+            }
+            onChange={(finish) => dispatch({ type: 'SET_FINISH', finish })}
           />
         </div>
       ),

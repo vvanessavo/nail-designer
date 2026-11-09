@@ -45,6 +45,7 @@ export type Action =
   | { type: 'SET_SHAPE'; shape: NailShape }
   | { type: 'SET_BASE_COLOR'; color: string }
   | { type: 'SET_FRENCH_TIP'; on: boolean }
+  | { type: 'SET_FINISH'; finish: Finish }
   | { type: 'SET_FRENCH_TIP_COLOR'; color: string }
   | { type: 'SET_FRENCH_TIP_THICKNESS'; thickness: number }
   | { type: 'SET_APPLY_TO_ALL'; applyToAll: boolean }
@@ -150,6 +151,13 @@ export function nailReducer(state: AppState, action: Action): AppState {
         ...state,
         nails: state.nails.map((nail) =>
           isTargeted(state, nail.id) ? { ...nail, hasFrenchTip: action.on } : nail,
+        ),
+      }
+    case 'SET_FINISH':
+      return {
+        ...state,
+        nails: state.nails.map((nail) =>
+          isTargeted(state, nail.id) ? { ...nail, finish: action.finish } : nail,
         ),
       }
     case 'SET_FRENCH_TIP_COLOR':
