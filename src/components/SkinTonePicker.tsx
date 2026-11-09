@@ -39,7 +39,7 @@ function SkinTonePicker({ value, onChange }: SkinTonePickerProps) {
               aria-pressed={isSelected}
               title={tone.name}
               style={{ backgroundColor: tone.hex }}
-              className={`h-9 w-9 shrink-0 cursor-pointer rounded-full border border-black/10 transition ${
+              className={`h-9 w-9 shrink-0 cursor-pointer rounded-full border border-black/10 transition hover:scale-110 active:scale-95 ${
                 isSelected ? 'ring-2 ring-rose-600 ring-offset-2 ring-offset-rose-50' : ''
               }`}
             />

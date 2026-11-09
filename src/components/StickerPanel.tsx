@@ -44,7 +44,7 @@ function StickerPanel({
   const pickedLabel = STICKERS.find((sticker) => sticker.type === picked)?.label
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex flex-col items-center gap-4">
       <div
         role="group"
         aria-label="Stickers"
@@ -60,7 +60,7 @@ function StickerPanel({
               aria-pressed={isPicked}
               aria-label={label}
               title={label}
-              className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border bg-white transition ${
+              className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border bg-white transition active:scale-95 ${
                 isPicked
                   ? 'border-rose-600 ring-1 ring-rose-600'
                   : 'border-stone-200 hover:border-stone-400'
@@ -91,7 +91,7 @@ function StickerPanel({
       </p>
       {/* Colour (for the selected sticker, or for new ones) and delete (greyed out until a
           sticker is tapped). Always shown, for the same reason: the panel keeps its height. */}
-      <div className="flex w-full max-w-xl items-start gap-2 border-t border-stone-100 pt-2">
+      <div className="flex w-full max-w-xl items-start gap-2 border-t border-stone-100 pt-3">
         <div className="min-w-0 flex-1">
           <ColourPicker
             label="Sticker colours"
@@ -107,7 +107,7 @@ function StickerPanel({
           disabled={!hasSelectedSticker}
           aria-label="Delete sticker"
           title="Delete sticker"
-          className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border border-rose-200 text-rose-700 hover:bg-rose-50 disabled:cursor-default disabled:opacity-40 disabled:hover:bg-transparent"
+          className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border border-rose-200 text-rose-700 transition enabled:hover:bg-rose-50 enabled:active:bg-rose-100 disabled:cursor-default disabled:opacity-40"
         >
           <svg
             viewBox="0 0 24 24"

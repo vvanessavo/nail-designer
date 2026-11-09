@@ -65,6 +65,43 @@ const FINGERS: Finger[] = [
 // Draw the palm before the thumb's neighbours but after the thumb, so it covers the joins.
 const THUMB_INDEX = 4
 
+// Where one side of a finger crosses the height `y`, in the hand's coordinates.
+// side: -1 for the finger's left edge, 1 for its right edge.
+function fingerEdgeX(finger: Finger, side: -1 | 1, y: number): number {
+  const turn = (finger.angle * Math.PI) / 180
+  // The edge runs from the base (40 below the joint) to where the rounded tip starts.
+  const ends = [
+    { x: (side * finger.baseWidth) / 2, y: 40 },
+    { x: (side * finger.tipWidth) / 2, y: -finger.length + finger.tipWidth / 2 },
+  ].map((point) => ({
+    x: finger.x + point.x * Math.cos(turn) - point.y * Math.sin(turn),
+    y: finger.y + point.x * Math.sin(turn) + point.y * Math.cos(turn),
+  }))
+  const along = (y - ends[0].y) / (ends[1].y - ends[0].y)
+  return ends[0].x + (ends[1].x - ends[0].x) * along
+}
+
+// The skin between neighbouring fingers. Without it, the gap between two fingers ends in a
+// flat, square bottom (the palm's straight top edge). Each web fills the corners so the gap
+// ends in a soft rounded U, like real webbing.
+const PALM_TOP = 216 // about where the palm's top edge runs between the fingers
+const WEB_HEIGHT = 7 // how far up the fingers the webbing reaches
+const WEB_PATHS = FINGERS.slice(0, THUMB_INDEX - 1).map((finger, index) => {
+  const top = PALM_TOP - WEB_HEIGHT
+  const left = fingerEdgeX(finger, 1, top) // right edge of this finger
+  const right = fingerEdgeX(FINGERS[index + 1], -1, top) // left edge of the next one
+  // Control points straight down from each side make the U leave the fingers smoothly;
+  // its lowest point sits about 3 units above the palm edge.
+  const dip = (WEB_HEIGHT - 3) / 0.75
+  return [
+    `M ${left - 1} ${top}`,
+    `C ${left} ${top + dip} ${right} ${top + dip} ${right + 1} ${top}`,
+    `L ${right + 1} ${PALM_TOP + 4}`,
+    `L ${left - 1} ${PALM_TOP + 4}`,
+    'Z',
+  ].join(' ')
+})
+
 // A finger that gets narrower towards a rounded tip. Drawn pointing straight up from (0, 0).
 function fingerPath({ baseWidth, tipWidth, length }: Finger): string {
   const base = baseWidth / 2
@@ -375,6 +412,14 @@ function Hand({
         listening={false}
       />
       {FINGERS.slice(0, THUMB_INDEX).map(renderFinger)}
+      {WEB_PATHS.map((web) => (
+        <Path
+          key={web}
+          data={web}
+          fill={skinTone}
+          listening={false}
+        />
+      ))}
     </Group>
   )
 }

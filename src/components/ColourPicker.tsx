@@ -26,7 +26,7 @@ const PRESETS: Preset[] = [
 ]
 
 const SWATCH =
-  'h-9 w-9 shrink-0 cursor-pointer rounded-full border border-black/10 transition disabled:cursor-default'
+  'h-9 w-9 shrink-0 cursor-pointer rounded-full border border-black/10 transition enabled:hover:scale-110 enabled:active:scale-95 disabled:cursor-default'
 const SELECTED_RING = 'ring-2 ring-rose-600 ring-offset-2 ring-offset-white'
 
 type ColourPickerProps = {

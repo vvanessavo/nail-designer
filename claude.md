@@ -67,7 +67,7 @@ src/
   state/           nailState.ts: types and reducer
   App.tsx
   main.tsx
-  index.css        contains only: @import "tailwindcss";
+  index.css        Tailwind import, the theme (Nunito font, blush colour) and the focus ring
 ```
 
 Add new folders only when a story needs them. The data model is in `PRD.md`; once `src/state/nailState.ts` exists, that file is the source of truth and the PRD should be updated to match.

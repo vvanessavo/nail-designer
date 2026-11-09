@@ -27,7 +27,7 @@ function FinishPicker({ value, onChange }: FinishPickerProps) {
             type="button"
             aria-pressed={isActive}
             onClick={() => onChange(finish)}
-            className={`flex cursor-pointer items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition ${
+            className={`flex cursor-pointer items-center gap-2 rounded-full px-4 py-1.5 text-sm font-semibold transition ${
               isActive ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-800'
             }`}
           >

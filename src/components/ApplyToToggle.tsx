@@ -30,7 +30,7 @@ function ApplyToToggle({ applyToAll, selectedCount, onChange, onClear }: ApplyTo
               type="button"
               aria-pressed={isActive}
               onClick={() => onChange(option.applyToAll)}
-              className={`cursor-pointer rounded-full px-4 py-1.5 text-sm font-medium transition ${
+              className={`cursor-pointer rounded-full px-4 py-1.5 text-sm font-semibold transition ${
                 isActive ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-800'
               }`}
             >
@@ -48,7 +48,7 @@ function ApplyToToggle({ applyToAll, selectedCount, onChange, onClear }: ApplyTo
             <button
               type="button"
               onClick={onClear}
-              className="cursor-pointer font-medium text-rose-700 underline underline-offset-2"
+              className="cursor-pointer font-semibold text-rose-700 underline underline-offset-2"
             >
               Clear
             </button>
