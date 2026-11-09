@@ -13,12 +13,12 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 | 0.1 | E1: Hand and state | A hand on screen, nails selectable, skin tone changes | Done |
 | 0.2 | E2: Shape and colour | Choose a nail shape and paint a base colour | Done |
 | 0.3 | E3: Stickers | Place, move, and resize stickers on nails | Done |
-| 0.4 | E4: French tip, finish, undo | A complete design tool | Backlog |
+| 0.4 | E4: French tip, finish, undo | A complete design tool | In progress |
 | 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | Backlog |
 
 ## Now
 
-E3 (stickers) is done, including E3-S6 (zoom). Next: **E4-S1, French tip overlay.**
+E4-S1 (French tip overlay) is done. Next: **E4-S2, French tip controls** (colour and thickness).
 
 ---
 
@@ -115,9 +115,10 @@ Depends on: E3-S3. Best built after E3-S4 so dragging stickers and panning don't
 
 ## E4: French tip, finish, undo (Release 0.4)
 
-### E4-S1: French tip overlay. P0. Backlog
+### E4-S1: French tip overlay. P0. Done
 As a user, I can add a French tip to a nail, because it's one of the most requested designs.
 Done when: a toggle adds or removes an arched tip overlay on the selected nails, stored as `hasFrenchTip`, and it stays within the nail shape.
+Built as: a French tip tab with the Each nail / All nails switch and an on / off switch (`SET_FRENCH_TIP`). The tip is `frenchTipPath` in `src/shapes.ts`: everything above a curved smile line, clipped to the nail outline like the stickers, and drawn under them. It covers 80% of the free edge in the middle. The nail's edge line is now drawn last, on top of the tip and stickers.
 
 ### E4-S2: French tip controls. P0. Backlog
 As a user, I can change the tip colour and thickness.

@@ -9,7 +9,7 @@
 import type Konva from 'konva'
 import { Circle, Group, Path } from 'react-konva'
 import type { Nail, StickerChanges } from '../state/nailState'
-import { freeEdgeLength, nailShapePath } from '../shapes'
+import { freeEdgeLength, frenchTipPath, nailShapePath } from '../shapes'
 import { STICKER_SIZE, STICKERS } from '../stickers'
 
 const NAIL_EDGE = 'rgba(150, 90, 80, 0.5)'
@@ -177,13 +177,19 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
           targeted={isTargeted}
           data={nailOutline}
           fill={nail.baseColor}
-          stroke={NAIL_EDGE}
-          strokeWidth={1}
         />
         {/* Stickers are clipped to the nail's exact outline, so nothing shows outside the
             nail, even while a sticker is being dragged or resized near the edge. clipFunc
             returns the same outline as the nail shape (an SVG path, as a Path2D). */}
         <Group clipFunc={() => [new Path2D(nailOutline)]}>
+          {/* The French tip goes under the stickers, and is clipped to the nail like them. */}
+          {nail.hasFrenchTip && (
+            <Path
+              data={frenchTipPath(nail.shape, nailWidth)}
+              fill={nail.frenchTipColor}
+              listening={false}
+            />
+          )}
           {nail.stickers.map((sticker) => (
             <Path
               key={sticker.id}
@@ -222,6 +228,13 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
             />
           ))}
         </Group>
+        {/* The nail's edge, drawn last so the tip and stickers don't cover it. */}
+        <Path
+          data={nailOutline}
+          stroke={NAIL_EDGE}
+          strokeWidth={1}
+          listening={false}
+        />
         {/* A small dot just past the nail tip marks the nails your changes will go to.
             Dark with a white rim, so it shows against any polish or background. */}
         {isTargeted && (
