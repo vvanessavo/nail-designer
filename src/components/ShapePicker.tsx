@@ -8,6 +8,9 @@ const SHAPES: { shape: NailShape; label: string }[] = [
   { shape: 'square', label: 'Square' },
   { shape: 'almond', label: 'Almond' },
   { shape: 'coffin', label: 'Coffin' },
+  { shape: 'stiletto', label: 'Stiletto' },
+  { shape: 'squoval', label: 'Squoval' },
+  { shape: 'natural', label: 'Natural' },
 ]
 
 // Size of the nail drawn in each preview.
@@ -23,7 +26,7 @@ function ShapePicker({ value, onChange }: ShapePickerProps) {
   return (
     <fieldset className="flex w-full flex-col items-center gap-2">
       <legend className="sr-only">Nail shape</legend>
-      {/* The four buttons share the width, up to 72px each, so they fit any phone. */}
+      {/* Four buttons per row share the width, up to 72px each, so they fit any phone. */}
       <div className="grid w-full max-w-80 grid-cols-4 gap-2">
         {SHAPES.map(({ shape, label }) => {
           const isSelected = shape === value
@@ -40,7 +43,8 @@ function ShapePicker({ value, onChange }: ShapePickerProps) {
               }`}
             >
               <svg
-                viewBox="-14 -28 28 50"
+                // Tall enough for the longest shape (stiletto).
+                viewBox="-14 -31 28 53"
                 className="h-12 w-8"
                 aria-hidden="true"
               >

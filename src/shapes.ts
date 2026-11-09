@@ -4,7 +4,7 @@
 // - the nail bed, which sits on the finger and is the same for every shape
 //   (straight sides, rounded U-shaped cuticle at the bottom)
 // - the free edge, the part that grows past the fingertip. This is what makes a nail
-//   round, square, almond or coffin.
+//   round, square, almond, coffin, stiletto, squoval or natural.
 //
 // Coordinates: (0, 0) is the middle of the fingertip line, where the free edge starts.
 // Negative y goes up (out past the fingertip), positive y goes down towards the cuticle.
@@ -17,6 +17,9 @@ const FREE_EDGE_LENGTH: Record<NailShape, number> = {
   square: 0.35,
   almond: 1.1,
   coffin: 1.2,
+  stiletto: 1.4,
+  squoval: 0.38,
+  natural: 0.18,
 }
 
 export function freeEdgeLength(shape: NailShape, width: number): number {
@@ -69,6 +72,41 @@ function freeEdge(shape: NailShape, width: number): string {
         `C ${-half} ${-length * 0.35} ${-tip - width * 0.04} ${-length * 0.75} ${-tip} ${-length}`,
         `L ${tip} ${-length}`,
         `C ${tip + width * 0.04} ${-length * 0.75} ${half} ${-length * 0.35} ${half} 0`,
+      ].join(' ')
+    }
+
+    case 'stiletto': {
+      // Longest of all; the sides curve in to a sharp point. Unlike almond, the sides meet
+      // at an angle, so the tip is pointed instead of rounded.
+      const length = freeEdgeLength(shape, width)
+      return [
+        `C ${-half} ${-length * 0.4} ${-half * 0.15} ${-length * 0.85} 0 ${-length}`,
+        `C ${half * 0.15} ${-length * 0.85} ${half} ${-length * 0.4} ${half} 0`,
+      ].join(' ')
+    }
+
+    case 'squoval': {
+      // Short like square, with a flat tip, but the corners are softly rounded
+      // ("square" + "oval").
+      const length = freeEdgeLength(shape, width)
+      const corner = width * 0.2
+      return [
+        `L ${-half} ${-length + corner}`,
+        `Q ${-half} ${-length} ${-half + corner} ${-length}`,
+        `L ${half - corner} ${-length}`,
+        `Q ${half} ${-length} ${half} ${-length + corner}`,
+        `L ${half} 0`,
+      ].join(' ')
+    }
+
+    case 'natural': {
+      // Very short, a gentle curve that follows the fingertip, like an unpainted nail.
+      const length = freeEdgeLength(shape, width)
+      // The curve's middle reaches the full length: the control point sits higher.
+      return [
+        `L ${-half} ${-length * 0.3}`,
+        `Q 0 ${-length * 1.7} ${half} ${-length * 0.3}`,
+        `L ${half} 0`,
       ].join(' ')
     }
   }

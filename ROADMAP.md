@@ -15,11 +15,11 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 | 0.3 | E3: Stickers | Place, move, and resize stickers on nails | Done |
 | 0.4 | E4: French tip, finish, undo | A complete design tool | Done |
 | 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | In progress (user test waits for E6) |
-| 1.1 | E6: Richer design | More shapes, length, special bases, copy design, redo, freehand, text | Backlog |
+| 1.1 | E6: Richer design | More shapes, length, special bases, copy design, redo, freehand, text | In progress |
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. The owner asked for the E6 features before the user test, so next: **E6-S1, more nail shapes**. E5-S5 (user test) follows E6.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. The owner asked for the E6 features before the user test. E6-S1 (more shapes) is done. Next: **E6-S2, nail length**. E5-S5 (user test) follows E6.
 
 ---
 
@@ -175,9 +175,10 @@ Depends on: E5-S4.
 
 Pulled forward from the later releases at the owner's request, built before the E5-S5 user test. Every new feature also works with undo, with touch, and in exported pictures.
 
-### E6-S1: More nail shapes. P1. Backlog
+### E6-S1: More nail shapes. P1. Done
 As a user, I can choose stiletto, squoval or natural nails, so more real styles are possible.
 Done when: stiletto (long, sharp point), squoval (square with soft corners) and natural (short, follows the fingertip) sit next to the four existing shapes in the Shape tab, and French tips, stickers and clipping work on all of them.
+Built as: three new cases in `src/shapes.ts` (stiletto 1.4x the nail's width past the fingertip, squoval 0.38x with rounded corners, natural 0.18x with a gentle curve), and a second row in the Shape tab (4 + 3 buttons).
 
 ### E6-S2: Nail length. P1. Backlog
 As a user, I can make nails shorter or longer, so the set matches the length I want.

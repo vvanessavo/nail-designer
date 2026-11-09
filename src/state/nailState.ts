@@ -2,7 +2,7 @@
 // Keep these types in sync with the data model in PRD.md.
 
 export type Finish = 'matte' | 'shiny'
-export type NailShape = 'round' | 'square' | 'almond' | 'coffin'
+export type NailShape = 'round' | 'square' | 'almond' | 'coffin' | 'stiletto' | 'squoval' | 'natural'
 
 export type Sticker = {
   id: string
