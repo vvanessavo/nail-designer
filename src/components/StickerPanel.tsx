@@ -79,42 +79,49 @@ function StickerPanel({
           )
         })}
       </div>
-      <p className="text-center text-xs text-stone-500">
+      {/* min-h keeps room for 3 lines whatever the hint says, so the panel never changes height
+          when a sticker is tapped (that would re-fit the hands and move the sticker away). */}
+      <p className="min-h-12 text-center text-xs text-stone-500">
         {pickedLabel
           ? `Tap a nail to add the ${pickedLabel.toLowerCase()}. Tap the ${pickedLabel.toLowerCase()} again when you're done.`
           : hasSelectedSticker
             ? 'Drag the sticker to move it. Drag a corner to resize it, or the top handle to turn it.'
             : 'Choose a sticker, then tap a nail. Tap a sticker on a nail to change it.'}
       </p>
-      {/* Colour and delete for the sticker showing its handles. */}
-      {selectedColor !== null && (
-        <div className="flex flex-col items-center gap-3 border-t border-stone-100 pt-3">
+      {/* Colour and delete for the sticker showing its handles. Always shown (greyed out until
+          a sticker is tapped) for the same reason: the panel keeps its height. */}
+      <div className="flex w-full max-w-xl items-start gap-2 border-t border-stone-100 pt-2">
+        <div className="min-w-0 flex-1">
           <ColourPicker
             label="Sticker colours"
-            value={selectedColor}
+            value={selectedColor ?? ''}
             onChange={onRecolor}
             extraPresets={STICKER_EXTRA_COLOURS}
+            compact
+            disabled={!hasSelectedSticker}
           />
-          <button
-            type="button"
-            onClick={onDelete}
-            className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-rose-200 px-4 text-sm font-medium text-rose-700 hover:bg-rose-50"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
-              aria-hidden="true"
-            >
-              <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
-            </svg>
-            Delete sticker
-          </button>
         </div>
-      )}
+        <button
+          type="button"
+          onClick={onDelete}
+          disabled={!hasSelectedSticker}
+          aria-label="Delete sticker"
+          title="Delete sticker"
+          className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border border-rose-200 text-rose-700 hover:bg-rose-50 disabled:cursor-default disabled:opacity-40 disabled:hover:bg-transparent"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            className="h-5 w-5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            aria-hidden="true"
+          >
+            <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
+          </svg>
+        </button>
+      </div>
     </div>
   )
 }

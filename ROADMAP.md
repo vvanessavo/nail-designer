@@ -13,12 +13,12 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 | 0.1 | E1: Hand and state | A hand on screen, nails selectable, skin tone changes | Done |
 | 0.2 | E2: Shape and colour | Choose a nail shape and paint a base colour | Done |
 | 0.3 | E3: Stickers | Place, move, and resize stickers on nails | Done |
-| 0.4 | E4: French tip, finish, undo | A complete design tool | In progress |
+| 0.4 | E4: French tip, finish, undo | A complete design tool | Done |
 | 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | Backlog |
 
 ## Now
 
-E4-S4 (edit and delete a sticker) is done. Next: **E4-S5, undo.**
+E4 (French tip, finish, undo) is done. Next: **E5-S1, export as PNG.**
 
 ---
 
@@ -134,12 +134,13 @@ Built as: a Shiny / Matte switch in the Colour tab, under the swatches (`SET_FIN
 ### E4-S4: Edit and delete a sticker. P1. Done
 As a user, I can recolour or remove a sticker I've placed.
 Done when: selecting a sticker shows a colour picker and a delete control, and both update state and display immediately.
-Built as: tapping a placed sticker in the Stickers tab shows the colour swatches (plus Gold and Silver) and a Delete sticker button under the hint. Recolouring goes through `UPDATE_STICKER`, deleting through `DELETE_STICKER`. On a computer, Delete or Backspace also removes the selected sticker.
+Built as: under the hint in the Stickers tab, a sideways-scrolling row of colour swatches (plus Gold and Silver) and a delete button. They're greyed out until you tap a placed sticker. They're always shown so the panel never changes height: a taller panel re-fits the hands and moves the sticker out from under your finger. Recolouring goes through `UPDATE_STICKER`, deleting through `DELETE_STICKER`. On a computer, Delete or Backspace also removes the selected sticker.
 Depends on: E3-S4.
 
-### E4-S5: Undo. P1. Backlog
+### E4-S5: Undo. P1. Done
 As a user, I can undo a mistake.
 Done when: Cmd+Z (and an on-screen undo button for touch) reverts the last change. Redo is a stretch (P2).
+Built as: `historyReducer` in `src/state/nailState.ts` keeps up to 50 earlier designs. Every design change saves one; choosing nails doesn't. Quick runs of the same change (under 0.6 s apart, e.g. dragging the colour picker or the thickness slider) count as one step. Undo puts back skin tone and nails, and keeps the current nail selection. An Undo button sits bottom-left of the hands area, and Cmd+Z / Ctrl+Z work except while typing in a text box. Redo isn't built.
 
 ---
 
