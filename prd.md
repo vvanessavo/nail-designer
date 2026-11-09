@@ -86,7 +86,7 @@ The shape of the app's state. Keep in sync with `src/state/nailState.ts` once it
 
 ```ts
 type Finish = 'matte' | 'shiny'
-type NailShape = 'round' | 'square' | 'almond' | 'coffin'
+type NailShape = 'round' | 'square' | 'almond' | 'coffin' | 'stiletto' | 'squoval' | 'natural'
 
 type Sticker = {
   id: string
