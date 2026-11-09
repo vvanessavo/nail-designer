@@ -18,7 +18,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E4-S3 (matte and shiny finish) is done. Next: **E4-S4, edit and delete a sticker.**
+E4-S4 (edit and delete a sticker) is done. Next: **E4-S5, undo.**
 
 ---
 
@@ -131,9 +131,10 @@ As a user, I can switch between matte and shiny, so I can see how the finish loo
 Done when: a toggle changes the finish visibly and the state is held in `finish`.
 Built as: a Shiny / Matte switch in the Colour tab, under the swatches (`SET_FINISH`). Shiny draws two white highlight streaks that fade down the nail; matte draws a faint white haze that flattens the colour. Both go over the tip and stickers, like a top coat. Nails start shiny.
 
-### E4-S4: Edit and delete a sticker. P1. Backlog
+### E4-S4: Edit and delete a sticker. P1. Done
 As a user, I can recolour or remove a sticker I've placed.
 Done when: selecting a sticker shows a colour picker and a delete control, and both update state and display immediately.
+Built as: tapping a placed sticker in the Stickers tab shows the colour swatches (plus Gold and Silver) and a Delete sticker button under the hint. Recolouring goes through `UPDATE_STICKER`, deleting through `DELETE_STICKER`. On a computer, Delete or Backspace also removes the selected sticker.
 Depends on: E3-S4.
 
 ### E4-S5: Undo. P1. Backlog

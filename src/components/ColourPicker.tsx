@@ -4,7 +4,7 @@
 import { useState } from 'react'
 import { HexColorInput, HexColorPicker } from 'react-colorful'
 
-type Preset = {
+export type Preset = {
   name: string
   hex: string
 }
@@ -32,12 +32,14 @@ type ColourPickerProps = {
   value: string // hex, e.g. "#f6dcd6"
   onChange: (hex: string) => void
   label?: string // what screen readers call the group of swatches
+  extraPresets?: Preset[] // more swatches after the standard ones, e.g. gold for stickers
 }
 
-function ColourPicker({ value, onChange, label = 'Polish colours' }: ColourPickerProps) {
+function ColourPicker({ value, onChange, label = 'Polish colours', extraPresets = [] }: ColourPickerProps) {
   // Whether the full custom picker is open.
   const [showCustom, setShowCustom] = useState(false)
-  const isPreset = PRESETS.some((preset) => preset.hex.toLowerCase() === value.toLowerCase())
+  const presets = [...PRESETS, ...extraPresets]
+  const isPreset = presets.some((preset) => preset.hex.toLowerCase() === value.toLowerCase())
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -46,7 +48,7 @@ function ColourPicker({ value, onChange, label = 'Polish colours' }: ColourPicke
         aria-label={label}
         className="grid grid-cols-6 gap-2"
       >
-        {PRESETS.map((preset) => {
+        {presets.map((preset) => {
           const isSelected = preset.hex.toLowerCase() === value.toLowerCase()
           return (
             <button
