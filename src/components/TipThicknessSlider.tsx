@@ -10,7 +10,7 @@ type TipThicknessSliderProps = {
 
 function TipThicknessSlider({ value, onChange }: TipThicknessSliderProps) {
   return (
-    <label className="flex w-full max-w-72 flex-col gap-1 text-sm font-medium text-stone-700">
+    <label className="flex w-full max-w-72 flex-col gap-1 text-sm font-semibold text-stone-700">
       Tip thickness
       <div className="flex items-center gap-3 text-xs font-normal text-stone-500">
         Thin

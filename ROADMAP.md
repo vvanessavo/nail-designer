@@ -18,7 +18,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E5-S2 (touch and mobile support) is done. Next: **E5-S3, visual polish.**
+E5-S3 (visual polish) is done. Next: **E5-S4, deploy** to Vercel.
 
 ---
 
@@ -156,8 +156,9 @@ As a user on a phone or tablet, every feature works.
 Done when: every interaction from E1 to E5 has been tested on a phone and a tablet, with no tap-versus-drag conflicts.
 So far: an automated touch run of every interaction (31 checks) passes on 5 simulated sizes, from a 320px phone to an iPad in landscape: taps, multi-select, colour picker drag, panel and tab-row swipes, slider, sticker place / drag / resize / turn / recolour / delete, zoom, pan, pinch, undo and save. Pans, pinches and sticker drags never count as nail taps. Fixes: no double-tap page zoom, no long-press menu on the hands, no grey tap flash, and a bigger invisible grab area on the sticker handles (about 26px). From the owner's phone test: sticker colours couldn't be changed. Fixed: the sticker colour row always works (with no sticker selected it sets the colour for the next stickers placed), Gold and Silver come first, and each sticker responds to taps in a circle at least 32px across, since stickers are only about 8px wide on a phone. 2026-11-09: the owner ran the full checklist on a real device and everything works.
 
-### E5-S3: Visual polish. P1. Backlog
+### E5-S3: Visual polish. P1. Done
 Done when: the app has an intentional palette and typography, clear hover and selected states, and consistent spacing.
+Built as: the "Soft blush" look the owner chose. A blush background (#FFF5F5, `bg-blush`), white panels, warm grey text (Tailwind stone), one rose accent (rose-600) for selected items and Save, and the Nunito font (loaded in the background from Google Fonts). The theme lives in `src/index.css`. Every button has hover and pressed feedback (tiles press in, swatches grow, floating buttons tint rose), and a rose focus ring shows for keyboard users. Panels use the same spacing throughout. Also: rounded webbing between the fingers instead of square notches, a nail favicon, the page title "Nail Designer", and a matching phone address-bar colour.
 
 ### E5-S4: Deploy. P0. Backlog
 Done when: the app is live on Vercel at a shareable link and works on a phone.
@@ -180,5 +181,6 @@ Depends on: E5-S4.
 | 2026-11-06 | An "Each nail / All nails" switch decides where shape and colour changes go; tapping a nail switches to Each nail. Targeted nails are marked with a small dark dot above the tip instead of a red outline |
 | 2026-11-06 | Multi-select on touch: in Each nail mode a tap adds or removes a nail (no long-press), with a Clear link; tapping a nail in All nails mode starts a fresh selection with that nail |
 | 2026-11-07 | Added E3-S6, zoom in on a hand: both hands share a phone's width, so nails and stickers are small; zooming makes decorating practical |
+| 2026-11-09 | Visual style: "Soft blush" (blush background, rose accent, Nunito), chosen by the owner over "Salon chic" and "Playful pop" |
 | 2026-11-09 | The finish switch lives in the Colour tab rather than its own tab: it's part of the polish, and fewer tabs fit better on a phone |
 | 2026-11-09 | Zoom lives in the hands area (buttons bottom-right), not the toolbar, so it's available in every tab. While zoomed, a one-finger drag pans; stickers are moved by dragging them directly |

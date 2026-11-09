@@ -13,7 +13,7 @@ function UndoButton({ disabled, onUndo }: UndoButtonProps) {
       disabled={disabled}
       onClick={onUndo}
       title="Undo (Cmd+Z / Ctrl+Z)"
-      className="absolute bottom-0 left-0 flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-stone-200 bg-white/90 px-3 text-sm text-stone-700 shadow-sm disabled:cursor-default disabled:text-stone-300"
+      className="absolute bottom-0 left-0 flex h-11 cursor-pointer items-center gap-2 rounded-xl border border-stone-200 bg-white/90 px-3 text-sm font-semibold text-stone-700 shadow-sm transition enabled:hover:bg-rose-50 enabled:active:bg-rose-100 disabled:cursor-default disabled:text-stone-300"
     >
       {/* A curved arrow pointing back. */}
       <svg

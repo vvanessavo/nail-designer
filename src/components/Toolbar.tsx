@@ -42,7 +42,8 @@ function Toolbar({ tabs, actions }: ToolbarProps) {
                 aria-expanded={isOpen}
                 aria-controls={`panel-${tab.id}`}
                 onClick={() => setOpenTabId(isOpen ? null : tab.id)}
-                className={`shrink-0 cursor-pointer border-b-2 px-4 py-3 text-sm font-medium transition ${
+                // The focus ring sits inside the tab, because the scrolling row would cut off one outside it.
+                className={`shrink-0 cursor-pointer border-b-2 px-4 py-3 text-sm font-semibold transition focus-visible:-outline-offset-2 ${
                   isOpen
                     ? 'border-rose-600 text-rose-700'
                     : 'border-transparent text-stone-600 hover:text-stone-900'

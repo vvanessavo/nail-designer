@@ -9,7 +9,7 @@ import { HANDS_HEIGHT, HANDS_WIDTH } from './components/Hands'
 const PIXELS_PER_UNIT = 4
 // Space around the hands, in drawing units.
 const MARGIN = 20
-const BACKGROUND = '#FFF1F2' // Tailwind rose-50, the app's background
+const BACKGROUND = '#FFF5F5' // the app's blush background (--color-blush in index.css)
 
 export function exportDesign(stage: Konva.Stage, fileName = 'my-nail-design.png') {
   // Hide what's only there for editing, and show the whole drawing at its own size.

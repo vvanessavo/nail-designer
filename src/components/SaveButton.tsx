@@ -10,7 +10,7 @@ function SaveButton({ onSave }: SaveButtonProps) {
       type="button"
       onClick={onSave}
       title="Save your design as a picture (PNG)"
-      className="flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-rose-600 px-3 text-sm font-medium text-white shadow-sm hover:bg-rose-700"
+      className="flex h-9 shrink-0 cursor-pointer items-center gap-1.5 rounded-full bg-rose-600 px-3 text-sm font-bold text-white shadow-sm transition hover:bg-rose-700 active:bg-rose-800"
     >
       {/* An arrow pointing down into a tray: "download". */}
       <svg

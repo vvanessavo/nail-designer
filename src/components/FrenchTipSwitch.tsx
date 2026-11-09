@@ -14,7 +14,7 @@ function FrenchTipSwitch({ on, disabled, onChange }: FrenchTipSwitchProps) {
       aria-checked={on}
       disabled={disabled}
       onClick={() => onChange(!on)}
-      className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl px-2 text-sm font-medium text-stone-700 disabled:cursor-default disabled:opacity-40"
+      className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl px-2 text-sm font-semibold text-stone-700 disabled:cursor-default disabled:opacity-40"
     >
       French tip
       {/* The track, with a knob that slides right when the switch is on. */}

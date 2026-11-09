@@ -33,7 +33,7 @@ function ShapePicker({ value, onChange }: ShapePickerProps) {
               type="button"
               onClick={() => onChange(shape)}
               aria-pressed={isSelected}
-              className={`flex min-w-0 cursor-pointer flex-col items-center gap-1 rounded-xl border bg-white px-2 py-2 text-xs font-medium transition ${
+              className={`flex min-w-0 cursor-pointer flex-col items-center gap-1 rounded-xl border bg-white px-2 py-2 text-xs font-semibold transition active:scale-95 ${
                 isSelected
                   ? 'border-rose-600 text-rose-700 ring-1 ring-rose-600'
                   : 'border-stone-200 text-stone-600 hover:border-stone-400'

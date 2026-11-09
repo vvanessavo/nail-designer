@@ -268,7 +268,7 @@ function App() {
     // below it. min-h-0 lets that space shrink when a panel opens, and the hands shrink with it.
     // For phones: touch-manipulation stops a quick double tap (e.g. on + or Undo) from zooming
     // the whole page, and the tap-highlight setting removes the grey flash on tapped buttons.
-    <div className="flex h-dvh touch-manipulation flex-col bg-rose-50 [-webkit-tap-highlight-color:transparent]">
+    <div className="flex h-dvh touch-manipulation flex-col bg-blush text-stone-700 [-webkit-tap-highlight-color:transparent]">
       <Toolbar
         tabs={tabs}
         actions={

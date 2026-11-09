@@ -326,7 +326,7 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
           aria-label="Zoom out"
           disabled={view.zoom <= 1}
           onClick={() => zoomBy(1 / ZOOM_STEP)}
-          className="h-11 w-11 cursor-pointer text-xl disabled:cursor-default disabled:text-stone-300"
+          className="h-11 w-11 cursor-pointer text-xl transition enabled:hover:bg-rose-50 enabled:active:bg-rose-100 disabled:cursor-default disabled:text-stone-300"
         >
           −
         </button>
@@ -335,7 +335,7 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
           aria-label="Zoom in"
           disabled={view.zoom >= MAX_ZOOM}
           onClick={() => zoomBy(ZOOM_STEP)}
-          className="h-11 w-11 cursor-pointer border-x border-stone-200 text-xl disabled:cursor-default disabled:text-stone-300"
+          className="h-11 w-11 cursor-pointer border-x border-stone-200 text-xl transition enabled:hover:bg-rose-50 enabled:active:bg-rose-100 disabled:cursor-default disabled:text-stone-300"
         >
           +
         </button>
@@ -343,7 +343,7 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
           type="button"
           disabled={view.zoom <= 1}
           onClick={() => setView(FULL_VIEW)}
-          className="h-11 cursor-pointer px-3 text-sm disabled:cursor-default disabled:text-stone-300"
+          className="h-11 cursor-pointer px-3 text-sm font-semibold transition enabled:hover:bg-rose-50 enabled:active:bg-rose-100 disabled:cursor-default disabled:text-stone-300"
         >
           Reset
         </button>
