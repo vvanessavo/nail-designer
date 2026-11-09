@@ -11,16 +11,13 @@
 import Konva from 'konva'
 import { useEffect, useRef, useState, type Ref } from 'react'
 import { Group, Layer, Rect, Stage, Transformer } from 'react-konva'
-import Hand, { HAND_HEIGHT, HAND_TOP, HAND_WIDTH, type StickerEditing } from './Hand'
+import Hand, { type StickerEditing } from './Hand'
+import { drawingTop, HAND_BOTTOM, HANDS_WIDTH, RIGHT_HAND_X } from '../handGeometry'
 import { isTargeted, type AppState } from '../state/nailState'
 
-// Space between the two hands' drawing areas. It's negative so the areas overlap:
-// each area has empty space beside the thumb, and this pulls the thumbs close together.
-const GAP = -35
-const WIDTH = HAND_WIDTH * 2 + GAP
-// Size of the whole drawing (both hands), in drawing units. Used when exporting an image.
-export const HANDS_WIDTH = WIDTH
-export const HANDS_HEIGHT = HAND_HEIGHT
+const WIDTH = HANDS_WIDTH
+// Where the wrist fade starts, in the hand's own units (the wrist ends at HAND_BOTTOM).
+const WRIST_FADE_START = 334
 
 type HandsProps = {
   stageRef: Ref<Konva.Stage> // lets App reach the Konva stage, to export an image of it
@@ -46,7 +43,8 @@ Konva.hitOnDragEnabled = true
 // What part of the drawing is on screen: how much it's enlarged, and which drawing point
 // (in the hands' own units) sits in the middle of the view.
 type View = { zoom: number; centreX: number; centreY: number }
-const FULL_VIEW: View = { zoom: 1, centreX: WIDTH / 2, centreY: HAND_HEIGHT / 2 }
+// The whole drawing, centred. `height` is the drawing's current height.
+const fullView = (height: number): View => ({ zoom: 1, centreX: WIDTH / 2, centreY: height / 2 })
 
 const clampZoom = (zoom: number) => Math.max(1, Math.min(MAX_ZOOM, zoom))
 
@@ -101,15 +99,20 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
   // The canvas fills the whole box, so a zoomed-in view uses all the space there is.
   const stageWidth = Math.floor(box.width)
   const stageHeight = Math.floor(box.height)
+  // The drawing's top (just above the longest nail) and height, in the hand's own units.
+  const top = drawingTop(state.nails)
+  const height = HAND_BOTTOM - top
   // As large as fits in the box without stretching the hands (the full view).
-  const fitScale = Math.min(stageWidth / WIDTH, stageHeight / HAND_HEIGHT)
+  const fitScale = Math.min(stageWidth / WIDTH, stageHeight / height)
 
-  const [view, setView] = useState<View>(FULL_VIEW)
-  const scale = fitScale * view.zoom
+  const [view, setView] = useState<View>(() => fullView(height))
+  // Fully zoomed out always shows the whole drawing, even after it changes height.
+  const shown = view.zoom === 1 ? fullView(height) : view
+  const scale = fitScale * shown.zoom
   // Where the drawing's top-left corner lands on the canvas: the view's centre in the middle,
   // kept inside the limits of placeEdge.
-  const stageX = placeEdge(stageWidth / 2 - view.centreX * scale, WIDTH * scale, stageWidth)
-  const stageY = placeEdge(stageHeight / 2 - view.centreY * scale, HAND_HEIGHT * scale, stageHeight)
+  const stageX = placeEdge(stageWidth / 2 - shown.centreX * scale, WIDTH * scale, stageWidth)
+  const stageY = placeEdge(stageHeight / 2 - shown.centreY * scale, height * scale, stageHeight)
   // The drawing point under a canvas point.
   const toDrawing = (screen: Point) => ({ x: (screen.x - stageX) / scale, y: (screen.y - stageY) / scale })
 
@@ -117,7 +120,7 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
   // e.g. under the mouse or between two fingers.
   const zoomAround = (newZoom: number, drawingPoint: Point, screen: Point): View => {
     const zoom = clampZoom(newZoom)
-    if (zoom === 1) return FULL_VIEW // fully zoomed out: centre the hands again
+    if (zoom === 1) return fullView(height) // fully zoomed out: centre the hands again
     const newScale = fitScale * zoom
     return {
       zoom,
@@ -218,7 +221,7 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
             // Don't let a pan drag the hands away from the edges of the canvas.
             dragBoundFunc={(position) => ({
               x: placeEdge(position.x, WIDTH * scale, stageWidth),
-              y: placeEdge(position.y, HAND_HEIGHT * scale, stageHeight),
+              y: placeEdge(position.y, height * scale, stageHeight),
             })}
             onDragStart={() => {
               isDragging.current = true
@@ -248,7 +251,7 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
             }}
           >
             <Layer>
-              <Group y={-HAND_TOP}>
+              <Group y={-top}>
                 <Hand
                   firstNail={0}
                   mirrored={false}
@@ -262,26 +265,27 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
                 <Hand
                   firstNail={5}
                   mirrored={true}
-                  x={HAND_WIDTH + GAP}
+                  x={RIGHT_HAND_X}
                   skinTone={state.skinTone}
                   nails={state.nails}
                   targetedNailIds={targetedNailIds}
                   onSelectNail={handleSelectNail}
                   stickerEditing={stickerEditing}
                 />
+                {/* Fades the wrists out instead of cutting them off with a hard edge.
+                    "destination-out" makes this rectangle erase what's under it: not at all
+                    at its top, fully at the bottom of the wrist. */}
+                <Rect
+                  y={WRIST_FADE_START}
+                  width={WIDTH}
+                  height={HAND_BOTTOM - WRIST_FADE_START}
+                  fillLinearGradientStartPoint={{ x: 0, y: 0 }}
+                  fillLinearGradientEndPoint={{ x: 0, y: HAND_BOTTOM - WRIST_FADE_START }}
+                  fillLinearGradientColorStops={[0, 'rgba(0,0,0,0)', 1, 'rgba(0,0,0,1)']}
+                  globalCompositeOperation="destination-out"
+                  listening={false}
+                />
               </Group>
-              {/* Fades the wrists out instead of cutting them off with a hard edge.
-                  "destination-out" makes this rectangle erase what's under it: not at all
-                  at the top, fully at the bottom. */}
-              <Rect
-                width={WIDTH}
-                height={HAND_HEIGHT}
-                fillLinearGradientStartPoint={{ x: 0, y: 0 }}
-                fillLinearGradientEndPoint={{ x: 0, y: HAND_HEIGHT }}
-                fillLinearGradientColorStops={[0, 'rgba(0,0,0,0)', 0.8, 'rgba(0,0,0,0)', 1, 'rgba(0,0,0,1)']}
-                globalCompositeOperation="destination-out"
-                listening={false}
-              />
               {/* Handles for the selected sticker: corners resize it from its middle (keeping its proportions),
                   the handle on top turns it, snapping to straight when close. Drawn after the
                   wrist fade so the fade never hides them.
@@ -342,7 +346,7 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
         <button
           type="button"
           disabled={view.zoom <= 1}
-          onClick={() => setView(FULL_VIEW)}
+          onClick={() => setView(fullView(height))}
           className="h-11 cursor-pointer px-3 text-sm font-semibold transition enabled:hover:bg-rose-50 enabled:active:bg-rose-100 disabled:cursor-default disabled:text-stone-300"
         >
           Reset

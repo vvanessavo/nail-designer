@@ -116,6 +116,7 @@ type Sticker = {
 type Nail = {
   id: number              // nail-0 ... nail-N
   shape: NailShape
+  length: number          // 1 = the shape's usual length (0.5 to 2)
   baseColor: string       // hex
   finish: Finish
   hasFrenchTip: boolean
