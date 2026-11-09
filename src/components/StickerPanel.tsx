@@ -4,15 +4,32 @@
 
 import { useEffect } from 'react'
 import { STICKER_SIZE, STICKERS, type StickerType } from '../stickers'
+import ColourPicker, { type Preset } from './ColourPicker'
+
+// Metallic colours that suit stickers, offered on top of the usual polish colours.
+const STICKER_EXTRA_COLOURS: Preset[] = [
+  { name: 'Gold', hex: '#D4AF37' },
+  { name: 'Silver', hex: '#C0C0C0' },
+]
 
 type StickerPanelProps = {
   picked: StickerType | null // the sticker waiting to be placed, if any
-  hasSelectedSticker: boolean // a placed sticker is showing its handles
+  selectedColor: string | null // colour of the placed sticker showing its handles, if any
   onPick: (type: StickerType | null) => void
   onOpenChange: (open: boolean) => void // tells App when this tab opens and closes
+  onRecolor: (color: string) => void // recolours the selected sticker
+  onDelete: () => void // removes the selected sticker
 }
 
-function StickerPanel({ picked, hasSelectedSticker, onPick, onOpenChange }: StickerPanelProps) {
+function StickerPanel({
+  picked,
+  selectedColor,
+  onPick,
+  onOpenChange,
+  onRecolor,
+  onDelete,
+}: StickerPanelProps) {
+  const hasSelectedSticker = selectedColor !== null
   // Tell App the Stickers tab is open. When this panel closes (the tab is closed or another
   // tab opens), put any picked sticker down, so tapping a nail goes back to choosing nails.
   useEffect(() => {
@@ -67,8 +84,37 @@ function StickerPanel({ picked, hasSelectedSticker, onPick, onOpenChange }: Stic
           ? `Tap a nail to add the ${pickedLabel.toLowerCase()}. Tap the ${pickedLabel.toLowerCase()} again when you're done.`
           : hasSelectedSticker
             ? 'Drag the sticker to move it. Drag a corner to resize it, or the top handle to turn it.'
-            : 'Choose a sticker, then tap a nail. Tap a sticker on a nail to move, resize or turn it.'}
+            : 'Choose a sticker, then tap a nail. Tap a sticker on a nail to change it.'}
       </p>
+      {/* Colour and delete for the sticker showing its handles. */}
+      {selectedColor !== null && (
+        <div className="flex flex-col items-center gap-3 border-t border-stone-100 pt-3">
+          <ColourPicker
+            label="Sticker colours"
+            value={selectedColor}
+            onChange={onRecolor}
+            extraPresets={STICKER_EXTRA_COLOURS}
+          />
+          <button
+            type="button"
+            onClick={onDelete}
+            className="flex min-h-11 cursor-pointer items-center gap-2 rounded-full border border-rose-200 px-4 text-sm font-medium text-rose-700 hover:bg-rose-50"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
+              <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
+            </svg>
+            Delete sticker
+          </button>
+        </div>
+      )}
     </div>
   )
 }

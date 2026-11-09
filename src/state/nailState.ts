@@ -34,8 +34,8 @@ export type AppState = {
   applyToAll: boolean // true: changes go on every nail; false: only on the selected nails
 }
 
-// The parts of a sticker that moving, resizing and turning can change.
-export type StickerChanges = Partial<Pick<Sticker, 'x' | 'y' | 'scale' | 'rotation'>>
+// The parts of a placed sticker that can be changed: moving, resizing, turning and recolouring.
+export type StickerChanges = Partial<Pick<Sticker, 'x' | 'y' | 'scale' | 'rotation' | 'color'>>
 
 // Every change to the state is described as an action. The reducer below decides what each
 // action does, so all state changes live in one place.
@@ -52,6 +52,7 @@ export type Action =
   | { type: 'CLEAR_SELECTION' }
   | { type: 'ADD_STICKER'; nailId: number; sticker: Sticker }
   | { type: 'UPDATE_STICKER'; nailId: number; stickerId: string; changes: StickerChanges }
+  | { type: 'DELETE_STICKER'; nailId: number; stickerId: string }
 
 const NAIL_COUNT = 10
 
@@ -125,6 +126,15 @@ export function nailReducer(state: AppState, action: Action): AppState {
                   sticker.id === action.stickerId ? { ...sticker, ...action.changes } : sticker,
                 ),
               }
+            : nail,
+        ),
+      }
+    case 'DELETE_STICKER':
+      return {
+        ...state,
+        nails: state.nails.map((nail) =>
+          nail.id === action.nailId
+            ? { ...nail, stickers: nail.stickers.filter((sticker) => sticker.id !== action.stickerId) }
             : nail,
         ),
       }

@@ -1,4 +1,4 @@
-import { useCallback, useReducer, useState } from 'react'
+import { useCallback, useEffect, useReducer, useState } from 'react'
 import ApplyToToggle from './components/ApplyToToggle'
 import ColourPicker from './components/ColourPicker'
 import FinishPicker from './components/FinishPicker'
@@ -66,6 +66,31 @@ function App() {
       dispatch({ type: 'SELECT_NAIL', nailId })
     }
   }
+
+  // The sticker showing its handles, and the nail it's on.
+  const selectedNail = state.nails.find((nail) =>
+    nail.stickers.some((sticker) => sticker.id === selectedStickerId),
+  )
+  const selectedSticker = selectedNail?.stickers.find((sticker) => sticker.id === selectedStickerId)
+
+  const deleteSelectedSticker = useCallback(() => {
+    if (!selectedNail || !selectedSticker) return
+    dispatch({ type: 'DELETE_STICKER', nailId: selectedNail.id, stickerId: selectedSticker.id })
+    setSelectedStickerId(null)
+  }, [selectedNail, selectedSticker])
+
+  // On a computer, the Delete or Backspace key also removes the selected sticker
+  // (unless you're typing, e.g. in the hex colour box).
+  useEffect(() => {
+    const handleKey = (event: KeyboardEvent) => {
+      const typing = event.target instanceof HTMLInputElement
+      if ((event.key === 'Delete' || event.key === 'Backspace') && !typing) {
+        deleteSelectedSticker()
+      }
+    }
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [deleteSelectedSticker])
 
   // Stickers can be edited while the Stickers tab is open and no sticker is picked to place.
   const stickerEditing =
@@ -182,9 +207,20 @@ function App() {
       content: (
         <StickerPanel
           picked={pickedSticker}
-          hasSelectedSticker={selectedStickerId !== null}
+          selectedColor={selectedSticker?.color ?? null}
           onPick={handlePickSticker}
           onOpenChange={handleStickersTabOpen}
+          onRecolor={(color) => {
+            if (selectedNail && selectedSticker) {
+              dispatch({
+                type: 'UPDATE_STICKER',
+                nailId: selectedNail.id,
+                stickerId: selectedSticker.id,
+                changes: { color },
+              })
+            }
+          }}
+          onDelete={deleteSelectedSticker}
         />
       ),
     },
