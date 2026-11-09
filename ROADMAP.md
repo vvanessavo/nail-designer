@@ -18,7 +18,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E4-S1 (French tip overlay) is done. Next: **E4-S2, French tip controls** (colour and thickness).
+E4-S2 (French tip colour and thickness) is done. Next: **E4-S3, matte and shiny finish.**
 
 ---
 
@@ -120,9 +120,10 @@ As a user, I can add a French tip to a nail, because it's one of the most reques
 Done when: a toggle adds or removes an arched tip overlay on the selected nails, stored as `hasFrenchTip`, and it stays within the nail shape.
 Built as: a French tip tab with the Each nail / All nails switch and an on / off switch (`SET_FRENCH_TIP`). The tip is `frenchTipPath` in `src/shapes.ts`: everything above a curved smile line, clipped to the nail outline like the stickers, and drawn under them. It covers 80% of the free edge in the middle. The nail's edge line is now drawn last, on top of the tip and stickers.
 
-### E4-S2: French tip controls. P0. Backlog
+### E4-S2: French tip controls. P0. Done
 As a user, I can change the tip colour and thickness.
 Done when: a tip colour picker and a thickness slider update the overlay immediately, for the selected nails or all nails.
+Built as: under the French tip switch, once the target nails have a tip: a Thin to Thick slider (`SET_FRENCH_TIP_THICKNESS`, new `frenchTipThickness` field, 0.3 to 1.3, starts at 0.8) and the same colour swatches and custom picker as the Colour tab (`SET_FRENCH_TIP_COLOR`).
 Depends on: E4-S1.
 
 ### E4-S3: Matte and shiny finish. P1. Backlog
