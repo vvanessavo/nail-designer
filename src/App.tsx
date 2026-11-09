@@ -260,7 +260,9 @@ function App() {
   return (
     // The app fills exactly one screen (h-dvh): toolbar on top, hands in the space left
     // below it. min-h-0 lets that space shrink when a panel opens, and the hands shrink with it.
-    <div className="flex h-dvh flex-col bg-rose-50">
+    // For phones: touch-manipulation stops a quick double tap (e.g. on + or Undo) from zooming
+    // the whole page, and the tap-highlight setting removes the grey flash on tapped buttons.
+    <div className="flex h-dvh touch-manipulation flex-col bg-rose-50 [-webkit-tap-highlight-color:transparent]">
       <Toolbar
         tabs={tabs}
         actions={
