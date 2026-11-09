@@ -21,6 +21,9 @@ export type Nail = {
   finish: Finish
   hasFrenchTip: boolean
   frenchTipColor: string
+  // How deep the tip is: the share of the free edge it covers in the middle of the nail.
+  // 1 reaches the fingertip line; more goes past it. Kept between the two limits below.
+  frenchTipThickness: number
   stickers: Sticker[]
 }
 
@@ -42,12 +45,18 @@ export type Action =
   | { type: 'SET_SHAPE'; shape: NailShape }
   | { type: 'SET_BASE_COLOR'; color: string }
   | { type: 'SET_FRENCH_TIP'; on: boolean }
+  | { type: 'SET_FRENCH_TIP_COLOR'; color: string }
+  | { type: 'SET_FRENCH_TIP_THICKNESS'; thickness: number }
   | { type: 'SET_APPLY_TO_ALL'; applyToAll: boolean }
   | { type: 'CLEAR_SELECTION' }
   | { type: 'ADD_STICKER'; nailId: number; sticker: Sticker }
   | { type: 'UPDATE_STICKER'; nailId: number; stickerId: string; changes: StickerChanges }
 
 const NAIL_COUNT = 10
+
+// Thinnest and thickest a French tip can be (see frenchTipThickness).
+export const MIN_TIP_THICKNESS = 0.3
+export const MAX_TIP_THICKNESS = 1.3
 
 function createNail(id: number): Nail {
   return {
@@ -57,6 +66,7 @@ function createNail(id: number): Nail {
     finish: 'shiny',
     hasFrenchTip: false,
     frenchTipColor: '#FFFFFF',
+    frenchTipThickness: 0.8,
     stickers: [],
   }
 }
@@ -142,5 +152,21 @@ export function nailReducer(state: AppState, action: Action): AppState {
           isTargeted(state, nail.id) ? { ...nail, hasFrenchTip: action.on } : nail,
         ),
       }
+    case 'SET_FRENCH_TIP_COLOR':
+      return {
+        ...state,
+        nails: state.nails.map((nail) =>
+          isTargeted(state, nail.id) ? { ...nail, frenchTipColor: action.color } : nail,
+        ),
+      }
+    case 'SET_FRENCH_TIP_THICKNESS': {
+      const thickness = Math.max(MIN_TIP_THICKNESS, Math.min(MAX_TIP_THICKNESS, action.thickness))
+      return {
+        ...state,
+        nails: state.nails.map((nail) =>
+          isTargeted(state, nail.id) ? { ...nail, frenchTipThickness: thickness } : nail,
+        ),
+      }
+    }
   }
 }

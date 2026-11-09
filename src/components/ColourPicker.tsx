@@ -1,4 +1,4 @@
-// Picks the base colour for the nails: a grid of preset polish colours, plus a "Custom"
+// Picks a colour (the nails' base colour, or the French tip's): a grid of preset polish colours, plus a "Custom"
 // button that opens a full colour picker (react-colorful) and a box for an exact hex code.
 
 import { useState } from 'react'
@@ -31,9 +31,10 @@ const SELECTED_RING = 'ring-2 ring-rose-600 ring-offset-2 ring-offset-white'
 type ColourPickerProps = {
   value: string // hex, e.g. "#f6dcd6"
   onChange: (hex: string) => void
+  label?: string // what screen readers call the group of swatches
 }
 
-function ColourPicker({ value, onChange }: ColourPickerProps) {
+function ColourPicker({ value, onChange, label = 'Polish colours' }: ColourPickerProps) {
   // Whether the full custom picker is open.
   const [showCustom, setShowCustom] = useState(false)
   const isPreset = PRESETS.some((preset) => preset.hex.toLowerCase() === value.toLowerCase())
@@ -42,7 +43,7 @@ function ColourPicker({ value, onChange }: ColourPickerProps) {
     <div className="flex flex-col items-center gap-4">
       <div
         role="group"
-        aria-label="Polish colours"
+        aria-label={label}
         className="grid grid-cols-6 gap-2"
       >
         {PRESETS.map((preset) => {

@@ -185,7 +185,7 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
           {/* The French tip goes under the stickers, and is clipped to the nail like them. */}
           {nail.hasFrenchTip && (
             <Path
-              data={frenchTipPath(nail.shape, nailWidth)}
+              data={frenchTipPath(nail.shape, nailWidth, nail.frenchTipThickness)}
               fill={nail.frenchTipColor}
               listening={false}
             />

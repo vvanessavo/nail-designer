@@ -89,18 +89,17 @@ export function nailShapePath(shape: NailShape, width: number, bedLength: number
   ].join(' ')
 }
 
-// How much of the free edge a French tip covers in the middle of the nail (1 = all of it).
-const FRENCH_TIP_COVER = 0.8
 // How much further down the nail's sides the tip reaches than its middle, as a fraction of the
 // nail's width. This is what makes the curved "smile line".
 const SMILE_DEPTH = 0.3
 
 // The white tip of a French manicure: everything above a curved smile line. It's drawn bigger
 // than the nail at the top and sides, and clipped to the nail's outline, so it fits every shape.
-export function frenchTipPath(shape: NailShape, width: number): string {
+// `thickness` is the share of the free edge it covers in the middle (1 = all of it).
+export function frenchTipPath(shape: NailShape, width: number, thickness: number): string {
   const half = width / 2
   const length = freeEdgeLength(shape, width)
-  const middleY = -length + length * FRENCH_TIP_COVER // where the smile line crosses the middle
+  const middleY = -length + length * thickness // where the smile line crosses the middle
   const sideY = middleY + width * SMILE_DEPTH // where it meets the sides
   const margin = width // extra space, so the clip decides the outer edge
   return [

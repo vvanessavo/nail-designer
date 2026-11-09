@@ -2,6 +2,7 @@ import { useCallback, useReducer, useState } from 'react'
 import ApplyToToggle from './components/ApplyToToggle'
 import ColourPicker from './components/ColourPicker'
 import FrenchTipSwitch from './components/FrenchTipSwitch'
+import TipThicknessSlider from './components/TipThicknessSlider'
 import Hands from './components/Hands'
 import ShapePicker from './components/ShapePicker'
 import SkinTonePicker from './components/SkinTonePicker'
@@ -85,6 +86,9 @@ function App() {
       ? firstTarget.shape
       : null
 
+  // Shown as on only if every target nail already has a tip.
+  const targetsHaveTip = targetNails.length > 0 && targetNails.every((nail) => nail.hasFrenchTip)
+
   // The "Each nail / All nails" switch, shown at the top of the Shape, Colour and French tip tabs.
   const applyToToggle = (
     <ApplyToToggle
@@ -140,11 +144,25 @@ function App() {
         <div className="flex flex-col items-center gap-4">
           {applyToToggle}
           <FrenchTipSwitch
-            // Shown as on only if every target nail already has a tip.
-            on={targetNails.length > 0 && targetNails.every((nail) => nail.hasFrenchTip)}
+            on={targetsHaveTip}
             disabled={targetNails.length === 0}
             onChange={(on) => dispatch({ type: 'SET_FRENCH_TIP', on })}
           />
+          {/* Tip colour and thickness, once the target nails have a tip. They show the first
+              target nail's settings and change every target nail. */}
+          {firstTarget && targetsHaveTip && (
+            <>
+              <TipThicknessSlider
+                value={firstTarget.frenchTipThickness}
+                onChange={(thickness) => dispatch({ type: 'SET_FRENCH_TIP_THICKNESS', thickness })}
+              />
+              <ColourPicker
+                label="Tip colours"
+                value={firstTarget.frenchTipColor}
+                onChange={(color) => dispatch({ type: 'SET_FRENCH_TIP_COLOR', color })}
+              />
+            </>
+          )}
         </div>
       ),
     },

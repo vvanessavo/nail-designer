@@ -95,6 +95,7 @@ type Nail = {
   finish: Finish
   hasFrenchTip: boolean
   frenchTipColor: string
+  frenchTipThickness: number // share of the free edge the tip covers in the middle (0.3 to 1.3)
   stickers: Sticker[]
 }
 
