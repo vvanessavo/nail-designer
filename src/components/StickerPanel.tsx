@@ -14,22 +14,23 @@ const STICKER_EXTRA_COLOURS: Preset[] = [
 
 type StickerPanelProps = {
   picked: StickerType | null // the sticker waiting to be placed, if any
-  selectedColor: string | null // colour of the placed sticker showing its handles, if any
+  color: string // the selected sticker's colour, or the colour for new stickers
+  hasSelectedSticker: boolean // a placed sticker is showing its handles
   onPick: (type: StickerType | null) => void
   onOpenChange: (open: boolean) => void // tells App when this tab opens and closes
-  onRecolor: (color: string) => void // recolours the selected sticker
+  onColorChange: (color: string) => void // recolours the selected sticker, and sets new stickers' colour
   onDelete: () => void // removes the selected sticker
 }
 
 function StickerPanel({
   picked,
-  selectedColor,
+  color,
+  hasSelectedSticker,
   onPick,
   onOpenChange,
-  onRecolor,
+  onColorChange,
   onDelete,
 }: StickerPanelProps) {
-  const hasSelectedSticker = selectedColor !== null
   // Tell App the Stickers tab is open. When this panel closes (the tab is closed or another
   // tab opens), put any picked sticker down, so tapping a nail goes back to choosing nails.
   useEffect(() => {
@@ -86,19 +87,18 @@ function StickerPanel({
           ? `Tap a nail to add the ${pickedLabel.toLowerCase()}. Tap the ${pickedLabel.toLowerCase()} again when you're done.`
           : hasSelectedSticker
             ? 'Drag the sticker to move it. Drag a corner to resize it, or the top handle to turn it.'
-            : 'Choose a sticker, then tap a nail. Tap a sticker on a nail to change it.'}
+            : 'Choose a colour and a sticker, then tap a nail. Tap a sticker on a nail to change it.'}
       </p>
-      {/* Colour and delete for the sticker showing its handles. Always shown (greyed out until
-          a sticker is tapped) for the same reason: the panel keeps its height. */}
+      {/* Colour (for the selected sticker, or for new ones) and delete (greyed out until a
+          sticker is tapped). Always shown, for the same reason: the panel keeps its height. */}
       <div className="flex w-full max-w-xl items-start gap-2 border-t border-stone-100 pt-2">
         <div className="min-w-0 flex-1">
           <ColourPicker
             label="Sticker colours"
-            value={selectedColor ?? ''}
-            onChange={onRecolor}
+            value={color}
+            onChange={onColorChange}
             extraPresets={STICKER_EXTRA_COLOURS}
             compact
-            disabled={!hasSelectedSticker}
           />
         </div>
         <button

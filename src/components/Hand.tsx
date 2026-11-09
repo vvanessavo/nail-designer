@@ -24,6 +24,8 @@ const STICKER_WIDTH_RATIO = 0.7
 // Smallest and largest a sticker can be resized to, compared with its default size.
 const MIN_STICKER_SCALE = 0.3
 const MAX_STICKER_SCALE = 1.6
+// Stickers respond to taps within this many screen pixels of their middle (a 32px circle).
+const STICKER_TAP_RADIUS = 16
 
 // A small off-screen drawing surface, used only to ask "is this point inside this outline?".
 const outlineChecker = document.createElement('canvas').getContext('2d')
@@ -217,8 +219,18 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
               // taps pass through to the finger and choose the nail as usual.
               listening={stickerEditing !== null}
               draggable={stickerEditing !== null}
-              // A little extra invisible edge makes small stickers easier to grab.
-              hitStrokeWidth={8}
+              // The area that responds to taps: a circle around the sticker, at least
+              // STICKER_TAP_RADIUS screen pixels, so even a tiny sticker is easy to tap with a
+              // fingertip. getAbsoluteScale is how big one sticker unit is on screen right now
+              // (it changes with the sticker's size and the zoom).
+              hitFunc={(context, shape) => {
+                const unitsPerPixel = 1 / Math.abs(shape.getAbsoluteScale().x)
+                const radius = Math.max(STICKER_SIZE * 0.6, STICKER_TAP_RADIUS * unitsPerPixel)
+                context.beginPath()
+                context.arc(STICKER_SIZE / 2, STICKER_SIZE / 2, radius, 0, Math.PI * 2)
+                context.closePath()
+                context.fillStrokeShape(shape)
+              }}
               onPointerClick={(event) => {
                 event.cancelBubble = true // don't also count as a tap on the finger
                 stickerEditing?.onSelect(sticker.id)
