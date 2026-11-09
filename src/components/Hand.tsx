@@ -278,6 +278,7 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
             Dark with a white rim, so it shows against any polish or background. */}
         {isTargeted && (
           <Circle
+            name="target-dot" // left out of exported images
             x={0}
             y={-freeEdgeLength(nail.shape, nailWidth) - 9}
             radius={4.5}
