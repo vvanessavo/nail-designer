@@ -58,6 +58,10 @@ npm run build    # type-check and production build
 npm run lint     # ESLint
 ```
 
+## Live site
+
+https://nail-designer-phi.vercel.app, hosted on Vercel and connected to the GitHub repository. Every push to `main` deploys automatically within a minute or two, so `main` must always build.
+
 ## Project structure
 
 ```

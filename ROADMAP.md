@@ -18,7 +18,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E5-S3 (visual polish) is done. Next: **E5-S4, deploy** to Vercel.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. Next: **E5-S5, user test** with 3 people.
 
 ---
 
@@ -160,8 +160,9 @@ So far: an automated touch run of every interaction (31 checks) passes on 5 simu
 Done when: the app has an intentional palette and typography, clear hover and selected states, and consistent spacing.
 Built as: the "Soft blush" look the owner chose. A blush background (#FFF5F5, `bg-blush`), white panels, warm grey text (Tailwind stone), one rose accent (rose-600) for selected items and Save, and the Nunito font (loaded in the background from Google Fonts). The theme lives in `src/index.css`. Every button has hover and pressed feedback (tiles press in, swatches grow, floating buttons tint rose), and a rose focus ring shows for keyboard users. Panels use the same spacing throughout. Also: rounded webbing between the fingers instead of square notches, a nail favicon, the page title "Nail Designer", and a matching phone address-bar colour.
 
-### E5-S4: Deploy. P0. Backlog
+### E5-S4: Deploy. P0. Done
 Done when: the app is live on Vercel at a shareable link and works on a phone.
+Built as: the GitHub repository is connected to Vercel (Vite settings detected, nothing changed), so every push to `main` redeploys automatically. Live at https://nail-designer-phi.vercel.app. The full touch run passes against the live site on all 5 phone and tablet sizes.
 
 ### E5-S5: User test. P0. Backlog
 Done when: 3 people have used the app without help, observations are written down, and the top 3 issues are fixed. Compare results against the success metrics in `PRD.md`.
