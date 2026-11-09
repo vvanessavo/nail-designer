@@ -14,14 +14,14 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 | 0.2 | E2: Shape and colour | Choose a nail shape and paint a base colour | Done |
 | 0.3 | E3: Stickers | Place, move, and resize stickers on nails | Done |
 | 0.4 | E4: French tip, finish, undo | A complete design tool | Done |
-| 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | In progress (user test waits for E6) |
+| 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | Done except the user test, which is on hold |
 | 1.1 | E6: Richer design | More shapes, length, special bases, copy design, redo, freehand, text, autosave, mirror hands, recent colours | In progress |
 | 1.2 | E7: Start and share | Starter designs, design recipe sheet, share link | Backlog |
-| 1.3 | E8: More nail art (after the user test) | French tip styles, gems and pearls, patterns, trending effects | Backlog |
+| 1.3 | E8: More nail art | French tip styles, gems and pearls, patterns, trending effects | Backlog |
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. The owner asked for the E6 and E7 features before the user test. E6-S1 (more shapes) is done. Next: **E6-S2, nail length**. Order: E6, then E7, then E5-S5 (user test), then E8.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S1 (more shapes) is done. Next: **E6-S2, nail length**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -167,7 +167,8 @@ Built as: the "Soft blush" look the owner chose. A blush background (#FFF5F5, `b
 Done when: the app is live on Vercel at a shareable link and works on a phone.
 Built as: the GitHub repository is connected to Vercel (Vite settings detected, nothing changed), so every push to `main` redeploys automatically. Live at https://nail-designer-phi.vercel.app. The full touch run passes against the live site on all 5 phone and tablet sizes.
 
-### E5-S5: User test. P0. Backlog
+### E5-S5: User test. P0. On hold
+On hold at the owner's request (2026-11-09); not scheduled until the owner asks for it.
 Done when: 3 people have used the app without help, observations are written down, and the top 3 issues are fixed. Compare results against the success metrics in `PRD.md`.
 Depends on: E5-S4.
 
@@ -175,7 +176,7 @@ Depends on: E5-S4.
 
 ## E6: Richer design (Release 1.1)
 
-Pulled forward from the later releases at the owner's request, built before the E5-S5 user test. Every new feature also works with undo, with touch, and in exported pictures.
+Pulled forward from the later releases at the owner's request. Every new feature also works with undo, with touch, and in exported pictures.
 
 ### E6-S1: More nail shapes. P1. Done
 As a user, I can choose stiletto, squoval or natural nails, so more real styles are possible.
@@ -225,7 +226,7 @@ Done when: every colour picker (polish, tip, stickers, pen, ombre) shows a row o
 
 ## E7: Start and share (Release 1.2)
 
-Built before the E5-S5 user test, because they change how people start a design and what they leave with.
+Starting points and ways to take a design to an artist.
 
 ### E7-S1: Starter designs. P1. Backlog
 As a new user, I can start from a ready-made look, so I get a good result right away.
@@ -243,9 +244,9 @@ Done when: a Share action creates a link with the whole design packed into it (n
 
 ---
 
-## E8: More nail art (Release 1.3, after the user test)
+## E8: More nail art (Release 1.3)
 
-Built after E5-S5, so real feedback can reorder or drop these.
+More kinds of nail art, built after E7.
 
 ### E8-S1: French tip styles. P1. Backlog
 As a user, I can choose the French tip style.
@@ -281,6 +282,7 @@ Depends on: E6-S3.
 | 2026-11-07 | Added E3-S6, zoom in on a hand: both hands share a phone's width, so nails and stickers are small; zooming makes decorating practical |
 | 2026-11-09 | The owner pulled these later-release features forward, before the user test: more shapes, length, special bases, copy design, redo, freehand drawing, text (epic E6). Grayscale hand, undertone control, layers, 3D and the platform features stay later |
 | 2026-11-09 | The owner added artist-inspired features: autosave and My designs, mirror hands, recent colours (E6), starter designs, recipe sheet, share link (E7, before the user test), and French tip styles, gems, patterns, trending effects (E8, after the user test). Photo try-on, side-by-side comparison and salon pricing are recorded as later |
+| 2026-11-09 | The user test (E5-S5) is on hold at the owner's request; E8 no longer waits for it. Order: E6, E7, E8 |
 | 2026-11-09 | Visual style: "Soft blush" (blush background, rose accent, Nunito), chosen by the owner over "Salon chic" and "Playful pop" |
 | 2026-11-09 | The finish switch lives in the Colour tab rather than its own tab: it's part of the polish, and fewer tabs fit better on a phone |
 | 2026-11-09 | Zoom lives in the hands area (buttons bottom-right), not the toolbar, so it's available in every tab. While zoomed, a one-finger drag pans; stickers are moved by dragging them directly |

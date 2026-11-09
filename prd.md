@@ -53,7 +53,7 @@ Goal for the MVP: a user can visualise a complete nail set without Photoshop or 
 - Visual polish
 
 ### Release 1.1: richer design (owner asked, 2026-11-09)
-Pulled forward from the later releases below, built before the user test (roadmap epic E6):
+Pulled forward from the later releases below (roadmap epic E6):
 - More shapes: stiletto, squoval, natural
 - Nail length slider with short / medium / long presets
 - Special bases: ombre, chrome, pearl, glitter
@@ -70,7 +70,7 @@ Pulled forward from the later releases below, built before the user test (roadma
 - Design recipe sheet: the picture plus a per-nail list of what to recreate (answers the open question in section 9)
 - Share link with the design packed into the URL (no server)
 
-### Release 1.3: more nail art (owner asked, 2026-11-09; after the user test)
+### Release 1.3: more nail art (owner asked, 2026-11-09)
 - French tip styles: deep, micro, V, side, double line, reverse
 - Gems: rhinestones, pearls, studs
 - Patterns: marble, tortoiseshell, leopard, checkerboard, floral
