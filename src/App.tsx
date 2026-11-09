@@ -9,7 +9,14 @@ import ShapePicker from './components/ShapePicker'
 import SkinTonePicker from './components/SkinTonePicker'
 import StickerPanel from './components/StickerPanel'
 import Toolbar, { type ToolbarTab } from './components/Toolbar'
-import { initialState, isTargeted, nailReducer, type StickerChanges } from './state/nailState'
+import UndoButton from './components/UndoButton'
+import {
+  historyReducer,
+  initialHistory,
+  isTargeted,
+  type Action,
+  type StickerChanges,
+} from './state/nailState'
 import type { StickerType } from './stickers'
 
 // New stickers start in gold, which shows up on most polish colours.
@@ -22,8 +29,16 @@ function newStickerId(): string {
 
 function App() {
   // useReducer keeps all the app's state in one object and changes it only through
-  // actions, e.g. dispatch({ type: 'SELECT_NAIL', nailId: 3 }).
-  const [state, dispatch] = useReducer(nailReducer, initialState)
+  // actions, e.g. dispatch({ type: 'SELECT_NAIL', nailId: 3 }). The state sits inside an
+  // undo history (see historyReducer), and `state` is its current design.
+  const [history, dispatchHistory] = useReducer(historyReducer, initialHistory)
+  const state = history.present
+  const canUndo = history.past.length > 0
+  // Every change is stamped with the time, so quick runs of the same change undo together.
+  const dispatch = useCallback(
+    (action: Action) => dispatchHistory({ type: 'DO', action, time: Date.now() }),
+    [],
+  )
   // The sticker picked in the Stickers tab and waiting to be placed. While one is picked,
   // tapping a nail places it instead of choosing that nail.
   const [pickedSticker, setPickedSticker] = useState<StickerType | null>(null)
@@ -77,20 +92,31 @@ function App() {
     if (!selectedNail || !selectedSticker) return
     dispatch({ type: 'DELETE_STICKER', nailId: selectedNail.id, stickerId: selectedSticker.id })
     setSelectedStickerId(null)
-  }, [selectedNail, selectedSticker])
+  }, [dispatch, selectedNail, selectedSticker])
 
-  // On a computer, the Delete or Backspace key also removes the selected sticker
-  // (unless you're typing, e.g. in the hex colour box).
+  const undo = useCallback(() => {
+    dispatchHistory({ type: 'UNDO' })
+    // The sticker showing handles might be one the undo takes away, so put the handles away.
+    setSelectedStickerId(null)
+  }, [])
+
+  // Keyboard shortcuts on a computer (skipped while typing, e.g. in the hex colour box, where
+  // the keys keep their usual meaning):
+  // - Delete or Backspace removes the selected sticker
+  // - Cmd+Z (Mac) or Ctrl+Z (Windows) undoes the last change
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
-      const typing = event.target instanceof HTMLInputElement
-      if ((event.key === 'Delete' || event.key === 'Backspace') && !typing) {
+      if (event.target instanceof HTMLInputElement) return
+      if (event.key === 'Delete' || event.key === 'Backspace') {
         deleteSelectedSticker()
+      } else if (event.key.toLowerCase() === 'z' && (event.metaKey || event.ctrlKey) && !event.shiftKey) {
+        event.preventDefault()
+        undo()
       }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [deleteSelectedSticker])
+  }, [deleteSelectedSticker, undo])
 
   // Stickers can be edited while the Stickers tab is open and no sticker is picked to place.
   const stickerEditing =
@@ -232,14 +258,21 @@ function App() {
     <div className="flex h-dvh flex-col bg-rose-50">
       <Toolbar tabs={tabs} />
       <main className="flex min-h-0 flex-1 items-center justify-center p-4">
-        <Hands
-          state={state}
-          // In the Stickers tab, taps place or edit stickers, so the nail selection dots are hidden.
-          showTargets={!stickersTabOpen}
-          onSelectNail={handleNailTap}
-          onTapBackground={() => setSelectedStickerId(null)}
-          stickerEditing={stickerEditing}
-        />
+        {/* Same size as the hands area, so the undo button lines up with the zoom buttons. */}
+        <div className="relative flex h-full w-full max-w-2xl justify-center">
+          <Hands
+            state={state}
+            // In the Stickers tab, taps place or edit stickers, so the nail selection dots are hidden.
+            showTargets={!stickersTabOpen}
+            onSelectNail={handleNailTap}
+            onTapBackground={() => setSelectedStickerId(null)}
+            stickerEditing={stickerEditing}
+          />
+          <UndoButton
+            disabled={!canUndo}
+            onUndo={undo}
+          />
+        </div>
       </main>
     </div>
   )

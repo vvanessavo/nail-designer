@@ -188,3 +188,69 @@ export function nailReducer(state: AppState, action: Action): AppState {
     }
   }
 }
+
+// ---------------------------------------------------------------------------------------------
+// Undo history
+//
+// The app keeps a list of earlier designs ("past") next to the current state ("present").
+// Every design change saves the design before it; UNDO puts the last saved design back.
+
+// Changing which nails are chosen isn't a design change, so it isn't saved or undone.
+const NOT_UNDOABLE: Action['type'][] = ['SELECT_NAIL', 'CLEAR_SELECTION', 'SET_APPLY_TO_ALL']
+// Changes of the same kind that come quicker than this (dragging the colour picker or the
+// thickness slider) are saved as one step, so one undo takes back the whole drag.
+const MERGE_WITHIN_MS = 600
+// How many steps back undo can go.
+const MAX_UNDO_STEPS = 50
+
+// The parts of the state that undo puts back. The nail selection stays as it is.
+type Design = Pick<AppState, 'skinTone' | 'nails'>
+
+export type History = {
+  past: Design[]
+  present: AppState
+  lastChange: { key: string; time: number } | null // the most recent saved change
+}
+
+export type HistoryAction =
+  | { type: 'DO'; action: Action; time: number } // time: when it happened (Date.now())
+  | { type: 'UNDO' }
+
+export const initialHistory: History = { past: [], present: initialState, lastChange: null }
+
+// Two changes with the same key, close together, count as one undo step: same action,
+// and for stickers the same sticker.
+function changeKey(action: Action): string {
+  return 'stickerId' in action ? `${action.type}:${action.stickerId}` : action.type
+}
+
+export function historyReducer(history: History, historyAction: HistoryAction): History {
+  const { past, present, lastChange } = history
+
+  if (historyAction.type === 'UNDO') {
+    const previous = past.at(-1)
+    if (!previous) return history
+    return {
+      past: past.slice(0, -1),
+      present: { ...present, ...previous },
+      lastChange: null, // the next change always starts a new step
+    }
+  }
+
+  const { action, time } = historyAction
+  const next = nailReducer(present, action)
+  if (NOT_UNDOABLE.includes(action.type)) return { ...history, present: next }
+
+  const key = changeKey(action)
+  const continuesLastChange =
+    lastChange !== null && lastChange.key === key && time - lastChange.time < MERGE_WITHIN_MS
+  return {
+    // Save the design from before this change, unless it continues the last one
+    // (that one already saved the design from before it started).
+    past: continuesLastChange
+      ? past
+      : [...past, { skinTone: present.skinTone, nails: present.nails }].slice(-MAX_UNDO_STEPS),
+    present: next,
+    lastChange: { key, time },
+  }
+}
