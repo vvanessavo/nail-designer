@@ -30,6 +30,7 @@ import {
   type TextFont,
 } from './state/nailState'
 import { designThumbnail, exportDesign } from './exportImage'
+import { STARTERS } from './starters'
 import {
   loadCurrentDesign,
   loadRecentColors,
@@ -300,6 +301,11 @@ function App() {
           }
           onDelete={(id) => updateSavedDesigns(savedDesigns.filter((item) => item.id !== id))}
           onNew={() => openDesign({ skinTone: initialState.skinTone, nails: initialState.nails })}
+          onStarter={(starterId) => {
+            const starter = STARTERS.find((item) => item.id === starterId)
+            // A starter keeps the skin tone you chose.
+            if (starter) openDesign({ skinTone: state.skinTone, nails: starter.nails })
+          }}
         />
       ),
     },
