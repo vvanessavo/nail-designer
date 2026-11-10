@@ -15,13 +15,13 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 | 0.3 | E3: Stickers | Place, move, and resize stickers on nails | Done |
 | 0.4 | E4: French tip, finish, undo | A complete design tool | Done |
 | 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | Done except the user test, which is on hold |
-| 1.1 | E6: Richer design | More shapes, length, special bases, copy design, redo, freehand, text, autosave, mirror hands, recent colours | In progress |
+| 1.1 | E6: Richer design | More shapes, length, special bases, copy design, redo, freehand, text, autosave, mirror hands, recent colours | Done |
 | 1.2 | E7: Start and share | Starter designs, design recipe sheet, share link | Backlog |
 | 1.3 | E8: More nail art | French tip styles, gems and pearls, patterns, trending effects | Backlog |
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs) and E6-S9 (mirror hands). Next: **E6-S10, recent colours**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs), E6-S9 (mirror hands) and E6-S10 (recent colours): **E6 is done**. Next: **E7-S1, starter designs**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -231,9 +231,10 @@ As a user, the stickers look like designs people actually get on their nails.
 Done when: the basic shapes are replaced by real nail-art motifs, drawn like decals in several colours, recolourable without losing their details, small by default so several fit on a nail, and placed where I tap.
 Built as: 14 stickers in `src/stickers.ts` (daisy, cherry blossom, rose, leaf vine, bow, cherries, strawberry, butterfly, smiley, outlined heart, evil eye, moon and stars, twinkle star, swirl), each a stack of layers on a 24 x 24 grid in either the sticker's main colour or a fixed detail colour. They start in their own colours ("Original"); the colour row changes the main colour. Default size is about a third of the nail's width (0.5x to 3.2x). A new sticker goes where you tap the nail (the middle if you tap the finger), and when tap areas overlap the sticker closest to your finger is chosen. The sticker row scrolls sideways. Built before E6-S3 because the owner said the old stickers didn't look like real nail designs.
 
-### E6-S10: Recent colours. P1. Backlog
+### E6-S10: Recent colours. P1. Done
 As a user, I can reuse colours I've just used, so matching nails is one tap.
 Done when: every colour picker (polish, tip, stickers, pen, ombre) shows a row of the last 6 colours used anywhere in the design, newest first.
+Built as: up to 6 recent colours at the start of every colour row, then a thin divider. A colour is remembered 0.7 s after it's chosen, so a custom-picker drag adds only the final colour. Kept in the browser (`loadRecentColors` / `saveRecentColors` in `src/storage.ts`).
 
 ---
 

@@ -32,8 +32,10 @@ import {
 import { designThumbnail, exportDesign } from './exportImage'
 import {
   loadCurrentDesign,
+  loadRecentColors,
   loadSavedDesigns,
   saveCurrentDesign,
+  saveRecentColors,
   storeSavedDesigns,
   type SavedDesign,
 } from './storage'
@@ -97,6 +99,22 @@ function App() {
     }, 300)
     return () => clearTimeout(timer)
   }, [state.skinTone, state.nails])
+
+  // Recent colours: the last 6 colours used anywhere (newest first), shown at the start of
+  // every colour row. A colour is remembered once it has been kept for a moment, so dragging
+  // the custom picker adds only the colour you end on.
+  const [recentColors, setRecentColors] = useState<string[]>(() => loadRecentColors())
+  const rememberTimer = useRef<number | undefined>(undefined)
+  const rememberColor = (hex: string) => {
+    window.clearTimeout(rememberTimer.current)
+    rememberTimer.current = window.setTimeout(() => {
+      setRecentColors((list) => {
+        const next = [hex, ...list.filter((item) => item.toLowerCase() !== hex.toLowerCase())].slice(0, 6)
+        saveRecentColors(next)
+        return next
+      })
+    }, 700)
+  }
 
   // My designs: designs kept under a name, newest first.
   const [savedDesigns, setSavedDesigns] = useState<SavedDesign[]>(() => loadSavedDesigns())
@@ -325,7 +343,11 @@ function App() {
           {applyToToggle}
           <ColourPicker
             value={(firstTarget ?? state.nails[0]).baseColor}
-            onChange={(color) => dispatch({ type: 'SET_BASE_COLOR', color })}
+            onChange={(color) => {
+              dispatch({ type: 'SET_BASE_COLOR', color })
+              rememberColor(color)
+            }}
+            recent={recentColors}
             compact
           />
           <EffectPicker
@@ -341,7 +363,11 @@ function App() {
               <ColourPicker
                 label={sharedEffect === 'ombre' ? 'Ombre tip colours' : 'Glitter colours'}
                 value={firstTarget.effectColor}
-                onChange={(color) => dispatch({ type: 'SET_EFFECT_COLOR', color })}
+                onChange={(color) => {
+                  dispatch({ type: 'SET_EFFECT_COLOR', color })
+                  rememberColor(color)
+                }}
+                recent={recentColors}
                 extraPresets={[
                   { name: 'Gold', hex: '#D4AF37' },
                   { name: 'Silver', hex: '#C0C0C0' },
@@ -384,7 +410,11 @@ function App() {
               <ColourPicker
                 label="Tip colours"
                 value={firstTarget.frenchTipColor}
-                onChange={(color) => dispatch({ type: 'SET_FRENCH_TIP_COLOR', color })}
+                onChange={(color) => {
+                  dispatch({ type: 'SET_FRENCH_TIP_COLOR', color })
+                  rememberColor(color)
+                }}
+                recent={recentColors}
                 compact
               />
             </>
@@ -399,7 +429,11 @@ function App() {
         <DrawPanel
           settings={drawSettings}
           hasDrawing={state.nails.some((nail) => nail.strokes.length > 0)}
-          onChange={setDrawSettings}
+          onChange={(settings) => {
+            if (settings.color !== drawSettings.color) rememberColor(settings.color)
+            setDrawSettings(settings)
+          }}
+          recentColors={recentColors}
           onClearAll={() => dispatch({ type: 'CLEAR_STROKES' })}
           onOpenChange={setDrawTabOpen}
         />
@@ -422,8 +456,10 @@ function App() {
           hasSelectedSticker={selectedSticker !== undefined}
           onPick={handlePickSticker}
           onOpenChange={handleStickersTabOpen}
+          recentColors={recentColors}
           onColorChange={(color) => {
             setStickerColor(color)
+            if (color) rememberColor(color)
             if (selectedNail && selectedSticker) {
               dispatch({
                 type: 'UPDATE_STICKER',

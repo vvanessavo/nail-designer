@@ -35,6 +35,7 @@ type ColourPickerProps = {
   label?: string // what screen readers call the group of swatches
   extraPresets?: Preset[] // more swatches before the standard ones, e.g. gold for stickers
   compact?: boolean // one row of swatches that scrolls sideways, instead of a grid
+  recent?: string[] // colours used recently, shown first (newest first)
   disabled?: boolean // greyed out with nothing chosen (e.g. no sticker selected)
 }
 
@@ -45,6 +46,7 @@ function ColourPicker({
   extraPresets = [],
   compact = false,
   disabled = false,
+  recent = [],
 }: ColourPickerProps) {
   // Whether the full custom picker is open.
   const [showCustom, setShowCustom] = useState(false)
@@ -62,6 +64,29 @@ function ColourPicker({
           disabled ? 'opacity-40' : ''
         }`}
       >
+        {/* Recent colours first, then a thin line, then the usual swatches. */}
+        {recent.map((hex) => {
+          const isSelected = !disabled && hex.toLowerCase() === value.toLowerCase()
+          return (
+            <button
+              key={`recent-${hex}`}
+              type="button"
+              disabled={disabled}
+              onClick={() => onChange(hex)}
+              aria-label={`Recent colour ${hex}`}
+              aria-pressed={isSelected}
+              title={`Recent: ${hex}`}
+              style={{ backgroundColor: hex }}
+              className={`${SWATCH} ${isSelected ? SELECTED_RING : ''}`}
+            />
+          )
+        })}
+        {recent.length > 0 && (
+          <span
+            aria-hidden="true"
+            className="w-px shrink-0 self-stretch bg-stone-200"
+          />
+        )}
         {presets.map((preset) => {
           const isSelected = !disabled && preset.hex.toLowerCase() === value.toLowerCase()
           return (
