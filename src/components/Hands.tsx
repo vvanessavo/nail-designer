@@ -11,7 +11,7 @@
 import Konva from 'konva'
 import { useEffect, useRef, useState, type Ref } from 'react'
 import { Group, Layer, Rect, Stage, Transformer } from 'react-konva'
-import Hand, { type OnNailTap, type StickerEditing } from './Hand'
+import Hand, { type DrawingTool, type OnNailTap, type StickerEditing } from './Hand'
 import { drawingTop, HAND_BOTTOM, HANDS_WIDTH, RIGHT_HAND_X } from '../handGeometry'
 import { isTargeted, type AppState } from '../state/nailState'
 
@@ -26,6 +26,7 @@ type HandsProps = {
   onSelectNail: OnNailTap
   onTapBackground: () => void // a tap on empty space, not on a hand
   stickerEditing: StickerEditing | null
+  drawing: DrawingTool | null // set while the Draw tab is open
 }
 
 // Smallest and largest a sticker can be resized to, in screen pixels.
@@ -60,7 +61,15 @@ type Point = { x: number; y: number }
 const distance = (a: Point, b: Point) => Math.hypot(a.x - b.x, a.y - b.y)
 const midpoint = (a: Point, b: Point) => ({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 })
 
-function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, stickerEditing }: HandsProps) {
+function Hands({
+  stageRef,
+  state,
+  showTargets,
+  onSelectNail,
+  onTapBackground,
+  stickerEditing,
+  drawing,
+}: HandsProps) {
   const targetedNailIds = state.nails
     .filter(() => showTargets)
     .filter((nail) => isTargeted(state, nail.id))
@@ -154,8 +163,9 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
     if (!points) return
     event.evt.preventDefault()
     const stage = event.target.getStage()
-    // Two fingers means pinch: stop any pan or sticker drag the first finger started.
+    // Two fingers means pinch: stop any pan, sticker drag or line the first finger started.
     if (stage?.isDragging()) stage.stopDrag()
+    stage?.fire('drawcancel')
     stage?.find('.sticker').forEach((node) => node.isDragging() && node.stopDrag())
     const middle = midpoint(points[0], points[1])
     if (!pinch.current) {
@@ -215,8 +225,9 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
             x={stageX}
             y={stageY}
             // While zoomed in, dragging anywhere that isn't a sticker pans. A finger has to move
-            // a few pixels first, so a slightly wobbly tap still counts as a tap.
-            draggable={view.zoom > 1}
+            // a few pixels first, so a slightly wobbly tap still counts as a tap. Not while
+            // drawing: then one finger draws, and two fingers (a pinch) zoom and move the view.
+            draggable={view.zoom > 1 && !drawing}
             dragDistance={6}
             // Don't let a pan drag the hands away from the edges of the canvas.
             dragBoundFunc={(position) => ({
@@ -261,6 +272,7 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
                   targetedNailIds={targetedNailIds}
                   onSelectNail={handleSelectNail}
                   stickerEditing={stickerEditing}
+                  drawing={drawing}
                 />
                 <Hand
                   firstNail={5}
@@ -271,6 +283,7 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
                   targetedNailIds={targetedNailIds}
                   onSelectNail={handleSelectNail}
                   stickerEditing={stickerEditing}
+                  drawing={drawing}
                 />
                 {/* Fades the wrists out instead of cutting them off with a hard edge.
                     "destination-out" makes this rectangle erase what's under it: not at all

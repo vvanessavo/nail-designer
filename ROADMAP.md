@@ -21,7 +21,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design) and E6-S5 (redo). Next: **E6-S6, freehand drawing**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo) and E6-S6 (freehand drawing). Next: **E6-S7, text on a nail**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -205,9 +205,10 @@ Done when: a Redo button next to Undo, plus Cmd+Shift+Z / Ctrl+Y, steps forward 
 Depends on: E4-S5.
 Built as: a `future` list in `historyReducer` (UNDO moves the current design onto it, REDO brings it back, any new design change empties it), a Redo arrow button joined to Undo (`src/components/UndoRedoButtons.tsx`), and Cmd+Shift+Z / Ctrl+Shift+Z / Ctrl+Y.
 
-### E6-S6: Freehand drawing. P1. Backlog
+### E6-S6: Freehand drawing. P1. Done
 As a user, I can draw on a nail with my finger or mouse, so I can make designs no sticker covers.
 Done when: a Draw tab with a pen colour and thickness lets me draw lines on a nail that stay clipped to it, each line can be undone, an eraser or "clear drawing" removes them, and drawing never pans or selects by accident.
+Built as: a Draw tab (Pen / Eraser, a Thin to Thick slider, a colour row, Clear all drawings). `strokes` per nail (points relative to the nail's middle), `ADD_STROKE` (each line its own undo step), `DELETE_STROKE` (an eraser swipe is one step), `CLEAR_STROKES`. In `Hand.tsx`, pressing on a nail starts a line and the stage follows the finger until it lifts; a tap makes a dot. While drawing, one finger never pans and taps never choose nails; a pinch still zooms and cancels the line it interrupted. Lines are clipped to the nail, sit under stickers, and are copied by Copy design and included in saved pictures.
 
 ### E6-S7: Text on a nail. P1. Backlog
 As a user, I can put short text (initials, a word) on a nail.

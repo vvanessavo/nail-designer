@@ -29,6 +29,15 @@ export type Sticker = {
   color: string // the sticker's main colour (details like a daisy's centre keep their own)
 }
 
+// A line drawn on a nail. Points are x, y pairs relative to the middle of the nail (like a
+// sticker's position), in the same units as the drawing.
+export type Stroke = {
+  id: string
+  color: string
+  width: number
+  points: number[] // [x1, y1, x2, y2, ...]
+}
+
 export type Nail = {
   id: number // matches the SVG id: nail-0 ... nail-9
   shape: NailShape
@@ -43,6 +52,7 @@ export type Nail = {
   // 1 reaches the fingertip line; more goes past it. Kept between the two limits below.
   frenchTipThickness: number
   stickers: Sticker[]
+  strokes: Stroke[] // freehand drawing, in the order drawn
 }
 
 export type AppState = {
@@ -74,6 +84,9 @@ export type Action =
   | { type: 'ADD_STICKER'; nailId: number; sticker: Sticker }
   | { type: 'UPDATE_STICKER'; nailId: number; stickerId: string; changes: StickerChanges }
   | { type: 'DELETE_STICKER'; nailId: number; stickerId: string }
+  | { type: 'ADD_STROKE'; nailId: number; stroke: Stroke }
+  | { type: 'DELETE_STROKE'; nailId: number; strokeId: string }
+  | { type: 'CLEAR_STROKES' } // removes the drawing from every nail
   // Copies one nail's whole design onto other nails. `stamp` (e.g. the time) makes the copied
   // stickers' ids unique.
   | { type: 'PASTE_DESIGN'; fromNailId: number; toNailIds: number[]; stamp: number }
@@ -106,6 +119,7 @@ function createNail(id: number): Nail {
     frenchTipColor: '#FFFFFF',
     frenchTipThickness: 0.8,
     stickers: [],
+    strokes: [],
   }
 }
 
@@ -181,6 +195,24 @@ export function nailReducer(state: AppState, action: Action): AppState {
             : nail,
         ),
       }
+    case 'ADD_STROKE':
+      return {
+        ...state,
+        nails: state.nails.map((nail) =>
+          nail.id === action.nailId ? { ...nail, strokes: [...nail.strokes, action.stroke] } : nail,
+        ),
+      }
+    case 'DELETE_STROKE':
+      return {
+        ...state,
+        nails: state.nails.map((nail) =>
+          nail.id === action.nailId
+            ? { ...nail, strokes: nail.strokes.filter((stroke) => stroke.id !== action.strokeId) }
+            : nail,
+        ),
+      }
+    case 'CLEAR_STROKES':
+      return { ...state, nails: state.nails.map((nail) => ({ ...nail, strokes: [] })) }
     case 'PASTE_DESIGN': {
       const from = state.nails.find((nail) => nail.id === action.fromNailId)
       if (!from) return state
@@ -312,6 +344,7 @@ const designOf = (state: AppState): Design => ({ skinTone: state.skinTone, nails
 // and for stickers the same sticker. Each paste of a copied design is its own step.
 function changeKey(action: Action): string {
   if (action.type === 'PASTE_DESIGN') return `${action.type}:${action.stamp}` // never merged
+  if (action.type === 'ADD_STROKE') return `${action.type}:${action.stroke.id}` // one line, one step
   return 'stickerId' in action ? `${action.type}:${action.stickerId}` : action.type
 }
 
