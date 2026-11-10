@@ -27,6 +27,10 @@ function seeded(seed: number) {
   }
 }
 
+// A fully see-through version of a colour. Fading to this (rather than to see-through black)
+// keeps a fade clean, without a grey ring where the colours blend.
+const seeThrough = (hex: string) => `${hex.slice(0, 7)}00`
+
 type PatternArea = {
   nail: Nail
   top: number
@@ -154,6 +158,63 @@ function NailEffect({ nail, outline, top, bottom, width }: NailEffectProps) {
           0.8, 'rgba(255, 255, 255, 0.5)',
           1, 'rgba(255, 238, 215, 0.25)',
         ]}
+      />
+    )
+  }
+
+  if (nail.baseEffect === 'cat-eye') {
+    // A bright band running down the nail, fading out to each side; effectAmount moves it
+    // from left (0) to right (1). Slightly slanted, like a magnet-pulled cat-eye.
+    // The gradient runs almost straight across the nail, so the band runs down its length.
+    const centre = 0.15 + nail.effectAmount * 0.7
+    const band = 0.22
+    const clear = seeThrough(nail.effectColor)
+    return (
+      <Path
+        data={outline}
+        listening={false}
+        fillLinearGradientStartPoint={{ x: -width / 2, y: top }}
+        fillLinearGradientEndPoint={{ x: width / 2, y: top + width * 0.35 }}
+        fillLinearGradientColorStops={[
+          0, clear,
+          Math.max(0, centre - band), clear,
+          Math.max(0, centre - band * 0.35), nail.effectColor,
+          centre, lighten(nail.effectColor, 0.6),
+          Math.min(1, centre + band * 0.35), nail.effectColor,
+          Math.min(1, centre + band), clear,
+          1, clear,
+        ]}
+        opacity={0.85}
+      />
+    )
+  }
+
+  if (nail.baseEffect === 'aura') {
+    // A soft glow in the effect colour, strongest in the middle of the nail.
+    const middleY = (top + bottom) / 2
+    const radius = width * (0.3 + nail.effectAmount * 0.7)
+    return (
+      <Path
+        data={outline}
+        listening={false}
+        fillRadialGradientStartPoint={{ x: 0, y: middleY }}
+        fillRadialGradientEndPoint={{ x: 0, y: middleY }}
+        fillRadialGradientStartRadius={0}
+        fillRadialGradientEndRadius={radius}
+        fillRadialGradientColorStops={[0, nail.effectColor, 0.45, nail.effectColor, 1, seeThrough(nail.effectColor)]}
+        opacity={0.9}
+      />
+    )
+  }
+
+  if (nail.baseEffect === 'jelly') {
+    // The polish, see-through: effectAmount 0 is very sheer, 1 is nearly solid.
+    return (
+      <Path
+        data={outline}
+        fill={nail.baseColor}
+        opacity={0.25 + nail.effectAmount * 0.6}
+        listening={false}
       />
     )
   }

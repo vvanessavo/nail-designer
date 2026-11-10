@@ -15,6 +15,10 @@ export type BaseEffect =
   | 'leopard'
   | 'checker'
   | 'floral'
+  // Trending effects
+  | 'cat-eye' // a shimmering band, like magnetic cat-eye polish
+  | 'aura' // a soft glow in the middle of the nail
+  | 'jelly' // see-through polish, the natural nail showing through
 export type NailShape = 'round' | 'square' | 'almond' | 'coffin' | 'stiletto' | 'squoval' | 'natural'
 
 export type Sticker = {
@@ -51,13 +55,23 @@ export type Sticker = {
 
 export type TextFont = 'script' | 'bold'
 
-// The colours a pattern starts in (background, pattern) when it's picked.
-export const PATTERN_COLORS: Partial<Record<BaseEffect, { base: string; effect: string }>> = {
+// The colours a pattern or trending effect starts in (polish, effect) when it's picked.
+export const EFFECT_START_COLORS: Partial<Record<BaseEffect, { base: string; effect: string }>> = {
   marble: { base: '#F7F5F2', effect: '#8E8E93' },
   tortoise: { base: '#C8873A', effect: '#3B1F0E' },
   leopard: { base: '#D9B48F', effect: '#2B1B12' },
   checker: { base: '#FFFFFF', effect: '#1C1C1C' },
   floral: { base: '#F6DCD6', effect: '#FFFFFF' },
+  'cat-eye': { base: '#2E1A47', effect: '#D9D3F2' },
+  aura: { base: '#F3E1EC', effect: '#E85A9B' },
+  jelly: { base: '#E8384F', effect: '#FFFFFF' },
+}
+
+// Effects that use the effect strength slider (`effectAmount`), and what it does for each.
+export const EFFECT_AMOUNT_LABELS: Partial<Record<BaseEffect, { name: string; low: string; high: string }>> = {
+  'cat-eye': { name: 'Band position', low: 'Left', high: 'Right' },
+  aura: { name: 'Glow size', low: 'Small', high: 'Large' },
+  jelly: { name: 'Polish strength', low: 'Sheer', high: 'Strong' },
 }
 
 // A line drawn on a nail. Points are x, y pairs relative to the middle of the nail (like a
@@ -76,6 +90,8 @@ export type Nail = {
   baseColor: string // hex
   baseEffect: BaseEffect
   effectColor: string // ombre: the colour at the tip; glitter: the glitter; patterns: the pattern
+  // 0 to 1. Cat-eye: where the band sits; aura: how big the glow is; jelly: how strong the polish is.
+  effectAmount: number
   finish: Finish
   hasFrenchTip: boolean
   frenchTipColor: string
@@ -110,6 +126,7 @@ export type Action =
   // `colors` (optional) also sets the polish and effect colours, e.g. a pattern's usual colours.
   | { type: 'SET_BASE_EFFECT'; effect: BaseEffect; colors?: { base: string; effect: string } }
   | { type: 'SET_EFFECT_COLOR'; color: string }
+  | { type: 'SET_EFFECT_AMOUNT'; amount: number }
   | { type: 'SET_FRENCH_TIP'; on: boolean }
   | { type: 'SET_FINISH'; finish: Finish }
   | { type: 'SET_FRENCH_TIP_COLOR'; color: string }
@@ -153,6 +170,7 @@ export function createNail(id: number): Nail {
     baseColor: '#F6DCD6', // natural pink
     baseEffect: 'plain',
     effectColor: '#FFFFFF',
+    effectAmount: 0.5,
     finish: 'shiny',
     hasFrenchTip: false,
     frenchTipColor: '#FFFFFF',
@@ -334,6 +352,13 @@ export function nailReducer(state: AppState, action: Action): AppState {
             : nail,
         ),
       }
+    case 'SET_EFFECT_AMOUNT': {
+      const amount = Math.max(0, Math.min(1, action.amount))
+      return {
+        ...state,
+        nails: state.nails.map((nail) => (isTargeted(state, nail.id) ? { ...nail, effectAmount: amount } : nail)),
+      }
+    }
     case 'SET_EFFECT_COLOR':
       return {
         ...state,

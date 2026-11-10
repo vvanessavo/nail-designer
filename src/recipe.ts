@@ -79,6 +79,12 @@ function describe(nail: Nail): string[] {
         ? `, ombre to ${colourName(nail.effectColor)} at the tip`
         : nail.baseEffect === 'glitter'
           ? `, with ${colourName(nail.effectColor)} glitter`
+          : nail.baseEffect === 'cat-eye'
+            ? `, cat-eye with a ${colourName(nail.effectColor)} shimmer band`
+            : nail.baseEffect === 'aura'
+              ? `, aura glow in ${colourName(nail.effectColor)}`
+              : nail.baseEffect === 'jelly'
+                ? `, jelly (${nail.effectAmount < 0.35 ? 'very sheer' : nail.effectAmount > 0.7 ? 'strong' : 'sheer'})`
           : nail.baseEffect in PATTERN_NAMES
             ? `, ${PATTERN_NAMES[nail.baseEffect]} in ${colourName(nail.effectColor)}`
             : `, ${nail.baseEffect}`

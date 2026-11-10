@@ -281,10 +281,15 @@ Done when: marble, tortoiseshell, leopard, checkerboard and a simple floral are 
 Depends on: E6-S3.
 Built as: five more base effects (`marble`, `tortoise`, `leopard`, `checker`, `floral`) in the Colour tab's effect row. The polish colour is the background and a "Pattern colour" row sets the pattern; picking a pattern starts it in its usual colours (`PATTERN_COLORS`), as one undo step. Drawn by `NailEffect.tsx` on the canvas, the same every time for each nail. The recipe names the pattern, and a "Leopard accent" starter design was added.
 
-### E8-S4: Trending effects. P1. Backlog
+### E8-S4: Trending effects. P1. Done
 As a user, I can try cat-eye, aura and jelly nails.
 Done when: cat-eye (a shimmering band I can move), aura (a soft glow in the middle of the nail in a second colour) and jelly / sheer (see-through polish with an adjustable strength, the natural nail showing through) are offered as base effects.
 Depends on: E6-S3.
+Built as: three more base effects (`cat-eye`, `aura`, `jelly`) and one new number per nail, `effectAmount` (0 to 1, `SET_EFFECT_AMOUNT`). A slider under the effect row sets it: the band position for cat-eye, the glow size for aura, and Sheer to Strong for jelly. Cat-eye and aura have a second colour (shimmer, glow); jelly shows the natural nail through the polish. `PATTERN_COLORS` became `EFFECT_START_COLORS`, the colours every pattern or effect starts in.
+
+### E8-S5: Pen types and ink sheerness. P1. In progress
+As a user, I can draw with different pens and make the ink see-through.
+Done when: the Draw tab offers Fine liner (even line), Fountain pen (thick and thin with direction, like a calligraphy nib), Brush (tapers off at the end) and Dotting tool (a row of dots), plus an Ink slider from Sheer to Solid; each line keeps its own pen and sheerness, with touch and mouse, in the exported picture, and older drawings still show as before.
 
 ---
 
