@@ -3,7 +3,8 @@
 // With nothing picked, tapping a placed sticker shows handles to move, resize and turn it.
 
 import { useEffect } from 'react'
-import { paint, STICKER_SIZE, STICKERS, type StickerType } from '../stickers'
+import { paint, STICKER_SIZE, STICKERS, TEXT_MAX_LENGTH, type StickerType } from '../stickers'
+import type { TextFont } from '../state/nailState'
 import ColourPicker, { type Preset } from './ColourPicker'
 
 // Metallic colours that suit stickers, offered on top of the usual polish colours.
@@ -13,15 +14,17 @@ const STICKER_EXTRA_COLOURS: Preset[] = [
 ]
 
 type StickerPanelProps = {
-  picked: StickerType | null // the sticker waiting to be placed, if any
+  picked: StickerType | 'text' | null // the sticker (or text) waiting to be placed, if any
   color: string | null // the selected sticker's colour, or the colour for new stickers (null = original)
   isOriginalColor: boolean // the colour shown is the sticker's own original colour
   hasSelectedSticker: boolean // a placed sticker is showing its handles
-  onPick: (type: StickerType | null) => void
+  onPick: (type: StickerType | 'text' | null) => void
   onOpenChange: (open: boolean) => void // tells App when this tab opens and closes
   // Recolours the selected sticker and sets new stickers' colour (null = original colours).
   onColorChange: (color: string | null) => void
   onDelete: () => void // removes the selected sticker
+  text: { text: string; font: TextFont } // the words in the text box, and their font
+  onTextChange: (text: { text: string; font: TextFont }) => void
 }
 
 function StickerPanel({
@@ -33,6 +36,8 @@ function StickerPanel({
   onOpenChange,
   onColorChange,
   onDelete,
+  text,
+  onTextChange,
 }: StickerPanelProps) {
   // Tell App the Stickers tab is open. When this panel closes (the tab is closed or another
   // tab opens), put any picked sticker down, so tapping a nail goes back to choosing nails.
@@ -44,7 +49,8 @@ function StickerPanel({
     }
   }, [onOpenChange, onPick])
 
-  const pickedLabel = STICKERS.find((sticker) => sticker.type === picked)?.label
+  const pickedLabel =
+    picked === 'text' ? 'Text' : STICKERS.find((sticker) => sticker.type === picked)?.label
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -93,10 +99,58 @@ function StickerPanel({
           )
         })}
       </div>
+      {/* Text on a nail: type up to TEXT_MAX_LENGTH characters, choose a font, tap a nail. */}
+      <div className="flex w-full max-w-xl items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onPick(picked === 'text' ? null : 'text')}
+          aria-pressed={picked === 'text'}
+          title="Text"
+          aria-label="Text"
+          className={`flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border bg-white font-[Dancing_Script] text-xl font-bold text-stone-700 transition active:scale-95 ${
+            picked === 'text' ? 'border-rose-600 ring-1 ring-rose-600' : 'border-stone-200 hover:border-stone-400'
+          }`}
+        >
+          Aa
+        </button>
+        {/* text-base (16px): a smaller font makes iPhones zoom the page when the box is tapped. */}
+        <input
+          type="text"
+          aria-label="Text for a nail"
+          placeholder="Initials or a word"
+          maxLength={TEXT_MAX_LENGTH}
+          value={text.text}
+          onChange={(event) => onTextChange({ ...text, text: event.target.value })}
+          className="h-11 min-w-0 flex-1 rounded-xl border border-stone-200 bg-white px-3 text-base text-stone-800 placeholder:text-stone-400"
+        />
+        <div
+          role="group"
+          aria-label="Text font"
+          className="flex shrink-0 rounded-full bg-stone-100 p-1"
+        >
+          {(['script', 'bold'] as const).map((font) => (
+            <button
+              key={font}
+              type="button"
+              aria-pressed={text.font === font}
+              onClick={() => onTextChange({ ...text, font })}
+              className={`cursor-pointer rounded-full px-2.5 py-1 text-sm transition ${
+                font === 'script' ? 'font-[Dancing_Script] font-bold' : 'font-bold'
+              } ${text.font === font ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-800'}`}
+            >
+              {font === 'script' ? 'Script' : 'Bold'}
+            </button>
+          ))}
+        </div>
+      </div>
       {/* min-h keeps room for 3 lines whatever the hint says, so the panel never changes height
           when a sticker is tapped (that would re-fit the hands and move the sticker away). */}
       <p className="min-h-12 text-center text-xs text-stone-500">
-        {pickedLabel
+        {picked === 'text'
+          ? text.text.trim()
+            ? 'Tap a nail to add your text. Tap Aa again when you\'re done.'
+            : 'Type your text, then tap a nail to add it.'
+          : pickedLabel
           ? `Tap a nail to add the ${pickedLabel.toLowerCase()}. Tap the ${pickedLabel.toLowerCase()} again when you're done.`
           : hasSelectedSticker
             ? 'Drag the sticker to move it. Drag a corner to resize it, or the top handle to turn it.'

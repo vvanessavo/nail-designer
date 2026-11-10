@@ -8,7 +8,7 @@
 
 import type Konva from 'konva'
 import { useState } from 'react'
-import { Circle, Group, Line, Path, Rect } from 'react-konva'
+import { Circle, Group, Line, Path, Rect, Text } from 'react-konva'
 import type { Nail, StickerChanges, Stroke } from '../state/nailState'
 import { darken, lighten } from '../colour'
 import NailEffect from './NailEffect'
@@ -21,7 +21,7 @@ import {
   THUMB_INDEX,
   type Finger,
 } from '../handGeometry'
-import { paint, STICKER_DESIGNS, STICKER_SIZE } from '../stickers'
+import { paint, STICKER_DESIGNS, STICKER_SIZE, TEXT_FONTS, TEXT_SIZE } from '../stickers'
 
 const NAIL_EDGE = 'rgba(150, 90, 80, 0.5)'
 const DOT_COLOR = '#292524' // Tailwind stone-800
@@ -40,8 +40,16 @@ const MAX_STICKER_SCALE = 3.2
 // Stickers respond to taps within this many screen pixels of their middle (a 32px circle).
 const STICKER_TAP_RADIUS = 16
 
-// A small off-screen drawing surface, used only to ask "is this point inside this outline?".
+// A small off-screen drawing surface, used only to ask "is this point inside this outline?"
+// and "how wide is this text?".
 const outlineChecker = document.createElement('canvas').getContext('2d')
+
+// How wide a piece of nail text is, in the 24 x 24 sticker grid, so it can be centred.
+function textWidth(text: string, fontFamily: string): number {
+  if (!outlineChecker) return text.length * TEXT_SIZE * 0.6
+  outlineChecker.font = `bold ${TEXT_SIZE}px ${fontFamily}`
+  return outlineChecker.measureText(text).width
+}
 
 
 // Where one side of a finger crosses the height `y`, in the hand's coordinates.
@@ -458,19 +466,41 @@ function FingerShape({
               onDragEnd={(event) => saveSticker(sticker.id, event.target)}
               onTransformEnd={(event) => saveSticker(sticker.id, event.target)}
             >
-              {STICKER_DESIGNS[sticker.type].layers.map((layer, index) => (
-                <Path
-                  key={index}
-                  data={layer.d}
-                  fill={paint(layer.fill, sticker.color)}
-                  stroke={paint(layer.stroke, sticker.color)}
-                  strokeWidth={layer.strokeWidth}
-                  lineCap="round"
-                  lineJoin="round"
-                  opacity={layer.opacity}
-                  listening={false}
-                />
-              ))}
+              {sticker.type === 'text' ? (
+                // Text, centred on the middle of the sticker's 24 x 24 square. It responds to
+                // taps too, so long words are easy to grab.
+                (() => {
+                  const fontFamily = TEXT_FONTS[sticker.font ?? 'script']
+                  const width = textWidth(sticker.text ?? '', fontFamily) * 1.1 + 2
+                  return (
+                    <Text
+                      text={sticker.text ?? ''}
+                      x={STICKER_SIZE / 2 - width / 2}
+                      y={STICKER_SIZE / 2 - TEXT_SIZE * 0.6}
+                      width={width}
+                      align="center"
+                      fontFamily={fontFamily}
+                      fontStyle="bold"
+                      fontSize={TEXT_SIZE}
+                      fill={sticker.color}
+                    />
+                  )
+                })()
+              ) : (
+                STICKER_DESIGNS[sticker.type].layers.map((layer, index) => (
+                  <Path
+                    key={index}
+                    data={layer.d}
+                    fill={paint(layer.fill, sticker.color)}
+                    stroke={paint(layer.stroke, sticker.color)}
+                    strokeWidth={layer.strokeWidth}
+                    lineCap="round"
+                    lineJoin="round"
+                    opacity={layer.opacity}
+                    listening={false}
+                  />
+                ))
+              )}
               {/* The area that responds to taps. It covers the sticker's 24 x 24 square, and
                   its hitFunc makes the tap area a circle at least STICKER_TAP_RADIUS screen
                   pixels wide, so even a tiny sticker is easy to tap with a fingertip.

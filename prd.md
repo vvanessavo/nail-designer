@@ -107,12 +107,14 @@ type NailShape = 'round' | 'square' | 'almond' | 'coffin' | 'stiletto' | 'squova
 type Sticker = {
   id: string
   type: 'daisy' | 'blossom' | 'rose' | 'vine' | 'bow' | 'cherries' | 'strawberry'
-      | 'butterfly' | 'smiley' | 'heart' | 'evil-eye' | 'moon' | 'twinkle' | 'swirl'
+      | 'butterfly' | 'smiley' | 'heart' | 'evil-eye' | 'moon' | 'twinkle' | 'swirl' | 'text'
   x: number              // offset from the centre of the nail (0, 0 = centred)
   y: number
   scale: number           // 1 = default size, about 70% of the nail's width (0.3 to 1.6)
   rotation: number        // degrees, clockwise
   color: string
+  text?: string           // only for 'text': up to 12 characters
+  font?: 'script' | 'bold' // only for 'text'
 }
 
 type Nail = {

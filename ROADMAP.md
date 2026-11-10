@@ -21,7 +21,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo) and E6-S6 (freehand drawing). Next: **E6-S7, text on a nail**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing) and E6-S7 (text). Next: **E6-S8, autosave and My designs**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -210,9 +210,10 @@ As a user, I can draw on a nail with my finger or mouse, so I can make designs n
 Done when: a Draw tab with a pen colour and thickness lets me draw lines on a nail that stay clipped to it, each line can be undone, an eraser or "clear drawing" removes them, and drawing never pans or selects by accident.
 Built as: a Draw tab (Pen / Eraser, a Thin to Thick slider, a colour row, Clear all drawings). `strokes` per nail (points relative to the nail's middle), `ADD_STROKE` (each line its own undo step), `DELETE_STROKE` (an eraser swipe is one step), `CLEAR_STROKES`. In `Hand.tsx`, pressing on a nail starts a line and the stage follows the finger until it lifts; a tap makes a dot. While drawing, one finger never pans and taps never choose nails; a pinch still zooms and cancels the line it interrupted. Lines are clipped to the nail, sit under stickers, and are copied by Copy design and included in saved pictures.
 
-### E6-S7: Text on a nail. P1. Backlog
+### E6-S7: Text on a nail. P1. Done
 As a user, I can put short text (initials, a word) on a nail.
 Done when: I can type up to about 10 characters, place it on a nail, and move, resize, turn, recolour and delete it like a sticker; it stays clipped to the nail.
+Built as: text is a sticker of type 'text' with `text` and `font` ('script' = Dancing Script, 'bold' = Nunito), so moving, resizing, turning, recolouring, deleting, copying and undo all work as for stickers. The Stickers tab has an "Aa" button, a text box (up to 12 characters, 16px so iPhones don't zoom) and a Script / Bold switch; typing gets the text ready, a tap on a nail places it, and tapping placed text puts its words back in the box for editing.
 
 ### E6-S8: Autosave and My designs. P1. Backlog
 As a user, my design is never lost when I refresh or close the tab, and I can keep several designs.

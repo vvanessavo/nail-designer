@@ -5,9 +5,22 @@
 // e.g. the petals of a daisy) or in its own fixed colour (e.g. the daisy's yellow centre), so
 // recolouring keeps the details looking natural.
 
-import type { Sticker } from './state/nailState'
+import type { Sticker, TextFont } from './state/nailState'
 
-export type StickerType = Sticker['type']
+// The drawn stickers. Text is a sticker too ('text'), but it's written, not drawn.
+export type StickerType = Exclude<Sticker['type'], 'text'>
+
+// Text on a nail: the longest it can be, its starting colour, its size and its fonts
+// (loaded in index.html).
+export const TEXT_MAX_LENGTH = 12
+export const TEXT_COLOR = '#1C1C1C'
+export const TEXT_SIZE = 10 // font size, in the 24 x 24 sticker grid
+export const TEXT_FONTS: Record<TextFont, string> = {
+  script: '"Dancing Script", cursive',
+  bold: 'Nunito, sans-serif',
+}
+
+// The colour a sticker comes in before the user picks one.
 
 // Every sticker is drawn on a 24 x 24 grid, centred on (12, 12).
 export const STICKER_SIZE = 24
@@ -324,6 +337,10 @@ export const STICKERS: StickerDesign[] = [
 export const STICKER_DESIGNS = Object.fromEntries(
   STICKERS.map((design) => [design.type, design]),
 ) as Record<StickerType, StickerDesign>
+
+// The colour a sticker comes in before the user picks one.
+export const originalColorOf = (type: Sticker['type']) =>
+  type === 'text' ? TEXT_COLOR : STICKER_DESIGNS[type].defaultColor
 
 // A layer's paint: the sticker's chosen colour for 'main', otherwise the layer's own colour.
 export const paint = (value: string | undefined, mainColor: string) =>
