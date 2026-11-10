@@ -2,6 +2,7 @@
 // Keep these types in sync with the data model in PRD.md.
 
 export type Finish = 'matte' | 'shiny'
+export type FrenchTipStyle = 'classic' | 'deep' | 'micro' | 'v' | 'side' | 'double' | 'reverse'
 export type BaseEffect = 'plain' | 'ombre' | 'chrome' | 'pearl' | 'glitter'
 export type NailShape = 'round' | 'square' | 'almond' | 'coffin' | 'stiletto' | 'squoval' | 'natural'
 
@@ -56,6 +57,7 @@ export type Nail = {
   // How deep the tip is: the share of the free edge it covers in the middle of the nail.
   // 1 reaches the fingertip line; more goes past it. Kept between the two limits below.
   frenchTipThickness: number
+  frenchTipStyle: FrenchTipStyle
   stickers: Sticker[]
   strokes: Stroke[] // freehand drawing, in the order drawn
 }
@@ -85,6 +87,7 @@ export type Action =
   | { type: 'SET_FRENCH_TIP'; on: boolean }
   | { type: 'SET_FINISH'; finish: Finish }
   | { type: 'SET_FRENCH_TIP_COLOR'; color: string }
+  | { type: 'SET_FRENCH_TIP_STYLE'; style: FrenchTipStyle }
   | { type: 'SET_FRENCH_TIP_THICKNESS'; thickness: number }
   | { type: 'SET_APPLY_TO_ALL'; applyToAll: boolean }
   | { type: 'CLEAR_SELECTION' }
@@ -128,6 +131,7 @@ export function createNail(id: number): Nail {
     hasFrenchTip: false,
     frenchTipColor: '#FFFFFF',
     frenchTipThickness: 0.8,
+    frenchTipStyle: 'classic',
     stickers: [],
     strokes: [],
   }
@@ -310,6 +314,13 @@ export function nailReducer(state: AppState, action: Action): AppState {
         ...state,
         nails: state.nails.map((nail) =>
           isTargeted(state, nail.id) ? { ...nail, finish: action.finish } : nail,
+        ),
+      }
+    case 'SET_FRENCH_TIP_STYLE':
+      return {
+        ...state,
+        nails: state.nails.map((nail) =>
+          isTargeted(state, nail.id) ? { ...nail, frenchTipStyle: action.style } : nail,
         ),
       }
     case 'SET_FRENCH_TIP_COLOR':

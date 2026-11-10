@@ -42,6 +42,16 @@ const SHAPE_NAMES: Record<Nail['shape'], string> = {
   natural: 'Natural',
 }
 
+const TIP_STYLE_NAMES: Record<Nail['frenchTipStyle'], string> = {
+  classic: 'classic',
+  deep: 'deep',
+  micro: 'micro',
+  v: 'V-shape',
+  side: 'side (slanted)',
+  double: 'double line',
+  reverse: 'reverse (half-moon at the cuticle)',
+}
+
 function lengthName(length: number): string {
   if (length < 0.8) return 'short'
   if (length <= 1.2) return 'medium length'
@@ -63,8 +73,8 @@ function describe(nail: Nail): string[] {
           : `, ${nail.baseEffect}`
   lines.push(`Polish: ${colourName(nail.baseColor)}${effect}, ${nail.finish}`)
   if (nail.hasFrenchTip) {
-    const depth = nail.frenchTipThickness < 0.6 ? 'thin' : nail.frenchTipThickness > 1 ? 'deep' : 'classic'
-    lines.push(`French tip: ${colourName(nail.frenchTipColor)}, ${depth}`)
+    const depth = nail.frenchTipThickness < 0.6 ? 'thin' : nail.frenchTipThickness > 1 ? 'thick' : 'medium'
+    lines.push(`French tip: ${TIP_STYLE_NAMES[nail.frenchTipStyle]}, ${colourName(nail.frenchTipColor)}, ${depth}`)
   }
   const stickers = nail.stickers.filter((s) => s.type !== 'text')
   if (stickers.length > 0) {

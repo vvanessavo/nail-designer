@@ -17,11 +17,11 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 | 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | Done except the user test, which is on hold |
 | 1.1 | E6: Richer design | More shapes, length, special bases, copy design, redo, freehand, text, autosave, mirror hands, recent colours | Done |
 | 1.2 | E7: Start and share | Starter designs, design recipe sheet, share link | Done |
-| 1.3 | E8: More nail art | French tip styles, gems and pearls, patterns, trending effects | Backlog |
+| 1.3 | E8: More nail art | French tip styles, gems and pearls, patterns, trending effects | In progress |
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs), E6-S9 (mirror hands) and E6-S10 (recent colours): **E6 is done**. **E7 is done** (starter designs, recipe sheet, share link). Next: **E8-S1, French tip styles**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs), E6-S9 (mirror hands) and E6-S10 (recent colours): **E6 is done**. **E7 is done** (starter designs, recipe sheet, share link). E8-S1 (French tip styles) is done. Next: **E8-S2, gems and pearls**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -265,9 +265,10 @@ Built as: Save → Share link. `src/share.ts` packs the design (JSON, numbers ro
 
 More kinds of nail art, built after E7.
 
-### E8-S1: French tip styles. P1. Backlog
+### E8-S1: French tip styles. P1. Done
 As a user, I can choose the French tip style.
 Done when: the French tip tab offers Classic, Deep, Micro, V, Side, Double line and Reverse (a half-moon at the cuticle), each working with tip colour, thickness, every shape and clipping.
+Built as: a `frenchTipStyle` per nail (`SET_FRENCH_TIP_STYLE`), a style row with a small preview of each style in the French tip tab, and one outline per style in `frenchTipPath` (`src/shapes.ts`). The recipe names the style.
 
 ### E8-S2: Gems and pearls. P1. Backlog
 As a user, I can add rhinestones, pearls and studs that look raised and catch the light.
