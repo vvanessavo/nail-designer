@@ -69,28 +69,36 @@ function SkinTonePicker({
         })}
       </div>
       <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-        <div
-          role="group"
-          aria-label="Undertone"
-          className="flex items-center rounded-full bg-stone-100 p-1"
-        >
-          <span className="px-2 text-xs font-semibold text-stone-500">Undertone</span>
-          {UNDERTONES.map((option) => {
-            const isActive = option.undertone === undertone
-            return (
-              <button
-                key={option.undertone}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => onUndertoneChange(option.undertone)}
-                className={`cursor-pointer rounded-full px-3 py-1.5 text-sm font-semibold transition ${
-                  isActive ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-800'
-                }`}
-              >
-                {option.label}
-              </button>
-            )
-          })}
+        {/* The label sits outside the switch, so it doesn't look like one of the options. */}
+        <div className="flex items-center gap-2">
+          <span
+            id="undertone-label"
+            className="text-sm font-semibold text-stone-700"
+          >
+            Undertone
+          </span>
+          <div
+            role="group"
+            aria-labelledby="undertone-label"
+            className="flex items-center rounded-full bg-stone-100 p-1"
+          >
+            {UNDERTONES.map((option) => {
+              const isActive = option.undertone === undertone
+              return (
+                <button
+                  key={option.undertone}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => onUndertoneChange(option.undertone)}
+                  className={`cursor-pointer rounded-full px-3 py-1.5 text-sm font-semibold transition ${
+                    isActive ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-800'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              )
+            })}
+          </div>
         </div>
         <button
           type="button"
