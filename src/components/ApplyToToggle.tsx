@@ -8,6 +8,7 @@ type ApplyToToggleProps = {
   onChange: (applyToAll: boolean) => void
   onClear: () => void
   onCopyDesign?: () => void // offered when exactly one nail is chosen
+  onMirror?: (from: 'left' | 'right') => void // copies one hand onto the other
 }
 
 const OPTIONS = [
@@ -15,7 +16,14 @@ const OPTIONS = [
   { applyToAll: true, label: 'All nails' },
 ]
 
-function ApplyToToggle({ applyToAll, selectedCount, onChange, onClear, onCopyDesign }: ApplyToToggleProps) {
+function ApplyToToggle({
+  applyToAll,
+  selectedCount,
+  onChange,
+  onClear,
+  onCopyDesign,
+  onMirror,
+}: ApplyToToggleProps) {
   return (
     <div className="flex flex-col items-center gap-1">
       <div
@@ -63,6 +71,27 @@ function ApplyToToggle({ applyToAll, selectedCount, onChange, onClear, onCopyDes
               Copy design
             </button>
           )}
+        </p>
+      )}
+      {/* Mirror: copy one hand's whole design onto the other, as a mirror image. */}
+      {onMirror && (
+        <p className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-stone-500">
+          Mirror:
+          <button
+            type="button"
+            onClick={() => onMirror('left')}
+            className="cursor-pointer font-semibold text-rose-700 underline underline-offset-2"
+          >
+            left hand to right
+          </button>
+          ·
+          <button
+            type="button"
+            onClick={() => onMirror('right')}
+            className="cursor-pointer font-semibold text-rose-700 underline underline-offset-2"
+          >
+            right hand to left
+          </button>
         </p>
       )}
     </div>

@@ -117,6 +117,7 @@ type FingerShapeProps = {
   onSelectNail: OnNailTap
   stickerEditing: StickerEditing | null
   drawing: DrawingTool | null
+  mirrored: boolean // on the right hand, which is drawn as a flipped copy of the left
 }
 
 // Set while the Draw tab is open: the pen or eraser, and what to do with a finished line.
@@ -195,6 +196,7 @@ function FingerShape({
   onSelectNail,
   stickerEditing,
   drawing,
+  mirrored,
 }: FingerShapeProps) {
   // The line being drawn right now (shown while the finger moves, saved when it lifts).
   const [liveLine, setLiveLine] = useState<number[] | null>(null)
@@ -435,7 +437,9 @@ function FingerShape({
               // so it also turns around its middle.
               offsetX={STICKER_SIZE / 2}
               offsetY={STICKER_SIZE / 2}
-              scaleX={stickerScale * sticker.scale}
+              // On the right hand (drawn as a flipped copy of the left) the sticker is flipped
+              // back, so its picture and any text read the right way round.
+              scaleX={stickerScale * sticker.scale * (mirrored ? -1 : 1)}
               scaleY={stickerScale * sticker.scale}
               rotation={sticker.rotation}
               // Stickers only respond to taps and drags while they can be edited. Otherwise
@@ -624,6 +628,7 @@ function Hand({
         onSelectNail={onSelectNail}
         stickerEditing={stickerEditing}
         drawing={drawing}
+        mirrored={mirrored}
       />
     )
   }

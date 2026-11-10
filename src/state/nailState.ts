@@ -98,6 +98,8 @@ export type Action =
   // Copies one nail's whole design onto other nails. `stamp` (e.g. the time) makes the copied
   // stickers' ids unique.
   | { type: 'PASTE_DESIGN'; fromNailId: number; toNailIds: number[]; stamp: number }
+  // Copies one hand's design onto the other hand as a mirror image.
+  | { type: 'MIRROR_HAND'; from: 'left' | 'right'; stamp: number }
 
 const NAIL_COUNT = 10
 
@@ -149,6 +151,16 @@ export function nailName(nailId: number): string {
 // mode, otherwise only the selected ones.
 export function isTargeted(state: AppState, nailId: number): boolean {
   return state.applyToAll || state.selectedNailIds.includes(nailId)
+}
+
+// A copy of `from`'s whole design for the nail `toId`: everything about the design, but the
+// nail keeps its own number, and each copied sticker gets its own id.
+function copyDesignOnto(from: Nail, toId: number, stamp: number): Nail {
+  return {
+    ...from,
+    id: toId,
+    stickers: from.stickers.map((sticker) => ({ ...sticker, id: `${sticker.id}~${toId}~${stamp}` })),
+  }
 }
 
 // Takes the current state and an action, and returns the new state.
@@ -230,20 +242,23 @@ export function nailReducer(state: AppState, action: Action): AppState {
         ...state,
         nails: state.nails.map((nail) =>
           action.toNailIds.includes(nail.id) && nail.id !== from.id
-            ? {
-                // Everything about the design, but the nail keeps its own number, and each
-                // copied sticker gets its own id.
-                ...from,
-                id: nail.id,
-                stickers: from.stickers.map((sticker) => ({
-                  ...sticker,
-                  id: `${sticker.id}~${nail.id}~${action.stamp}`,
-                })),
-              }
+            ? copyDesignOnto(from, nail.id, action.stamp)
             : nail,
         ),
       }
     }
+    case 'MIRROR_HAND':
+      // Finger i on the left hand matches finger 9 - i on the right (pinky to pinky, thumb
+      // to thumb). The right hand is drawn as a mirror image of the left, so copying the
+      // design as it is gives a mirror image: stickers, drawings and text land on the same
+      // side (thumb side stays thumb side).
+      return {
+        ...state,
+        nails: state.nails.map((nail) => {
+          const onTargetHand = action.from === 'left' ? nail.id >= 5 : nail.id < 5
+          return onTargetHand ? copyDesignOnto(state.nails[9 - nail.id], nail.id, action.stamp) : nail
+        }),
+      }
     case 'SET_APPLY_TO_ALL':
       return { ...state, applyToAll: action.applyToAll }
     case 'SET_SKIN_TONE':
@@ -353,7 +368,9 @@ const designOf = (state: AppState): Design => ({ skinTone: state.skinTone, nails
 // Two changes with the same key, close together, count as one undo step: same action,
 // and for stickers the same sticker. Each paste of a copied design is its own step.
 function changeKey(action: Action): string {
-  if (action.type === 'PASTE_DESIGN') return `${action.type}:${action.stamp}` // never merged
+  if (action.type === 'PASTE_DESIGN' || action.type === 'MIRROR_HAND') {
+    return `${action.type}:${action.stamp}` // never merged
+  }
   if (action.type === 'ADD_STROKE') return `${action.type}:${action.stroke.id}` // one line, one step
   return 'stickerId' in action ? `${action.type}:${action.stickerId}` : action.type
 }

@@ -249,6 +249,7 @@ function App() {
       onChange={(applyToAll) => dispatch({ type: 'SET_APPLY_TO_ALL', applyToAll })}
       onClear={() => dispatch({ type: 'CLEAR_SELECTION' })}
       onCopyDesign={() => setCopyFrom(state.selectedNailIds[0] ?? null)}
+      onMirror={(from) => dispatch({ type: 'MIRROR_HAND', from, stamp: Date.now() })}
     />
   )
 
