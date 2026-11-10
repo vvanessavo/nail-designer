@@ -25,6 +25,7 @@ import {
   initialState,
   isTargeted,
   nailName,
+  PATTERN_COLORS,
   type Action,
   type Design,
   type StickerChanges,
@@ -417,16 +418,27 @@ function App() {
           />
           <EffectPicker
             value={sharedEffect}
-            onChange={(effect) => dispatch({ type: 'SET_BASE_EFFECT', effect })}
+            // Picking a pattern also sets its usual colours (one undo step); change them after.
+            onChange={(effect) => dispatch({ type: 'SET_BASE_EFFECT', effect, colors: PATTERN_COLORS[effect] })}
           />
-          {/* Ombre and glitter use a second colour. */}
-          {firstTarget && (sharedEffect === 'ombre' || sharedEffect === 'glitter') && (
+          {/* Ombre, glitter and patterns use a second colour. */}
+          {firstTarget && sharedEffect && !['plain', 'chrome', 'pearl'].includes(sharedEffect) && (
             <div className="flex w-full flex-col items-center gap-1">
               <span className="text-xs font-semibold text-stone-500">
-                {sharedEffect === 'ombre' ? 'Fades to (at the tip)' : 'Glitter colour'}
+                {sharedEffect === 'ombre'
+                  ? 'Fades to (at the tip)'
+                  : sharedEffect === 'glitter'
+                    ? 'Glitter colour'
+                    : 'Pattern colour'}
               </span>
               <ColourPicker
-                label={sharedEffect === 'ombre' ? 'Ombre tip colours' : 'Glitter colours'}
+                label={
+                  sharedEffect === 'ombre'
+                    ? 'Ombre tip colours'
+                    : sharedEffect === 'glitter'
+                      ? 'Glitter colours'
+                      : 'Pattern colours'
+                }
                 value={firstTarget.effectColor}
                 onChange={(color) => {
                   dispatch({ type: 'SET_EFFECT_COLOR', color })

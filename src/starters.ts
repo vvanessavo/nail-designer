@@ -67,6 +67,15 @@ export const STARTERS: Starter[] = [
     nails: allNails({ shape: 'almond', length: 1.2, baseColor: '#B9A4D9', baseEffect: 'chrome' }),
   },
   {
+    id: 'leopard-accent',
+    name: 'Leopard accent',
+    nails: allNails({ shape: 'almond', length: 1.1, baseColor: '#2B1B12' }, (id) =>
+      RING_FINGERS.includes(id)
+        ? { baseEffect: 'leopard', baseColor: '#D9B48F', effectColor: '#2B1B12' }
+        : {},
+    ),
+  },
+  {
     id: 'cherry-accent',
     name: 'Cherry accent',
     nails: allNails({ shape: 'round', length: 1.1, baseColor: '#F6DCD6' }, (id) =>

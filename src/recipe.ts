@@ -52,6 +52,14 @@ const TIP_STYLE_NAMES: Record<Nail['frenchTipStyle'], string> = {
   reverse: 'reverse (half-moon at the cuticle)',
 }
 
+const PATTERN_NAMES: Record<string, string> = {
+  marble: 'marble veins',
+  tortoise: 'tortoiseshell',
+  leopard: 'leopard print',
+  checker: 'checkerboard',
+  floral: 'little flowers',
+}
+
 function lengthName(length: number): string {
   if (length < 0.8) return 'short'
   if (length <= 1.2) return 'medium length'
@@ -71,7 +79,9 @@ function describe(nail: Nail): string[] {
         ? `, ombre to ${colourName(nail.effectColor)} at the tip`
         : nail.baseEffect === 'glitter'
           ? `, with ${colourName(nail.effectColor)} glitter`
-          : `, ${nail.baseEffect}`
+          : nail.baseEffect in PATTERN_NAMES
+            ? `, ${PATTERN_NAMES[nail.baseEffect]} in ${colourName(nail.effectColor)}`
+            : `, ${nail.baseEffect}`
   lines.push(`Polish: ${colourName(nail.baseColor)}${effect}, ${nail.finish}`)
   if (nail.hasFrenchTip) {
     const depth = nail.frenchTipThickness < 0.6 ? 'thin' : nail.frenchTipThickness > 1 ? 'thick' : 'medium'
