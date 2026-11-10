@@ -22,7 +22,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs), E6-S9 (mirror hands) and E6-S10 (recent colours): **E6 is done**. **E7 is done** (starter designs, recipe sheet, share link). E8-S1 (French tip styles), E8-S2 (gems and pearls), E8-S3 (patterns), E8-S4 (trending effects) and E8-S5 (pen types and ink sheerness, added at the owner's request) are done: **E8 is done**. The owner then asked for new features: **E9** (textured finishes, undertone and grayscale, layers, 3D nail art, try on a hand photo). E9-S1 (textured finishes), E9-S2 (undertone and grayscale hand) and E9-S3 (layers) are done. Now: **E9-S4, 3D nail art**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs), E6-S9 (mirror hands) and E6-S10 (recent colours): **E6 is done**. **E7 is done** (starter designs, recipe sheet, share link). E8-S1 (French tip styles), E8-S2 (gems and pearls), E8-S3 (patterns), E8-S4 (trending effects) and E8-S5 (pen types and ink sheerness, added at the owner's request) are done: **E8 is done**. The owner then asked for new features: **E9** (textured finishes, undertone and grayscale, layers, 3D nail art, try on a hand photo). E9-S1 (textured finishes), E9-S2 (undertone and grayscale hand), E9-S3 (layers) and E9-S4 (3D nail art) are done. Now: **E9-S5, try on a hand photo**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -315,12 +315,13 @@ Done when: with a sticker, gem or text selected, Bring to front and Send to back
 Depends on: E3-S4, E6-S6.
 Built as: stickers are drawn in list order, so `MOVE_STICKER_LAYER` moves the selected sticker to the end (front) or start (back) of its nail's list. The two buttons sit next to the bin and show only while a sticker is selected. The Draw tab has "Lines go: Under stickers / Over stickers" (`linesOverStickers`, saved with the design, for the whole design).
 
-### E9-S4: 3D nail art. P2. In progress
+### E9-S4: 3D nail art. P2. Done
 As a user, I can add raised, sculpted nail art.
 Done when: a 3D section in the Stickers tab offers at least a bow, a flower, a heart and a charm that look raised (shading, highlight and a soft shadow on the nail); they place, move, resize, turn, recolour and delete like other stickers and show in the exported picture.
 Depends on: E8-S2.
+Built as: four sticker types (`3d-heart`, `3d-bow`, `3d-flower`, `3d-star`) in a "3D" group after the gems, with a divider on each side. `sculpted()` in `src/stickers.ts` builds each from one outline: a shadow, a darker side, the lit face and a glossy highlight. Layers can now be moved with `shift`. The recipe lists them on a "3D art" line.
 
-### E9-S5: Try on a hand photo. P2. Backlog
+### E9-S5: Try on a hand photo. P2. In progress
 As a user, I can see my design on a photo of my own hand.
 Done when: I can pick a photo of my hand, place the five nails of one hand on my fingertips (drag each nail onto a nail in the photo, resize and turn it), and see and save the result; the photo never leaves the browser.
 

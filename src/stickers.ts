@@ -31,6 +31,7 @@ export type StickerLayer = {
   stroke?: 'main' | string
   strokeWidth?: number
   opacity?: number
+  shift?: [number, number] // moves the layer by this much (x, y), e.g. for a shadow
 }
 
 export type StickerDesign = {
@@ -178,12 +179,79 @@ const STUD: StickerLayer[] = [
   { d: ellipse(10, 9.4, 1.4, 2.4, 50), fill: WHITE, opacity: 0.85 },
 ]
 
+// --- 3D nail art: sculpted, puffy pieces that sit up off the nail ------------------------
+// Each is drawn as a stack: a soft shadow on the nail (the outline moved down and right), the
+// piece in a darker shade (its side), the lit face moved a little up and left, and a glossy
+// highlight. Only the outline changes from piece to piece.
+
+const SHADOW_3D = 'rgba(0, 0, 0, 0.3)'
+const SIDE_3D = 'rgba(0, 0, 0, 0.28)'
+
+function sculpted(outline: string, highlights: StickerLayer[]): StickerLayer[] {
+  return [
+    { d: outline, fill: SHADOW_3D, shift: [0.9, 1.2] },
+    { d: outline, fill: 'main' },
+    { d: outline, fill: SIDE_3D },
+    { d: outline, fill: 'main', shift: [-0.5, -0.6] },
+    ...highlights,
+  ]
+}
+
+// A five-point star centred on (12, 12).
+function starPath(outer: number, inner: number): string {
+  const points = Array.from({ length: 10 }, (_, i) => turn([12, 12 - (i % 2 ? inner : outer)], i * 36))
+  return polygon(points)
+}
+
+const PUFFY_HEART =
+  'M 12 20.6 C 4.2 15.4 2.6 10.8 4.4 7.2 C 6.2 3.8 10.4 4 12 7.4 C 13.6 4 17.8 3.8 19.6 7.2 C 21.4 10.8 19.8 15.4 12 20.6 Z'
+const BOW_LOOPS = `${ellipse(7.4, 10.4, 3.4, 5, -62)} ${ellipse(16.6, 10.4, 3.4, 5, 62)}`
+const BOW_TAILS = 'M 10.6 12.4 L 7.6 20.2 L 9.6 19.4 L 10.6 21 L 12.4 13 Z M 13.4 12.4 L 16.4 20.2 L 14.4 19.4 L 13.4 21 L 11.6 13 Z'
+const FLOWER_PETALS = repeatAround(5, (deg) => {
+  const [x, y] = turn([12, 6.6], deg)
+  return circle(fmt(x), fmt(y), 3.9)
+})
+const STAR_CHARM = starPath(9.6, 4.4)
+
+const SCULPTED_HEART = sculpted(PUFFY_HEART, [
+  { d: ellipse(8.2, 8.6, 1.6, 2.6, 35), fill: WHITE, opacity: 0.5 },
+  { d: circle(7.6, 7.8, 0.9), fill: WHITE, opacity: 0.95 },
+])
+const SCULPTED_BOW = [
+  ...sculpted(`${BOW_TAILS} ${BOW_LOOPS}`, [
+    { d: ellipse(6.2, 8.8, 0.9, 2, -62), fill: WHITE, opacity: 0.6 },
+    { d: ellipse(15.4, 8.8, 0.9, 2, 62), fill: WHITE, opacity: 0.6 },
+  ]),
+  // The knot in the middle, raised a little more than the loops.
+  ...sculpted(circle(12, 11, 2.6), [{ d: circle(11.2, 10.2, 0.7), fill: WHITE, opacity: 0.9 }]),
+]
+const SCULPTED_FLOWER = [
+  ...sculpted(FLOWER_PETALS, [
+    { d: circle(10.4, 4.6, 1), fill: WHITE, opacity: 0.6 },
+    { d: circle(5.6, 9.6, 0.9), fill: WHITE, opacity: 0.5 },
+  ]),
+  // A gold bead in the middle.
+  { d: circle(12.5, 12.6, 3), fill: SHADOW_3D },
+  { d: circle(12, 12, 3), fill: YELLOW },
+  { d: 'M 15 12 A 3 3 0 0 1 9 12 C 10.6 14.2 13.4 14.2 15 12 Z', fill: 'rgba(0, 0, 0, 0.2)' },
+  { d: circle(11, 11, 0.9), fill: WHITE, opacity: 0.9 },
+]
+const SCULPTED_STAR = sculpted(STAR_CHARM, [
+  // A raised ridge from the middle to each point, catching the light on one side.
+  { d: lines(polygonPoints(5, 9.6).map((p) => [[12, 12], p])), stroke: 'rgba(255, 255, 255, 0.55)', strokeWidth: 0.5 },
+  { d: ellipse(10, 7.6, 0.8, 2, 20), fill: WHITE, opacity: 0.8 },
+])
+
 export const STICKERS: StickerDesign[] = [
   { type: 'gem-round', label: 'Round rhinestone', group: 'Gems', defaultColor: '#E6F1FA', layers: GEM_ROUND },
   { type: 'gem-teardrop', label: 'Teardrop rhinestone', group: 'Gems', defaultColor: '#F2C6D6', layers: GEM_TEARDROP },
   { type: 'gem-square', label: 'Square rhinestone', group: 'Gems', defaultColor: '#BFD8F2', layers: GEM_SQUARE },
   { type: 'pearl', label: 'Pearl', group: 'Gems', defaultColor: '#F6F0E6', layers: PEARL },
   { type: 'stud', label: 'Stud', group: 'Gems', defaultColor: '#D4AF37', layers: STUD },
+  { type: '3d-heart', label: '3D heart', group: '3D', defaultColor: '#E8475F', layers: SCULPTED_HEART },
+  { type: '3d-bow', label: '3D bow', group: '3D', defaultColor: '#F4A6C0', layers: SCULPTED_BOW },
+  { type: '3d-flower', label: '3D flower', group: '3D', defaultColor: '#F7B6C8', layers: SCULPTED_FLOWER },
+  { type: '3d-star', label: '3D star charm', group: '3D', defaultColor: '#D4AF37', layers: SCULPTED_STAR },
   {
     type: 'daisy',
     label: 'Daisy',

@@ -108,7 +108,8 @@ type Sticker = {
   id: string
   type: 'daisy' | 'blossom' | 'rose' | 'vine' | 'bow' | 'cherries' | 'strawberry'
       | 'butterfly' | 'smiley' | 'heart' | 'evil-eye' | 'moon' | 'twinkle' | 'swirl'
-      | 'gem-round' | 'gem-teardrop' | 'gem-square' | 'pearl' | 'stud' | 'text'
+      | 'gem-round' | 'gem-teardrop' | 'gem-square' | 'pearl' | 'stud'
+      | '3d-heart' | '3d-bow' | '3d-flower' | '3d-star' | 'text'
   x: number              // offset from the centre of the nail (0, 0 = centred)
   y: number
   scale: number           // 1 = default size, about 70% of the nail's width (0.3 to 1.6)
