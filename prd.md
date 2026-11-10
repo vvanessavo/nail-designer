@@ -83,11 +83,10 @@ Tracked here so they aren't built by accident. Do not build unless the owner ask
 
 | Later release | Features |
 |---|---|
-| Release 2: richer design | Grayscale hand, undertone control (the rest moved to Release 1.1) |
-| Release 3: freehand | Layers (freehand, text, copy designs and redo moved to Release 1.1) |
-| Release 4: 3D and finishes | 3D nail art (sculpted and stick-on), textured finish |
 | Release 5: platform | Accounts, cloud save, design gallery and sharing, artist tools, native mobile app, salon price and time estimates |
-| Later ideas | Try designs on a photo of your own hand (augmented reality), compare two designs side by side |
+| Later ideas | Live camera try-on (augmented reality), compare two designs side by side |
+
+Moved into Release 1.4 (roadmap epic E9) at the owner's request, 2026-11-09: textured finishes, undertone control and grayscale hand, layers, 3D nail art, and trying a design on a photo of your own hand (a still photo, placed by hand; not live camera).
 
 ## 6. Non-functional requirements
 
@@ -102,7 +101,7 @@ Tracked here so they aren't built by accident. Do not build unless the owner ask
 The shape of the app's state. Keep in sync with `src/state/nailState.ts` once it exists.
 
 ```ts
-type Finish = 'matte' | 'shiny'
+type Finish = 'shiny' | 'matte' | 'satin' | 'velvet' | 'sugar'
 type NailShape = 'round' | 'square' | 'almond' | 'coffin' | 'stiletto' | 'squoval' | 'natural'
 
 type Sticker = {

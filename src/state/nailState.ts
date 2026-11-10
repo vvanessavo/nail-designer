@@ -1,7 +1,7 @@
 // The app's state: what every nail looks like, the skin tone, and which nails are selected.
 // Keep these types in sync with the data model in PRD.md.
 
-export type Finish = 'matte' | 'shiny'
+export type Finish = 'shiny' | 'matte' | 'satin' | 'velvet' | 'sugar'
 export type FrenchTipStyle = 'classic' | 'deep' | 'micro' | 'v' | 'side' | 'double' | 'reverse'
 export type BaseEffect =
   | 'plain'

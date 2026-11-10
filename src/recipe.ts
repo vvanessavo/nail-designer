@@ -66,6 +66,14 @@ function lengthName(length: number): string {
   return 'long'
 }
 
+const FINISH_NAMES: Record<Nail['finish'], string> = {
+  shiny: 'shiny top coat',
+  matte: 'matte top coat',
+  satin: 'satin top coat',
+  velvet: 'velvet (magnetic) finish',
+  sugar: 'sugar texture',
+}
+
 const PEN_NAMES: Record<PenType, string> = {
   fine: 'fine liner',
   fountain: 'fountain pen',
@@ -95,7 +103,7 @@ function describe(nail: Nail): string[] {
           : nail.baseEffect in PATTERN_NAMES
             ? `, ${PATTERN_NAMES[nail.baseEffect]} in ${colourName(nail.effectColor)}`
             : `, ${nail.baseEffect}`
-  lines.push(`Polish: ${colourName(nail.baseColor)}${effect}, ${nail.finish}`)
+  lines.push(`Polish: ${colourName(nail.baseColor)}${effect}, ${FINISH_NAMES[nail.finish]}`)
   if (nail.hasFrenchTip) {
     const depth = nail.frenchTipThickness < 0.6 ? 'thin' : nail.frenchTipThickness > 1 ? 'thick' : 'medium'
     lines.push(`French tip: ${TIP_STYLE_NAMES[nail.frenchTipStyle]}, ${colourName(nail.frenchTipColor)}, ${depth}`)
