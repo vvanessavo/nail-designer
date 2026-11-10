@@ -72,7 +72,9 @@ src/
   handGeometry.ts  finger positions, nail sizes, drawing size (shared by Hand, Hands, export)
   shapes.ts        nail outlines and the French tip outline
   stickers.ts      the sticker designs (layers on a 24 x 24 grid, with a recolourable main colour)
-  exportImage.ts   saves the design as a PNG
+  exportImage.ts   saves the design as a PNG, and makes the small My designs pictures
+  storage.ts       autosave and My designs, kept in the browser (localStorage)
+  colour.ts        colour mixing helpers (chrome, glitter)
   App.tsx
   main.tsx
   index.css        Tailwind import, the theme (Nunito font, blush colour) and the focus ring

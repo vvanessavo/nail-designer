@@ -1,5 +1,6 @@
-// Saves the finished design as a PNG picture: both hands at full view, whatever the zoom,
-// without the selection dots or sticker handles, on the app's soft pink background.
+// Pictures of the design: both hands at full view, whatever the zoom, without the selection
+// dots or sticker handles, on the app's soft pink background. exportDesign downloads a sharp
+// PNG; designThumbnail makes a small picture for the My designs list.
 
 import type Konva from 'konva'
 
@@ -10,12 +11,11 @@ const PIXELS_PER_UNIT = 4
 const MARGIN = 20
 const BACKGROUND = '#FFF5F5' // the app's blush background (--color-blush in index.css)
 
+type Size = { width: number; height: number }
+
+// Draws the design onto a new canvas, `pixelsPerUnit` pixels for every drawing unit.
 // `size` is the drawing's size in drawing units (see drawingSize in handGeometry.ts).
-export function exportDesign(
-  stage: Konva.Stage,
-  size: { width: number; height: number },
-  fileName = 'my-nail-design.png',
-) {
+function renderDesign(stage: Konva.Stage, size: Size, pixelsPerUnit: number): HTMLCanvasElement | null {
   // Hide what's only there for editing, and show the whole drawing at its own size.
   // All of this is put back straight after, before the screen is next redrawn, so nothing flickers.
   const editingOnly = [...stage.find('.target-dot'), ...stage.find('Transformer')].filter((node) =>
@@ -33,7 +33,7 @@ export function exportDesign(
       y: 0,
       width: size.width + MARGIN * 2,
       height: size.height + MARGIN * 2,
-      pixelRatio: PIXELS_PER_UNIT,
+      pixelRatio: pixelsPerUnit,
     })
   } finally {
     editingOnly.forEach((node) => node.show())
@@ -46,10 +46,21 @@ export function exportDesign(
   picture.width = hands.width
   picture.height = hands.height
   const context = picture.getContext('2d')
-  if (!context) return
+  if (!context) return null
   context.fillStyle = BACKGROUND
   context.fillRect(0, 0, picture.width, picture.height)
   context.drawImage(hands, 0, 0)
+  return picture
+}
+
+// A small JPEG of the design (about 200 px wide), as text that can be stored with it.
+export function designThumbnail(stage: Konva.Stage, size: Size): string {
+  return renderDesign(stage, size, 0.4)?.toDataURL('image/jpeg', 0.8) ?? ''
+}
+
+export function exportDesign(stage: Konva.Stage, size: Size, fileName = 'my-nail-design.png') {
+  const picture = renderDesign(stage, size, PIXELS_PER_UNIT)
+  if (!picture) return
 
   // Download it: make a temporary link to the picture and click it.
   picture.toBlob((blob) => {
