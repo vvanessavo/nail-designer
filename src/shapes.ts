@@ -9,7 +9,7 @@
 // Coordinates: (0, 0) is the middle of the fingertip line, where the free edge starts.
 // Negative y goes up (out past the fingertip), positive y goes down towards the cuticle.
 
-import type { NailShape } from './state/nailState'
+import type { FrenchTipStyle, NailShape } from './state/nailState'
 
 // How far each shape's free edge grows past the fingertip, as a fraction of the nail's width.
 const FREE_EDGE_LENGTH: Record<NailShape, number> = {
@@ -138,28 +138,84 @@ export function nailShapePath(
 // nail's width. This is what makes the curved "smile line".
 const SMILE_DEPTH = 0.3
 
-// The white tip of a French manicure: everything above a curved smile line. It's drawn bigger
-// than the nail at the top and sides, and clipped to the nail's outline, so it fits every shape.
+// The tip of a French manicure, in one of several styles. It's drawn bigger than the nail at
+// the top and sides, and clipped to the nail's outline, so it fits every shape.
 // `thickness` is the share of the free edge it covers in the middle (1 = all of it).
+// `bedLength` (how far the nail runs down to the cuticle) is used by the Reverse style.
 export function frenchTipPath(
   shape: NailShape,
   width: number,
   thickness: number,
   lengthScale = 1,
+  style: FrenchTipStyle = 'classic',
+  bedLength = width,
 ): string {
   const half = width / 2
   const length = freeEdgeLength(shape, width, lengthScale)
-  const middleY = -length + length * thickness // where the smile line crosses the middle
-  const sideY = middleY + width * SMILE_DEPTH // where it meets the sides
   const margin = width // extra space, so the clip decides the outer edge
-  return [
-    `M ${-half - margin} ${-length - margin}`,
-    `L ${-half - margin} ${sideY}`,
-    `L ${-half} ${sideY}`,
-    // A curve whose middle reaches middleY: the control point sits twice as far up.
-    `Q 0 ${2 * middleY - sideY} ${half} ${sideY}`,
-    `L ${half + margin} ${sideY}`,
-    `L ${half + margin} ${-length - margin}`,
-    'Z',
-  ].join(' ')
+  const top = -length - margin
+  const left = -half - margin
+  const right = half + margin
+
+  // Everything above a smile line that crosses the middle at middleY and the sides `depth`
+  // lower. The curve's control point sits twice as far up, so its middle reaches middleY.
+  const aboveSmile = (middleY: number, depth: number) => {
+    const sideY = middleY + depth
+    return [
+      `M ${left} ${top}`,
+      `L ${left} ${sideY}`,
+      `L ${-half} ${sideY}`,
+      `Q 0 ${2 * middleY - sideY} ${half} ${sideY}`,
+      `L ${right} ${sideY}`,
+      `L ${right} ${top}`,
+      'Z',
+    ].join(' ')
+  }
+  // Where a tip covering `share` of the free edge crosses the middle.
+  const lineAt = (share: number) => -length + length * share
+
+  switch (style) {
+    case 'deep':
+      // Reaches further down, with a deeper smile.
+      return aboveSmile(lineAt(Math.min(thickness * 1.5, 1.8)), width * 0.45)
+    case 'micro':
+      // A thin band right at the edge.
+      return aboveSmile(lineAt(thickness * 0.3), width * 0.12)
+    case 'v': {
+      // Straight lines from the sides down to a point in the middle.
+      const sideY = lineAt(thickness * 0.45)
+      const pointY = lineAt(thickness * 1.1)
+      return [`M ${left} ${top}`, `L ${left} ${sideY}`, `L 0 ${pointY}`, `L ${right} ${sideY}`, `L ${right} ${top}`, 'Z'].join(' ')
+    }
+    case 'side': {
+      // A slanted tip: low on the left, high on the right.
+      const lowY = lineAt(thickness * 1.3)
+      const highY = lineAt(thickness * 0.15)
+      return [`M ${left} ${top}`, `L ${left} ${lowY + width * 0.1}`, `Q 0 ${(lowY + highY) / 2 + width * 0.15} ${right} ${highY}`, `L ${right} ${top}`, 'Z'].join(' ')
+    }
+    case 'double': {
+      // A slimmer tip, plus a thin second smile line below it.
+      const tip = aboveSmile(lineAt(thickness * 0.7), width * SMILE_DEPTH)
+      const lineTop = lineAt(thickness * 0.7) + width * 0.18
+      const lineWidth = width * 0.07
+      const sideTop = lineTop + width * SMILE_DEPTH
+      const band = [
+        `M ${-half} ${sideTop}`,
+        `Q 0 ${2 * lineTop - sideTop} ${half} ${sideTop}`,
+        `L ${half} ${sideTop + lineWidth}`,
+        `Q 0 ${2 * (lineTop + lineWidth) - (sideTop + lineWidth)} ${-half} ${sideTop + lineWidth}`,
+        'Z',
+      ].join(' ')
+      return `${tip} ${band}`
+    }
+    case 'reverse': {
+      // A half-moon at the cuticle instead of a tip: everything below an arch near the bottom.
+      const bottom = bedLength + margin
+      const sideY = bedLength - bedLength * 0.3 * thickness
+      const middleY = sideY - width * 0.25
+      return [`M ${left} ${bottom}`, `L ${left} ${sideY}`, `L ${-half} ${sideY}`, `Q 0 ${2 * middleY - sideY} ${half} ${sideY}`, `L ${right} ${sideY}`, `L ${right} ${bottom}`, 'Z'].join(' ')
+    }
+    default:
+      return aboveSmile(lineAt(thickness), width * SMILE_DEPTH)
+  }
 }

@@ -401,7 +401,14 @@ function FingerShape({
           {/* The French tip goes under the stickers, and is clipped to the nail like them. */}
           {nail.hasFrenchTip && (
             <Path
-              data={frenchTipPath(nail.shape, nailWidth, nail.frenchTipThickness, nail.length)}
+              data={frenchTipPath(
+                nail.shape,
+                nailWidth,
+                nail.frenchTipThickness,
+                nail.length,
+                nail.frenchTipStyle,
+                bedLength,
+              )}
               fill={nail.frenchTipColor}
               listening={false}
             />

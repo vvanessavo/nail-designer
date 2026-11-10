@@ -102,7 +102,7 @@ function NailPreview({ nails }: NailPreviewProps) {
                 )}
               {nail.hasFrenchTip && (
                 <path
-                  d={frenchTipPath(nail.shape, WIDTH, nail.frenchTipThickness, nail.length)}
+                  d={frenchTipPath(nail.shape, WIDTH, nail.frenchTipThickness, nail.length, nail.frenchTipStyle, BED)}
                   fill={nail.frenchTipColor}
                 />
               )}

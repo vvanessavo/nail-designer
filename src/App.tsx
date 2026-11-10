@@ -7,6 +7,7 @@ import DrawPanel, { type DrawSettings } from './components/DrawPanel'
 import EffectPicker from './components/EffectPicker'
 import FinishPicker from './components/FinishPicker'
 import FrenchTipSwitch from './components/FrenchTipSwitch'
+import TipStylePicker from './components/TipStylePicker'
 import TipThicknessSlider from './components/TipThicknessSlider'
 import Hands from './components/Hands'
 import LengthPicker from './components/LengthPicker'
@@ -463,10 +464,19 @@ function App() {
             disabled={targetNails.length === 0}
             onChange={(on) => dispatch({ type: 'SET_FRENCH_TIP', on })}
           />
-          {/* Tip colour and thickness, once the target nails have a tip. They show the first
-              target nail's settings and change every target nail. */}
+          {/* Tip style, thickness and colour, once the target nails have a tip. They show the
+              first target nail's settings and change every target nail. */}
           {firstTarget && targetsHaveTip && (
             <>
+              <TipStylePicker
+                value={
+                  targetNails.every((nail) => nail.frenchTipStyle === firstTarget.frenchTipStyle)
+                    ? firstTarget.frenchTipStyle
+                    : null
+                }
+                color={firstTarget.frenchTipColor}
+                onChange={(style) => dispatch({ type: 'SET_FRENCH_TIP_STYLE', style })}
+              />
               <TipThicknessSlider
                 value={firstTarget.frenchTipThickness}
                 onChange={(thickness) => dispatch({ type: 'SET_FRENCH_TIP_THICKNESS', thickness })}
