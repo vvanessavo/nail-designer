@@ -111,8 +111,13 @@ export type Nail = {
   strokes: Stroke[] // freehand drawing, in the order drawn
 }
 
+// Shifts every skin tone a little: warm is more golden, cool is more pink, neutral leaves it.
+export type Undertone = 'warm' | 'neutral' | 'cool'
+
 export type AppState = {
   skinTone: string // hex
+  undertone: Undertone
+  grayscaleHand: boolean // the hand drawn in grey, so the nails stand out
   nails: Nail[]
   selectedNailIds: number[]
   applyToAll: boolean // true: changes go on every nail; false: only on the selected nails
@@ -128,6 +133,8 @@ export type StickerChanges = Partial<
 export type Action =
   | { type: 'SELECT_NAIL'; nailId: number }
   | { type: 'SET_SKIN_TONE'; skinTone: string }
+  | { type: 'SET_UNDERTONE'; undertone: Undertone }
+  | { type: 'SET_GRAYSCALE_HAND'; on: boolean }
   | { type: 'SET_SHAPE'; shape: NailShape }
   | { type: 'SET_LENGTH'; length: number }
   | { type: 'SET_BASE_COLOR'; color: string }
@@ -191,6 +198,8 @@ export function createNail(id: number): Nail {
 
 export const initialState: AppState = {
   skinTone: '#E8B896',
+  undertone: 'neutral',
+  grayscaleHand: false,
   nails: Array.from({ length: NAIL_COUNT }, (_, id) => createNail(id)),
   selectedNailIds: [],
   applyToAll: true,
@@ -319,6 +328,10 @@ export function nailReducer(state: AppState, action: Action): AppState {
       return { ...state, applyToAll: action.applyToAll }
     case 'SET_SKIN_TONE':
       return { ...state, skinTone: action.skinTone }
+    case 'SET_UNDERTONE':
+      return { ...state, undertone: action.undertone }
+    case 'SET_GRAYSCALE_HAND':
+      return { ...state, grayscaleHand: action.on }
     case 'SET_SHAPE':
       return {
         ...state,
@@ -425,7 +438,7 @@ const NEVER_MERGED: Action['type'][] = ['LOAD_DESIGN', 'CLEAR_STROKES']
 const MAX_UNDO_STEPS = 50
 
 // The parts of the state that undo puts back. The nail selection stays as it is.
-export type Design = Pick<AppState, 'skinTone' | 'nails'>
+export type Design = Pick<AppState, 'skinTone' | 'undertone' | 'grayscaleHand' | 'nails'>
 
 export type History = {
   past: Design[]
@@ -441,7 +454,12 @@ export type HistoryAction =
 
 export const initialHistory: History = { past: [], present: initialState, future: [], lastChange: null }
 
-const designOf = (state: AppState): Design => ({ skinTone: state.skinTone, nails: state.nails })
+export const designOf = (state: AppState): Design => ({
+  skinTone: state.skinTone,
+  undertone: state.undertone,
+  grayscaleHand: state.grayscaleHand,
+  nails: state.nails,
+})
 
 // Two changes with the same key, close together, count as one undo step: same action,
 // and for stickers the same sticker. Each paste of a copied design is its own step.
