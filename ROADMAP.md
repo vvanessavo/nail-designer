@@ -21,7 +21,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text) and E6-S8 (autosave and My designs). Next: **E6-S9, mirror to the other hand**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs) and E6-S9 (mirror hands). Next: **E6-S10, recent colours**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -220,10 +220,11 @@ As a user, my design is never lost when I refresh or close the tab, and I can ke
 Done when: the current design is saved in the browser (localStorage) after every change and comes back on reload; a "My designs" list lets me save the current design under a name, open, rename and delete saved designs, and start a new one. Nothing leaves the device.
 Built as: `src/storage.ts` keeps the current design (saved 0.3 s after each change, opened on the next visit) and the My designs list in localStorage, filling in fields that older saved designs don't have. A "My designs" tab (first tab) has a name box and "Add to My designs" (keeps a small JPEG picture made like the PNG export), New design (undoable), and cards to Open, Rename and Delete. If the browser refuses to save (private browsing, storage full) the tab says so.
 
-### E6-S9: Mirror to the other hand. P1. Backlog
+### E6-S9: Mirror to the other hand. P1. Done
 As a user, I can copy one hand's design onto the other hand, so both hands match.
 Done when: "Copy left hand to right" and "Copy right hand to left" put each finger's design on the matching finger of the other hand (thumb to thumb, pinky to pinky), with stickers, drawings and text flipped left to right, in one undo step.
 Depends on: E6-S4.
+Built as: "Mirror: left hand to right · right hand to left" links under the Each nail / All nails switch (`MIRROR_HAND`: nail i and nail 9 - i swap designs as a mirror image; positions, turns and drawings mirror, while sticker pictures and text stay readable). Also fixed: stickers and text on the right hand used to show back to front, because the right hand is drawn as a flipped copy of the left; they're now flipped back.
 
 ### E6-S11: Real nail-art stickers. P1. Done
 As a user, the stickers look like designs people actually get on their nails.
