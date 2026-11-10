@@ -141,6 +141,7 @@ type AppState = {
   skinTone: string        // hex
   undertone: 'warm' | 'neutral' | 'cool'
   grayscaleHand: boolean  // the hand drawn in grey so the nails stand out
+  linesOverStickers: boolean // drawn lines in front of stickers (false: behind)
   nails: Nail[]
   selectedNailIds: number[]
   applyToAll: boolean     // true: changes go on every nail; false: only the selected nails

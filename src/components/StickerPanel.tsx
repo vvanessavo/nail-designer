@@ -1,6 +1,8 @@
 // The Stickers tab: pick a sticker, then tap nails to place it.
 // The picked sticker stays picked so it can go on several nails; tap it again to put it down.
-// With nothing picked, tapping a placed sticker shows handles to move, resize and turn it.
+// A new sticker shows handles to move, resize and turn it, and tapping any placed sticker
+// does the same. With a sticker selected, it can be recoloured, moved in front of or behind
+// the other stickers on its nail, or deleted.
 
 import { Fragment, useEffect } from 'react'
 import { paint, STICKER_SIZE, STICKERS, TEXT_MAX_LENGTH, type StickerType } from '../stickers'
@@ -23,6 +25,7 @@ type StickerPanelProps = {
   // Recolours the selected sticker and sets new stickers' colour (null = original colours).
   onColorChange: (color: string | null) => void
   onDelete: () => void // removes the selected sticker
+  onLayer: (to: 'front' | 'back') => void // moves the selected sticker in front of or behind the others
   text: { text: string; font: TextFont } // the words in the text box, and their font
   recentColors: string[]
   onTextChange: (text: { text: string; font: TextFont }) => void
@@ -37,6 +40,7 @@ function StickerPanel({
   onOpenChange,
   onColorChange,
   onDelete,
+  onLayer,
   text,
   onTextChange,
   recentColors,
@@ -196,6 +200,68 @@ function StickerPanel({
             compact
           />
         </div>
+        {/* Bring to front and send to back, shown only while a sticker is selected (they'd
+            only take room from the colours otherwise). */}
+        {hasSelectedSticker && (['front', 'back'] as const).map((to) => (
+          <button
+            key={to}
+            type="button"
+            onClick={() => onLayer(to)}
+            aria-label={to === 'front' ? 'Bring to front' : 'Send to back'}
+            title={to === 'front' ? 'Bring to front' : 'Send to back'}
+            className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border border-stone-200 text-stone-600 transition hover:border-stone-400 active:bg-stone-100"
+          >
+            {/* Two overlapping squares, the front one filled: the one in front is on top. */}
+            <svg
+              viewBox="0 0 24 24"
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              {to === 'front' ? (
+                <>
+                  <rect
+                    x="9"
+                    y="9"
+                    width="11"
+                    height="11"
+                    rx="2"
+                  />
+                  <rect
+                    x="4"
+                    y="4"
+                    width="11"
+                    height="11"
+                    rx="2"
+                    fill="currentColor"
+                  />
+                </>
+              ) : (
+                <>
+                  <rect
+                    x="9"
+                    y="9"
+                    width="11"
+                    height="11"
+                    rx="2"
+                    fill="currentColor"
+                  />
+                  <rect
+                    x="4"
+                    y="4"
+                    width="11"
+                    height="11"
+                    rx="2"
+                    fill="white"
+                  />
+                </>
+              )}
+            </svg>
+          </button>
+        ))}
         <button
           type="button"
           onClick={onDelete}

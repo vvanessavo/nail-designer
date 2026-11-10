@@ -118,6 +118,7 @@ export type AppState = {
   skinTone: string // hex
   undertone: Undertone
   grayscaleHand: boolean // the hand drawn in grey, so the nails stand out
+  linesOverStickers: boolean // drawn lines go in front of the stickers (false: behind them)
   nails: Nail[]
   selectedNailIds: number[]
   applyToAll: boolean // true: changes go on every nail; false: only on the selected nails
@@ -135,6 +136,9 @@ export type Action =
   | { type: 'SET_SKIN_TONE'; skinTone: string }
   | { type: 'SET_UNDERTONE'; undertone: Undertone }
   | { type: 'SET_GRAYSCALE_HAND'; on: boolean }
+  | { type: 'SET_LINES_OVER_STICKERS'; on: boolean }
+  // Moves a sticker in front of (or behind) the other stickers on its nail.
+  | { type: 'MOVE_STICKER_LAYER'; nailId: number; stickerId: string; to: 'front' | 'back' }
   | { type: 'SET_SHAPE'; shape: NailShape }
   | { type: 'SET_LENGTH'; length: number }
   | { type: 'SET_BASE_COLOR'; color: string }
@@ -200,6 +204,7 @@ export const initialState: AppState = {
   skinTone: '#E8B896',
   undertone: 'neutral',
   grayscaleHand: false,
+  linesOverStickers: false,
   nails: Array.from({ length: NAIL_COUNT }, (_, id) => createNail(id)),
   selectedNailIds: [],
   applyToAll: true,
@@ -332,6 +337,19 @@ export function nailReducer(state: AppState, action: Action): AppState {
       return { ...state, undertone: action.undertone }
     case 'SET_GRAYSCALE_HAND':
       return { ...state, grayscaleHand: action.on }
+    case 'SET_LINES_OVER_STICKERS':
+      return { ...state, linesOverStickers: action.on }
+    case 'MOVE_STICKER_LAYER':
+      // Stickers are drawn in list order, so the last one is in front.
+      return {
+        ...state,
+        nails: state.nails.map((nail) => {
+          const sticker = nail.stickers.find((s) => s.id === action.stickerId)
+          if (nail.id !== action.nailId || !sticker) return nail
+          const others = nail.stickers.filter((s) => s.id !== action.stickerId)
+          return { ...nail, stickers: action.to === 'front' ? [...others, sticker] : [sticker, ...others] }
+        }),
+      }
     case 'SET_SHAPE':
       return {
         ...state,
@@ -438,7 +456,7 @@ const NEVER_MERGED: Action['type'][] = ['LOAD_DESIGN', 'CLEAR_STROKES']
 const MAX_UNDO_STEPS = 50
 
 // The parts of the state that undo puts back. The nail selection stays as it is.
-export type Design = Pick<AppState, 'skinTone' | 'undertone' | 'grayscaleHand' | 'nails'>
+export type Design = Pick<AppState, 'skinTone' | 'undertone' | 'grayscaleHand' | 'linesOverStickers' | 'nails'>
 
 export type History = {
   past: Design[]
@@ -458,6 +476,7 @@ export const designOf = (state: AppState): Design => ({
   skinTone: state.skinTone,
   undertone: state.undertone,
   grayscaleHand: state.grayscaleHand,
+  linesOverStickers: state.linesOverStickers,
   nails: state.nails,
 })
 

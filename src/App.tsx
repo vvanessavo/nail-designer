@@ -548,6 +548,8 @@ function App() {
           }}
           recentColors={recentColors}
           onClearAll={() => dispatch({ type: 'CLEAR_STROKES' })}
+          linesOverStickers={state.linesOverStickers}
+          onLinesOverStickersChange={(on) => dispatch({ type: 'SET_LINES_OVER_STICKERS', on })}
           onOpenChange={setDrawTabOpen}
         />
       ),
@@ -583,6 +585,11 @@ function App() {
             }
           }}
           onDelete={deleteSelectedSticker}
+          onLayer={(to) => {
+            if (selectedNail && selectedSticker) {
+              dispatch({ type: 'MOVE_STICKER_LAYER', nailId: selectedNail.id, stickerId: selectedSticker.id, to })
+            }
+          }}
           // The text box shows the selected text sticker's words (and edits them), otherwise
           // the words for the next text placed.
           text={

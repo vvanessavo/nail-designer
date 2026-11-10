@@ -31,6 +31,7 @@ export function upgrade(value: unknown): Design | null {
       ? (saved.undertone as Design['undertone'])
       : initialState.undertone,
     grayscaleHand: saved.grayscaleHand === true,
+    linesOverStickers: saved.linesOverStickers === true,
     nails: saved.nails.map((nail: Partial<Nail>, id) => ({ ...createNail(id), ...nail, id })),
   }
 }
