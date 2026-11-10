@@ -21,7 +21,7 @@ export type SavedDesign = {
 
 // Fills in anything a design saved by an older version of the app doesn't have yet
 // (e.g. nail length, added later), so old designs still open.
-function upgrade(value: unknown): Design | null {
+export function upgrade(value: unknown): Design | null {
   if (!value || typeof value !== 'object') return null
   const saved = value as Partial<Design>
   if (!Array.isArray(saved.nails) || saved.nails.length !== initialState.nails.length) return null

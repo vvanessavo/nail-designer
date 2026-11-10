@@ -16,12 +16,12 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 | 0.4 | E4: French tip, finish, undo | A complete design tool | Done |
 | 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | Done except the user test, which is on hold |
 | 1.1 | E6: Richer design | More shapes, length, special bases, copy design, redo, freehand, text, autosave, mirror hands, recent colours | Done |
-| 1.2 | E7: Start and share | Starter designs, design recipe sheet, share link | In progress |
+| 1.2 | E7: Start and share | Starter designs, design recipe sheet, share link | Done |
 | 1.3 | E8: More nail art | French tip styles, gems and pearls, patterns, trending effects | Backlog |
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs), E6-S9 (mirror hands) and E6-S10 (recent colours): **E6 is done**. E7-S1 (starter designs) and E7-S2 (recipe sheet) are done. Next: **E7-S3, share link**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs), E6-S9 (mirror hands) and E6-S10 (recent colours): **E6 is done**. **E7 is done** (starter designs, recipe sheet, share link). Next: **E8-S1, French tip styles**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -254,9 +254,10 @@ Done when: Save offers "Picture" and "Picture + recipe"; the recipe version adds
 Answers the PRD open question about a design sheet.
 Built as: Save opens a menu (Picture / Picture + recipe). `src/recipe.ts` describes each nail in plain words (shape and length, polish colour by name and code, effect, finish, French tip, stickers counted by kind and colour, text, number of hand-painted lines) and groups matching nails ("All nails", "Both ring fingers"); `exportImage.ts` writes it under the picture (`my-nail-design-recipe.png`). Gems will be added to the recipe with E8-S2.
 
-### E7-S3: Share link. P1. Backlog
+### E7-S3: Share link. P1. Done
 As a user, I can send my artist a link that opens my exact design.
 Done when: a Share action creates a link with the whole design packed into it (no server, no account), opening it on any device shows the design ready to view or edit, and on phones it opens the phone's share menu.
+Built as: Save → Share link. `src/share.ts` packs the design (JSON, numbers rounded, compressed with the browser's built-in deflate, link-safe base64) after `#d=` in the link, a part browsers never send to the server; a typical design is about 500 characters. Phones get the share menu (the link is prepared ahead so the menu opens straight from the tap); computers copy the link. Opening a link shows the design with a "Keep in My designs" bar; Undo goes back to your own design; the link is then cleared from the address bar.
 
 ---
 

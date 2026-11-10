@@ -76,6 +76,7 @@ src/
   storage.ts       autosave and My designs, kept in the browser (localStorage)
   starters.ts      the ready-made starter designs
   recipe.ts        the plain-language nail recipe written under a saved picture
+  share.ts         share links: the design packed into the link after #d=
   colour.ts        colour mixing helpers (chrome, glitter)
   App.tsx
   main.tsx

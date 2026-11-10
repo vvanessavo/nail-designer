@@ -11,6 +11,7 @@ import TipThicknessSlider from './components/TipThicknessSlider'
 import Hands from './components/Hands'
 import LengthPicker from './components/LengthPicker'
 import MyDesignsPanel from './components/MyDesignsPanel'
+import NoticeBar from './components/NoticeBar'
 import ShapePicker from './components/ShapePicker'
 import SkinTonePicker from './components/SkinTonePicker'
 import StickerPanel from './components/StickerPanel'
@@ -31,6 +32,7 @@ import {
 } from './state/nailState'
 import { designThumbnail, exportDesign } from './exportImage'
 import { designRecipe } from './recipe'
+import { clearDesignFromLink, designFromLink, shareLinkFor } from './share'
 import { STARTERS } from './starters'
 import {
   loadCurrentDesign,
@@ -124,6 +126,71 @@ function App() {
     setSavedDesigns(designs)
     setStorageWorks(storeSavedDesigns(designs))
   }
+  // Keeps the current design in My designs, with a small picture of it.
+  const addToMyDesigns = (name: string) => {
+    const stage = stageRef.current
+    const saved: SavedDesign = {
+      id: `design-${Date.now()}`,
+      name,
+      savedAt: Date.now(),
+      thumbnail: stage ? designThumbnail(stage, drawingSize(state.nails)) : '',
+      design: { skinTone: state.skinTone, nails: state.nails },
+    }
+    updateSavedDesigns([saved, ...savedDesigns])
+  }
+
+  // A short message over the hands (e.g. "Link copied"), with an optional button.
+  const [notice, setNotice] = useState<{ message: string; actionLabel?: string; onAction?: () => void } | null>(
+    null,
+  )
+
+  // Share link: kept ready for the current design (made shortly after each change), so
+  // tapping "Share link" can open the phone's share menu straight away. Phones only allow
+  // that menu right after a tap, with nothing slow in between.
+  const [shareUrl, setShareUrl] = useState('')
+  useEffect(() => {
+    let cancelled = false
+    const timer = setTimeout(() => {
+      shareLinkFor({ skinTone: state.skinTone, nails: state.nails }).then((url) => {
+        if (!cancelled) setShareUrl(url)
+      })
+    }, 400)
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+    }
+  }, [state.skinTone, state.nails])
+
+  const shareDesign = () => {
+    if (!shareUrl) return
+    if (navigator.share) {
+      // The phone's own share menu (Messages, WhatsApp...). Closing it without sharing is fine.
+      navigator.share({ title: 'My nail design', url: shareUrl }).catch(() => {})
+    } else {
+      navigator.clipboard
+        .writeText(shareUrl)
+        .then(() => setNotice({ message: 'Link copied. Paste it to send your design.' }))
+        .catch(() => setNotice({ message: "Couldn't copy the link in this browser." }))
+    }
+  }
+
+  // Opening a share link: show the shared design (Undo goes back to your own), offer to keep
+  // it, and take it out of the address bar. The ref stops it loading twice.
+  const openedSharedLink = useRef(false)
+  useEffect(() => {
+    if (openedSharedLink.current) return
+    openedSharedLink.current = true
+    designFromLink().then((design) => {
+      if (!design) return
+      clearDesignFromLink()
+      dispatch({ type: 'LOAD_DESIGN', design })
+      setNotice({
+        message: "You're looking at a shared design. Undo goes back to yours.",
+        actionLabel: 'Keep in My designs',
+      })
+    })
+  }, [dispatch])
+
   const openDesign = (design: Design) => {
     dispatch({ type: 'LOAD_DESIGN', design })
     setSelectedStickerId(null)
@@ -282,17 +349,7 @@ function App() {
         <MyDesignsPanel
           designs={savedDesigns}
           storageWorks={storageWorks}
-          onAdd={(name) => {
-            const stage = stageRef.current
-            const saved: SavedDesign = {
-              id: `design-${Date.now()}`,
-              name,
-              savedAt: Date.now(),
-              thumbnail: stage ? designThumbnail(stage, drawingSize(state.nails)) : '',
-              design: { skinTone: state.skinTone, nails: state.nails },
-            }
-            updateSavedDesigns([saved, ...savedDesigns])
-          }}
+          onAdd={addToMyDesigns}
           onOpen={(id) => {
             const saved = savedDesigns.find((item) => item.id === id)
             if (saved) openDesign(saved.design)
@@ -512,6 +569,7 @@ function App() {
         tabs={tabs}
         actions={
           <SaveButton
+            onShare={shareDesign}
             onSave={(withRecipe) => {
               if (!stageRef.current) return
               const recipe = withRecipe ? designRecipe(state) : undefined
@@ -539,6 +597,21 @@ function App() {
             onUndo={undo}
             onRedo={redo}
           />
+          {notice && copyFrom === null && (
+            <NoticeBar
+              message={notice.message}
+              actionLabel={notice.actionLabel}
+              onAction={
+                notice.actionLabel
+                  ? () => {
+                      addToMyDesigns('Shared design')
+                      setNotice({ message: 'Kept in My designs.' })
+                    }
+                  : undefined
+              }
+              onClose={() => setNotice(null)}
+            />
+          )}
           {copyFrom !== null && (
             <CopyBar
               fromName={nailName(copyFrom)}

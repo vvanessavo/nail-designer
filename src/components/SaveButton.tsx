@@ -1,16 +1,18 @@
 // The Save button at the right end of the toolbar. It opens a small menu: save just the
-// picture, or the picture with the nail recipe underneath (for showing a nail artist).
+// picture, the picture with the nail recipe underneath (for showing a nail artist), or
+// share a link that opens this exact design.
 
 import { useEffect, useRef, useState } from 'react'
 
 type SaveButtonProps = {
   onSave: (withRecipe: boolean) => void
+  onShare: () => void
 }
 
 const ITEM =
   'flex w-full cursor-pointer flex-col items-start rounded-lg px-3 py-2 text-left hover:bg-rose-50 active:bg-rose-100'
 
-function SaveButton({ onSave }: SaveButtonProps) {
+function SaveButton({ onSave, onShare }: SaveButtonProps) {
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -86,6 +88,18 @@ function SaveButton({ onSave }: SaveButtonProps) {
           >
             <span className="font-semibold text-stone-800">Picture + recipe</span>
             <span className="text-xs text-stone-500">With a list of what's on each nail, for your nail artist</span>
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              setOpen(false)
+              onShare()
+            }}
+            className={ITEM}
+          >
+            <span className="font-semibold text-stone-800">Share link</span>
+            <span className="text-xs text-stone-500">A link that opens this exact design, on any device</span>
           </button>
         </div>
       )}
