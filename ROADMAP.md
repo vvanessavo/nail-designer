@@ -312,4 +312,5 @@ Built as: two optional fields on each line, `pen` and `opacity` (lines without t
 | 2026-11-09 | Visual style: "Soft blush" (blush background, rose accent, Nunito), chosen by the owner over "Salon chic" and "Playful pop" |
 | 2026-11-09 | The finish switch lives in the Colour tab rather than its own tab: it's part of the polish, and fewer tabs fit better on a phone |
 | 2026-11-09 | Added E8-S5 at the owner's request: pen types for drawing (fine liner, fountain pen, brush, dotting tool) and an adjustable ink sheerness. Polish sheerness is the jelly effect's slider (E8-S4) |
+| 2026-11-09 | The background is white instead of blush, in the app and the exported picture, at the owner's request. The rose accent and Nunito stay |
 | 2026-11-09 | Zoom lives in the hands area (buttons bottom-right), not the toolbar, so it's available in every tab. While zoomed, a one-finger drag pans; stickers are moved by dragging them directly |
