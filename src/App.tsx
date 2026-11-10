@@ -14,7 +14,7 @@ import SkinTonePicker from './components/SkinTonePicker'
 import StickerPanel from './components/StickerPanel'
 import SaveButton from './components/SaveButton'
 import Toolbar, { type ToolbarTab } from './components/Toolbar'
-import UndoButton from './components/UndoButton'
+import UndoRedoButtons from './components/UndoRedoButtons'
 import {
   historyReducer,
   initialHistory,
@@ -42,6 +42,7 @@ function App() {
   // The Konva stage the hands are drawn on, used to export a picture of them.
   const stageRef = useRef<Konva.Stage>(null)
   const canUndo = history.past.length > 0
+  const canRedo = history.future.length > 0
   // Every change is stamped with the time, so quick runs of the same change undo together.
   const dispatch = useCallback(
     (action: Action) => dispatchHistory({ type: 'DO', action, time: Date.now() }),
@@ -117,11 +118,15 @@ function App() {
     // The sticker showing handles might be one the undo takes away, so put the handles away.
     setSelectedStickerId(null)
   }, [])
+  const redo = useCallback(() => {
+    dispatchHistory({ type: 'REDO' })
+    setSelectedStickerId(null)
+  }, [])
 
   // Keyboard shortcuts on a computer (skipped while typing, e.g. in the hex colour box, where
   // the keys keep their usual meaning):
   // - Delete or Backspace removes the selected sticker
-  // - Cmd+Z (Mac) or Ctrl+Z (Windows) undoes the last change
+  // - Cmd+Z (Mac) or Ctrl+Z (Windows) undoes the last change; Cmd+Shift+Z or Ctrl+Y redoes it
   // - Escape leaves copy mode
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
@@ -130,14 +135,18 @@ function App() {
         setCopyFrom(null) // leave copy mode
       } else if (event.key === 'Delete' || event.key === 'Backspace') {
         deleteSelectedSticker()
-      } else if (event.key.toLowerCase() === 'z' && (event.metaKey || event.ctrlKey) && !event.shiftKey) {
+      } else if (event.key.toLowerCase() === 'z' && (event.metaKey || event.ctrlKey)) {
         event.preventDefault()
-        undo()
+        if (event.shiftKey) redo()
+        else undo()
+      } else if (event.key.toLowerCase() === 'y' && event.ctrlKey) {
+        event.preventDefault()
+        redo()
       }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [deleteSelectedSticker, undo])
+  }, [deleteSelectedSticker, undo, redo])
 
   // Stickers can be edited while the Stickers tab is open and no sticker is picked to place.
   const stickerEditing =
@@ -350,9 +359,11 @@ function App() {
             onTapBackground={() => setSelectedStickerId(null)}
             stickerEditing={stickerEditing}
           />
-          <UndoButton
-            disabled={!canUndo}
+          <UndoRedoButtons
+            canUndo={canUndo}
+            canRedo={canRedo}
             onUndo={undo}
+            onRedo={redo}
           />
           {copyFrom !== null && (
             <CopyBar
