@@ -387,7 +387,7 @@ function App() {
       id: 'shape',
       label: 'Shape',
       content: (
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-3">
           {applyToToggle}
           <ShapePicker
             value={targetShape}
@@ -409,7 +409,7 @@ function App() {
       id: 'colour',
       label: 'Colour',
       content: (
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-3">
           {applyToToggle}
           <ColourPicker
             value={(firstTarget ?? state.nails[0]).baseColor}
@@ -420,11 +420,23 @@ function App() {
             recent={recentColors}
             compact
           />
-          <EffectPicker
-            value={sharedEffect}
-            // Picking a pattern also sets its usual colours (one undo step); change them after.
-            onChange={(effect) => dispatch({ type: 'SET_BASE_EFFECT', effect, colors: EFFECT_START_COLORS[effect] })}
-          />
+          {/* Effect and finish share a row on a wider screen, saving a row of height. */}
+          <div className="flex w-full min-w-0 flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <EffectPicker
+              value={sharedEffect}
+              // Picking a pattern also sets its usual colours (one undo step); change them after.
+              onChange={(effect) => dispatch({ type: 'SET_BASE_EFFECT', effect, colors: EFFECT_START_COLORS[effect] })}
+            />
+            <FinishPicker
+              // Highlight a finish only if every target nail already has it.
+              value={
+                firstTarget && targetNails.every((nail) => nail.finish === firstTarget.finish)
+                  ? firstTarget.finish
+                  : null
+              }
+              onChange={(finish) => dispatch({ type: 'SET_FINISH', finish })}
+            />
+          </div>
           {/* Cat-eye, aura and jelly have a slider (band position, glow size, strength). */}
           {firstTarget && sharedEffect && EFFECT_AMOUNT_LABELS[sharedEffect] && (
             <EffectAmountSlider
@@ -469,15 +481,6 @@ function App() {
               />
             </div>
           )}
-          <FinishPicker
-            // Highlight a finish only if every target nail already has it.
-            value={
-              firstTarget && targetNails.every((nail) => nail.finish === firstTarget.finish)
-                ? firstTarget.finish
-                : null
-            }
-            onChange={(finish) => dispatch({ type: 'SET_FINISH', finish })}
-          />
         </div>
       ),
     },
@@ -485,7 +488,7 @@ function App() {
       id: 'french-tip',
       label: 'French tip',
       content: (
-        <div className="flex flex-col items-center gap-4">
+        <div className="flex flex-col items-center gap-3">
           {applyToToggle}
           <FrenchTipSwitch
             on={targetsHaveTip}

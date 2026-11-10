@@ -76,7 +76,7 @@ function EffectPicker({ value, onChange }: EffectPickerProps) {
     <div
       role="group"
       aria-label="Polish effect"
-      className="flex max-w-full gap-1 overflow-x-auto rounded-full bg-stone-100 p-1"
+      className="flex max-w-full min-w-0 gap-1 overflow-x-auto rounded-full bg-stone-100 p-1"
     >
       {EFFECTS.map(({ effect, label, preview }) => {
         const isActive = effect === value

@@ -55,7 +55,7 @@ function ColourPicker({
   const customOpen = showCustom && !disabled
 
   return (
-    <div className={`flex max-w-full min-w-0 flex-col items-center ${compact ? 'gap-2' : 'gap-4'}`}>
+    <div className={`flex max-w-full min-w-0 flex-col items-center ${compact ? 'gap-2' : 'gap-3'}`}>
       <div
         role="group"
         aria-label={label}

@@ -10,8 +10,9 @@ type LengthPickerProps = {
 
 function LengthPicker({ value, onChange }: LengthPickerProps) {
   return (
-    <div className="flex w-full max-w-72 flex-col gap-2">
-      <div className="flex items-center justify-between gap-2">
+    // One row on a wider screen (label, presets, slider), two rows on a phone.
+    <div className="flex w-full max-w-72 flex-col sm:max-w-xl sm:flex-row sm:items-center sm:gap-4">
+      <div className="flex items-center justify-between gap-2 sm:gap-3">
         <span className="text-sm font-semibold text-stone-700">Length</span>
         <div
           role="group"
@@ -36,7 +37,7 @@ function LengthPicker({ value, onChange }: LengthPickerProps) {
           })}
         </div>
       </div>
-      <label className="flex items-center gap-3 text-xs text-stone-500">
+      <label className="flex items-center gap-3 text-xs text-stone-500 sm:flex-1">
         Shorter
         <input
           type="range"
