@@ -17,11 +17,11 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 | 1.0 | E5: Export and launch | Export a PNG, works on touch, live link, tested with real users | Done except the user test, which is on hold |
 | 1.1 | E6: Richer design | More shapes, length, special bases, copy design, redo, freehand, text, autosave, mirror hands, recent colours | Done |
 | 1.2 | E7: Start and share | Starter designs, design recipe sheet, share link | Done |
-| 1.3 | E8: More nail art | French tip styles, gems and pearls, patterns, trending effects | In progress |
+| 1.3 | E8: More nail art | French tip styles, gems and pearls, patterns, trending effects, pen types | Done |
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs), E6-S9 (mirror hands) and E6-S10 (recent colours): **E6 is done**. **E7 is done** (starter designs, recipe sheet, share link). E8-S1 (French tip styles), E8-S2 (gems and pearls) and E8-S3 (patterns) are done. Next: **E8-S4, trending effects**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs), E6-S9 (mirror hands) and E6-S10 (recent colours): **E6 is done**. **E7 is done** (starter designs, recipe sheet, share link). E8-S1 (French tip styles), E8-S2 (gems and pearls), E8-S3 (patterns), E8-S4 (trending effects) and E8-S5 (pen types and ink sheerness, added at the owner's request) are done: **E8 is done**. Nothing is queued; the user test (E5-S5) is next when the owner wants it. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -287,9 +287,10 @@ Done when: cat-eye (a shimmering band I can move), aura (a soft glow in the midd
 Depends on: E6-S3.
 Built as: three more base effects (`cat-eye`, `aura`, `jelly`) and one new number per nail, `effectAmount` (0 to 1, `SET_EFFECT_AMOUNT`). A slider under the effect row sets it: the band position for cat-eye, the glow size for aura, and Sheer to Strong for jelly. Cat-eye and aura have a second colour (shimmer, glow); jelly shows the natural nail through the polish. `PATTERN_COLORS` became `EFFECT_START_COLORS`, the colours every pattern or effect starts in.
 
-### E8-S5: Pen types and ink sheerness. P1. In progress
+### E8-S5: Pen types and ink sheerness. P1. Done
 As a user, I can draw with different pens and make the ink see-through.
 Done when: the Draw tab offers Fine liner (even line), Fountain pen (thick and thin with direction, like a calligraphy nib), Brush (tapers off at the end) and Dotting tool (a row of dots), plus an Ink slider from Sheer to Solid; each line keeps its own pen and sheerness, with touch and mouse, in the exported picture, and older drawings still show as before.
+Built as: two optional fields on each line, `pen` and `opacity` (lines without them are solid fine-liner lines, so older designs and share links look the same). `src/components/PenStroke.tsx` draws each pen; every pen except the fine liner is one filled outline, so a sheer line is evenly see-through even where it crosses itself. The pen row has a little picture of each pen's line, and the recipe names the pens used.
 
 ---
 
@@ -310,4 +311,5 @@ Done when: the Draw tab offers Fine liner (even line), Fountain pen (thick and t
 | 2026-11-09 | The user test (E5-S5) is on hold at the owner's request; E8 no longer waits for it. Order: E6, E7, E8 |
 | 2026-11-09 | Visual style: "Soft blush" (blush background, rose accent, Nunito), chosen by the owner over "Salon chic" and "Playful pop" |
 | 2026-11-09 | The finish switch lives in the Colour tab rather than its own tab: it's part of the polish, and fewer tabs fit better on a phone |
+| 2026-11-09 | Added E8-S5 at the owner's request: pen types for drawing (fine liner, fountain pen, brush, dotting tool) and an adjustable ink sheerness. Polish sheerness is the jelly effect's slider (E8-S4) |
 | 2026-11-09 | Zoom lives in the hands area (buttons bottom-right), not the toolbar, so it's available in every tab. While zoomed, a one-finger drag pans; stickers are moved by dragging them directly |

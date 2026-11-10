@@ -90,8 +90,10 @@ function App() {
   const [drawTabOpen, setDrawTabOpen] = useState(false)
   const [drawSettings, setDrawSettings] = useState<DrawSettings>({
     tool: 'pen',
+    pen: 'fine',
     color: '#1C1C1C',
     width: 1,
+    opacity: 1,
   })
   // While copying a nail's design: the nail being copied. Nail taps then paste its design.
   const [copyFrom, setCopyFrom] = useState<number | null>(null)

@@ -8,10 +8,11 @@
 
 import type Konva from 'konva'
 import { useState } from 'react'
-import { Circle, Group, Line, Path, Rect, Text } from 'react-konva'
-import type { Nail, StickerChanges, Stroke } from '../state/nailState'
+import { Circle, Group, Path, Rect, Text } from 'react-konva'
+import type { Nail, PenType, StickerChanges, Stroke } from '../state/nailState'
 import { darken, lighten } from '../colour'
 import NailEffect from './NailEffect'
+import PenStroke from './PenStroke'
 import { freeEdgeLength, frenchTipPath, nailShapePath } from '../shapes'
 import {
   FINGERS,
@@ -125,6 +126,8 @@ export type DrawingTool = {
   tool: 'pen' | 'eraser'
   color: string
   width: number // line thickness, in drawing units
+  pen: PenType
+  opacity: number // ink: 0.15 (sheer) to 1 (solid)
   onAddStroke: (nailId: number, stroke: Stroke) => void
   onEraseStroke: (nailId: number, strokeId: string) => void
 }
@@ -339,6 +342,8 @@ function FingerShape({
         id: `stroke-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         color: tool.color,
         width: tool.width,
+        pen: tool.pen,
+        opacity: tool.opacity,
         points: line,
       })
     }
@@ -420,21 +425,18 @@ function FingerShape({
             />
           )}
           {/* Freehand lines go over the polish and tip, under the stickers. */}
-          {[...nail.strokes, ...(liveLine && drawing ? [{ id: 'live', color: drawing.color, width: drawing.width, points: liveLine }] : [])].map(
-            (stroke) => (
-              <Line
-                key={stroke.id}
-                y={nailCentreY}
-                points={stroke.points.length === 2 ? [...stroke.points, stroke.points[0] + 0.01, stroke.points[1]] : stroke.points}
-                stroke={stroke.color}
-                strokeWidth={stroke.width}
-                lineCap="round"
-                lineJoin="round"
-                tension={0.35}
-                listening={false}
-              />
-            ),
-          )}
+          {[
+            ...nail.strokes,
+            ...(liveLine && drawing
+              ? [{ id: 'live', color: drawing.color, width: drawing.width, pen: drawing.pen, opacity: drawing.opacity, points: liveLine }]
+              : []),
+          ].map((stroke) => (
+            <PenStroke
+              key={stroke.id}
+              stroke={stroke}
+              y={nailCentreY}
+            />
+          ))}
           {nail.stickers.map((sticker) => (
             // Each sticker is a group of layers (see src/stickers.ts). The group is what moves,
             // resizes and turns; its layers just draw.

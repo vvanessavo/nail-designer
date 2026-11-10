@@ -134,7 +134,8 @@ type Nail = {
   frenchTipThickness: number // share of the free edge the tip covers in the middle (0.3 to 1.3)
   frenchTipStyle: 'classic' | 'deep' | 'micro' | 'v' | 'side' | 'double' | 'reverse'
   stickers: Sticker[]
-  strokes: Stroke[]       // freehand drawing: { id, color, width, points: [x, y, ...] }
+  strokes: Stroke[]       // freehand drawing: { id, color, width, points: [x, y, ...], pen?, opacity? }
+                          // pen: 'fine' | 'fountain' | 'brush' | 'dots'; opacity: 0.15 (sheer) to 1
 }
 
 type AppState = {
