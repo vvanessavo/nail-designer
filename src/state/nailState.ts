@@ -74,6 +74,9 @@ export type Action =
   | { type: 'ADD_STICKER'; nailId: number; sticker: Sticker }
   | { type: 'UPDATE_STICKER'; nailId: number; stickerId: string; changes: StickerChanges }
   | { type: 'DELETE_STICKER'; nailId: number; stickerId: string }
+  // Copies one nail's whole design onto other nails. `stamp` (e.g. the time) makes the copied
+  // stickers' ids unique.
+  | { type: 'PASTE_DESIGN'; fromNailId: number; toNailIds: number[]; stamp: number }
 
 const NAIL_COUNT = 10
 
@@ -111,6 +114,13 @@ export const initialState: AppState = {
   nails: Array.from({ length: NAIL_COUNT }, (_, id) => createNail(id)),
   selectedNailIds: [],
   applyToAll: true,
+}
+
+// A nail's everyday name, e.g. nail 2 is the "left middle finger". Nails are numbered left to
+// right on screen: left pinky (0) to left thumb (4), then right thumb (5) to right pinky (9).
+const FINGER_NAMES = ['pinky', 'ring finger', 'middle finger', 'index finger', 'thumb']
+export function nailName(nailId: number): string {
+  return nailId < 5 ? `left ${FINGER_NAMES[nailId]}` : `right ${FINGER_NAMES[9 - nailId]}`
 }
 
 // Whether a change (shape, colour...) will apply to this nail: every nail in "All nails"
@@ -171,6 +181,27 @@ export function nailReducer(state: AppState, action: Action): AppState {
             : nail,
         ),
       }
+    case 'PASTE_DESIGN': {
+      const from = state.nails.find((nail) => nail.id === action.fromNailId)
+      if (!from) return state
+      return {
+        ...state,
+        nails: state.nails.map((nail) =>
+          action.toNailIds.includes(nail.id) && nail.id !== from.id
+            ? {
+                // Everything about the design, but the nail keeps its own number, and each
+                // copied sticker gets its own id.
+                ...from,
+                id: nail.id,
+                stickers: from.stickers.map((sticker) => ({
+                  ...sticker,
+                  id: `${sticker.id}~${nail.id}~${action.stamp}`,
+                })),
+              }
+            : nail,
+        ),
+      }
+    }
     case 'SET_APPLY_TO_ALL':
       return { ...state, applyToAll: action.applyToAll }
     case 'SET_SKIN_TONE':
@@ -273,8 +304,9 @@ export type HistoryAction =
 export const initialHistory: History = { past: [], present: initialState, lastChange: null }
 
 // Two changes with the same key, close together, count as one undo step: same action,
-// and for stickers the same sticker.
+// and for stickers the same sticker. Each paste of a copied design is its own step.
 function changeKey(action: Action): string {
+  if (action.type === 'PASTE_DESIGN') return `${action.type}:${action.stamp}` // never merged
   return 'stickerId' in action ? `${action.type}:${action.stickerId}` : action.type
 }
 

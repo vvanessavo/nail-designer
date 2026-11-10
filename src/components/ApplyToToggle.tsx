@@ -7,6 +7,7 @@ type ApplyToToggleProps = {
   selectedCount: number // how many nails are chosen
   onChange: (applyToAll: boolean) => void
   onClear: () => void
+  onCopyDesign?: () => void // offered when exactly one nail is chosen
 }
 
 const OPTIONS = [
@@ -14,7 +15,7 @@ const OPTIONS = [
   { applyToAll: true, label: 'All nails' },
 ]
 
-function ApplyToToggle({ applyToAll, selectedCount, onChange, onClear }: ApplyToToggleProps) {
+function ApplyToToggle({ applyToAll, selectedCount, onChange, onClear, onCopyDesign }: ApplyToToggleProps) {
   return (
     <div className="flex flex-col items-center gap-1">
       <div
@@ -51,6 +52,15 @@ function ApplyToToggle({ applyToAll, selectedCount, onChange, onClear }: ApplyTo
               className="cursor-pointer font-semibold text-rose-700 underline underline-offset-2"
             >
               Clear
+            </button>
+          )}
+          {selectedCount === 1 && onCopyDesign && (
+            <button
+              type="button"
+              onClick={onCopyDesign}
+              className="cursor-pointer font-semibold text-rose-700 underline underline-offset-2"
+            >
+              Copy design
             </button>
           )}
         </p>
