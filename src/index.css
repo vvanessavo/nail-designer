@@ -1,11 +1,10 @@
 @import "tailwindcss";
 
-/* The app's look ("Soft blush"): a warm blush background, white panels, warm grey text
+/* The app's look: a white background, warm grey text
    (Tailwind stone), one rose accent (Tailwind rose-600) and the rounded Nunito font,
    loaded in index.html. */
 @theme {
   --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
-  --color-blush: #fff5f5;
 }
 
 /* A clear rose ring around whatever has keyboard focus. :focus-visible means it only shows

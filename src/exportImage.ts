@@ -10,7 +10,7 @@ import type { RecipeGroup } from './recipe'
 const PIXELS_PER_UNIT = 4
 // Space around the hands, in drawing units.
 const MARGIN = 20
-const BACKGROUND = '#FFF5F5' // the app's blush background (--color-blush in index.css)
+const BACKGROUND = '#FFFFFF' // the app's white background
 
 type Size = { width: number; height: number }
 
