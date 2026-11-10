@@ -75,6 +75,13 @@ function Hands({
     .filter((nail) => isTargeted(state, nail.id))
     .map((nail) => nail.id)
 
+  // Fonts for nail text load in the background. When they arrive, draw again so text that was
+  // measured and drawn with a stand-in font gets its real font.
+  const [, setFontsLoaded] = useState(false)
+  useEffect(() => {
+    document.fonts?.ready.then(() => setFontsLoaded(true))
+  }, [])
+
   // Measure the box the hands can fill, and keep measuring when it changes size
   // (window resized, a toolbar panel opened or closed).
   const boxRef = useRef<HTMLDivElement>(null)

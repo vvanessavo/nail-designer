@@ -24,10 +24,11 @@ import {
   type Action,
   type StickerChanges,
   type Stroke,
+  type TextFont,
 } from './state/nailState'
 import { exportDesign } from './exportImage'
 import { drawingSize } from './handGeometry'
-import { STICKER_DESIGNS, type StickerType } from './stickers'
+import { originalColorOf, TEXT_COLOR, type StickerType } from './stickers'
 
 
 // A unique id for each sticker, so React and Konva can tell them apart.
@@ -52,7 +53,9 @@ function App() {
   )
   // The sticker picked in the Stickers tab and waiting to be placed. While one is picked,
   // tapping a nail places it instead of choosing that nail.
-  const [pickedSticker, setPickedSticker] = useState<StickerType | null>(null)
+  const [pickedSticker, setPickedSticker] = useState<StickerType | 'text' | null>(null)
+  // The words typed for new text, and their font.
+  const [textDraft, setTextDraft] = useState<{ text: string; font: TextFont }>({ text: '', font: 'script' })
   // Whether the Stickers tab is open. While it is, the hands are in "sticker mode": placed
   // stickers can be tapped to edit them, and nail taps don't choose nails.
   const [stickersTabOpen, setStickersTabOpen] = useState(false)
@@ -73,7 +76,7 @@ function App() {
 
   // useCallback keeps these functions the same between renders, because StickerPanel
   // runs an effect that depends on them.
-  const handlePickSticker = useCallback((type: StickerType | null) => {
+  const handlePickSticker = useCallback((type: StickerType | 'text' | null) => {
     setPickedSticker(type)
     if (type) setSelectedStickerId(null) // placing new stickers, so stop editing one
   }, [])
@@ -91,6 +94,8 @@ function App() {
       // Copy mode: a tap pastes the copied design onto that nail.
       dispatch({ type: 'PASTE_DESIGN', fromNailId: copyFrom, toNailIds: [nailId], stamp: Date.now() })
     } else if (pickedSticker) {
+      const isText = pickedSticker === 'text'
+      if (isText && textDraft.text.trim() === '') return // nothing typed yet
       dispatch({
         type: 'ADD_STICKER',
         nailId,
@@ -102,7 +107,8 @@ function App() {
           y: at?.y ?? 0,
           scale: 1,
           rotation: 0,
-          color: stickerColor ?? STICKER_DESIGNS[pickedSticker].defaultColor,
+          color: stickerColor ?? (isText ? TEXT_COLOR : originalColorOf(pickedSticker)),
+          ...(isText ? { text: textDraft.text.trim(), font: textDraft.font } : {}),
         },
       })
     } else if (stickersTabOpen) {
@@ -343,7 +349,7 @@ function App() {
           color={selectedSticker?.color ?? stickerColor}
           isOriginalColor={
             selectedSticker
-              ? selectedSticker.color === STICKER_DESIGNS[selectedSticker.type].defaultColor
+              ? selectedSticker.color === originalColorOf(selectedSticker.type)
               : stickerColor === null
           }
           hasSelectedSticker={selectedSticker !== undefined}
@@ -356,11 +362,31 @@ function App() {
                 type: 'UPDATE_STICKER',
                 nailId: selectedNail.id,
                 stickerId: selectedSticker.id,
-                changes: { color: color ?? STICKER_DESIGNS[selectedSticker.type].defaultColor },
+                changes: { color: color ?? originalColorOf(selectedSticker.type) },
               })
             }
           }}
           onDelete={deleteSelectedSticker}
+          // The text box shows the selected text sticker's words (and edits them), otherwise
+          // the words for the next text placed.
+          text={
+            selectedSticker?.type === 'text'
+              ? { text: selectedSticker.text ?? '', font: selectedSticker.font ?? 'script' }
+              : textDraft
+          }
+          onTextChange={(draft) => {
+            if (selectedNail && selectedSticker?.type === 'text') {
+              dispatch({
+                type: 'UPDATE_STICKER',
+                nailId: selectedNail.id,
+                stickerId: selectedSticker.id,
+                changes: draft,
+              })
+            } else {
+              setTextDraft(draft)
+              handlePickSticker('text') // typing gets the text ready to place
+            }
+          }}
         />
       ),
     },

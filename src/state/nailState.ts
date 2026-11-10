@@ -22,12 +22,17 @@ export type Sticker = {
     | 'moon'
     | 'twinkle'
     | 'swirl'
+    | 'text' // words or initials; see `text` and `font`
   x: number // offset from the centre of the nail, in drawing units (0 = centred)
   y: number
   scale: number // 1 = the default size, about a third of the nail's width
   rotation: number // degrees, turning clockwise
   color: string // the sticker's main colour (details like a daisy's centre keep their own)
+  text?: string // only for type 'text'
+  font?: TextFont // only for type 'text'
 }
+
+export type TextFont = 'script' | 'bold'
 
 // A line drawn on a nail. Points are x, y pairs relative to the middle of the nail (like a
 // sticker's position), in the same units as the drawing.
@@ -63,7 +68,9 @@ export type AppState = {
 }
 
 // The parts of a placed sticker that can be changed: moving, resizing, turning and recolouring.
-export type StickerChanges = Partial<Pick<Sticker, 'x' | 'y' | 'scale' | 'rotation' | 'color'>>
+export type StickerChanges = Partial<
+  Pick<Sticker, 'x' | 'y' | 'scale' | 'rotation' | 'color' | 'text' | 'font'>
+>
 
 // Every change to the state is described as an action. The reducer below decides what each
 // action does, so all state changes live in one place.
