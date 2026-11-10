@@ -55,7 +55,7 @@ function StickerPanel({
     picked === 'text' ? 'Text' : STICKERS.find((sticker) => sticker.type === picked)?.label
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-3">
       {/* One row that scrolls sideways; p-1 leaves room for the ring around the picked one.
           Each preview shows the sticker in the colour it will be placed in. */}
       <div
@@ -154,9 +154,9 @@ function StickerPanel({
           ))}
         </div>
       </div>
-      {/* min-h keeps room for 3 lines whatever the hint says, so the panel never changes height
+      {/* min-h keeps room for the longest hint (3 lines on a phone, 2 on a wider screen), so the panel never changes height
           when a sticker is tapped (that would re-fit the hands and move the sticker away). */}
-      <p className="min-h-12 text-center text-xs text-stone-500">
+      <p className="min-h-12 text-center text-xs text-stone-500 sm:min-h-8">
         {picked === 'text'
           ? text.text.trim()
             ? 'Tap a nail to add your text. Tap Aa again when you\'re done.'

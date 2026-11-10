@@ -78,7 +78,7 @@ function DrawPanel({ settings, hasDrawing, onChange, onClearAll, onOpenChange, r
   }, [onOpenChange])
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-3">
       <div className="flex flex-wrap items-center justify-center gap-3">
         <div
           role="group"
@@ -119,20 +119,21 @@ function DrawPanel({ settings, hasDrawing, onChange, onClearAll, onOpenChange, r
             Eraser
           </button>
         </div>
-        <button
-          type="button"
-          onClick={onClearAll}
-          disabled={!hasDrawing}
-          className="h-9 cursor-pointer rounded-full border border-rose-200 px-3 text-sm font-semibold text-rose-700 transition enabled:hover:bg-rose-50 enabled:active:bg-rose-100 disabled:cursor-default disabled:opacity-40"
-        >
-          Clear all drawings
-        </button>
       </div>
-      <p className="text-center text-xs text-stone-500">
-        {settings.tool === 'pen'
-          ? 'Draw on a nail with your finger or mouse. Tap for a dot. Zoom in for fine detail. Slide Ink towards Sheer for see-through lines.'
-          : 'Touch a line to remove it.'}
+      <p className="flex flex-wrap items-center justify-center gap-x-2 text-center text-xs text-stone-500">
+        {settings.tool === 'pen' ? 'Draw on a nail. Tap for a dot. Zoom in for detail.' : 'Touch a line to remove it.'}
+        {hasDrawing && (
+          <button
+            type="button"
+            onClick={onClearAll}
+            className="cursor-pointer font-semibold text-rose-700 underline underline-offset-2"
+          >
+            Clear all drawings
+          </button>
+        )}
       </p>
+      {/* Thickness and ink side by side, or one above the other on a narrow phone. */}
+      <div className="flex w-full flex-col items-center gap-x-6 sm:flex-row sm:justify-center">
       <label className="flex w-full max-w-72 items-center gap-3 text-xs text-stone-500">
         Thin
         <input
@@ -161,6 +162,7 @@ function DrawPanel({ settings, hasDrawing, onChange, onClearAll, onOpenChange, r
         />
         Solid
       </label>
+      </div>
       <ColourPicker
         label="Pen colours"
         value={settings.color}

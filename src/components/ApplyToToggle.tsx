@@ -26,27 +26,51 @@ function ApplyToToggle({
 }: ApplyToToggleProps) {
   return (
     <div className="flex flex-col items-center gap-1">
-      <div
-        role="group"
-        aria-label="Apply changes to"
-        className="flex rounded-full bg-stone-100 p-1"
-      >
-        {OPTIONS.map((option) => {
-          const isActive = option.applyToAll === applyToAll
-          return (
+      {/* The switch, with the mirror links beside it (below it on a narrow phone). */}
+      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+        <div
+          role="group"
+          aria-label="Apply changes to"
+          className="flex rounded-full bg-stone-100 p-1"
+        >
+          {OPTIONS.map((option) => {
+            const isActive = option.applyToAll === applyToAll
+            return (
+              <button
+                key={option.label}
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => onChange(option.applyToAll)}
+                className={`cursor-pointer rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+                  isActive ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-800'
+                }`}
+              >
+                {option.label}
+              </button>
+            )
+          })}
+        </div>
+        {/* Mirror: copy one hand's whole design onto the other, as a mirror image. */}
+        {onMirror && (
+          <p className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-stone-500">
+            Mirror:
             <button
-              key={option.label}
               type="button"
-              aria-pressed={isActive}
-              onClick={() => onChange(option.applyToAll)}
-              className={`cursor-pointer rounded-full px-4 py-1.5 text-sm font-semibold transition ${
-                isActive ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-800'
-              }`}
+              onClick={() => onMirror('left')}
+              className="cursor-pointer font-semibold text-rose-700 underline underline-offset-2"
             >
-              {option.label}
+              left hand to right
             </button>
-          )
-        })}
+            ·
+            <button
+              type="button"
+              onClick={() => onMirror('right')}
+              className="cursor-pointer font-semibold text-rose-700 underline underline-offset-2"
+            >
+              right hand to left
+            </button>
+          </p>
+        )}
       </div>
       {/* Always shown, and always room for two lines, so the panel keeps its height when you
           switch modes or choose nails. (A taller panel would shrink the hands and move them
@@ -76,27 +100,6 @@ function ApplyToToggle({
           </button>
         )}
       </p>
-      {/* Mirror: copy one hand's whole design onto the other, as a mirror image. */}
-      {onMirror && (
-        <p className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-stone-500">
-          Mirror:
-          <button
-            type="button"
-            onClick={() => onMirror('left')}
-            className="cursor-pointer font-semibold text-rose-700 underline underline-offset-2"
-          >
-            left hand to right
-          </button>
-          ·
-          <button
-            type="button"
-            onClick={() => onMirror('right')}
-            className="cursor-pointer font-semibold text-rose-700 underline underline-offset-2"
-          >
-            right hand to left
-          </button>
-        </p>
-      )}
     </div>
   )
 }

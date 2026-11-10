@@ -39,7 +39,7 @@ function ShapePicker({ value, onChange }: ShapePickerProps) {
               type="button"
               onClick={() => onChange(shape)}
               aria-pressed={isSelected}
-              className={`flex w-18 shrink-0 cursor-pointer flex-col items-center gap-1 rounded-xl border bg-white px-2 py-2 text-xs font-semibold transition active:scale-95 ${
+              className={`flex w-18 shrink-0 cursor-pointer flex-col items-center gap-0.5 rounded-xl border bg-white px-2 py-1.5 text-xs font-semibold transition active:scale-95 ${
                 isSelected
                   ? 'border-rose-600 text-rose-700 ring-1 ring-rose-600'
                   : 'border-stone-200 text-stone-600 hover:border-stone-400'
@@ -48,7 +48,7 @@ function ShapePicker({ value, onChange }: ShapePickerProps) {
               <svg
                 // Tall enough for the longest shape (stiletto).
                 viewBox="-14 -31 28 53"
-                className="h-12 w-8"
+                className="h-8 w-6"
                 aria-hidden="true"
               >
                 <path

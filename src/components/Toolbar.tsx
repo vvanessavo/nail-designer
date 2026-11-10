@@ -43,7 +43,7 @@ function Toolbar({ tabs, actions }: ToolbarProps) {
                 aria-controls={`panel-${tab.id}`}
                 onClick={() => setOpenTabId(isOpen ? null : tab.id)}
                 // The focus ring sits inside the tab, because the scrolling row would cut off one outside it.
-                className={`shrink-0 cursor-pointer border-b-2 px-4 py-3 text-sm font-semibold transition focus-visible:-outline-offset-2 ${
+                className={`shrink-0 cursor-pointer border-b-2 px-4 py-2.5 text-sm font-semibold transition focus-visible:-outline-offset-2 ${
                   isOpen
                     ? 'border-rose-600 text-rose-700'
                     : 'border-transparent text-stone-600 hover:text-stone-900'
@@ -62,9 +62,9 @@ function Toolbar({ tabs, actions }: ToolbarProps) {
           id={`panel-${openTab.id}`}
           role="tabpanel"
           aria-labelledby={`tab-${openTab.id}`}
-          // Capped at 45% of the screen height (scrolls inside if taller), so the hands
-          // always stay visible below the toolbar.
-          className="mx-auto max-h-[45dvh] max-w-2xl overflow-y-auto border-t border-rose-100 px-4 py-4"
+          // Capped at 36% of the screen height (scrolls inside if taller), so the hands
+          // always keep most of the screen.
+          className="mx-auto max-h-[36dvh] max-w-2xl overflow-y-auto border-t border-rose-100 px-4 py-3"
         >
           {openTab.content}
         </div>

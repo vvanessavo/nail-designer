@@ -31,7 +31,7 @@ function MyDesignsPanel({
   const [name, setName] = useState('')
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-3">
       {/* Ready-made looks: one row that scrolls sideways. */}
       <div className="flex w-full max-w-md flex-col gap-2">
         <span className="text-sm font-semibold text-stone-700">Start from a look</span>

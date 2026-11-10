@@ -17,7 +17,7 @@ function FinishPicker({ value, onChange }: FinishPickerProps) {
     <div
       role="group"
       aria-label="Finish"
-      className="flex rounded-full bg-stone-100 p-1"
+      className="flex shrink-0 rounded-full bg-stone-100 p-1"
     >
       {FINISHES.map(({ finish, label }) => {
         const isActive = finish === value
