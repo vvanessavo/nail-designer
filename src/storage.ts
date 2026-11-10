@@ -9,6 +9,7 @@ import { createNail, initialState, type Design, type Nail } from './state/nailSt
 
 const CURRENT_KEY = 'nail-designer.v1.current'
 const DESIGNS_KEY = 'nail-designer.v1.designs'
+const RECENT_KEY = 'nail-designer.v1.recent-colours'
 
 export type SavedDesign = {
   id: string
@@ -59,6 +60,13 @@ export function loadSavedDesigns(): SavedDesign[] {
     return design ? [{ ...item, design } as SavedDesign] : []
   })
 }
+
+// The colours used most recently (newest first), shown at the start of every colour row.
+export function loadRecentColors(): string[] {
+  const list = read(RECENT_KEY)
+  return Array.isArray(list) ? list.filter((item): item is string => typeof item === 'string') : []
+}
+export const saveRecentColors = (colors: string[]): boolean => write(RECENT_KEY, colors)
 
 // Saves the whole list. Returns false if the browser refused (e.g. storage is full).
 export const storeSavedDesigns = (designs: SavedDesign[]): boolean => write(DESIGNS_KEY, designs)

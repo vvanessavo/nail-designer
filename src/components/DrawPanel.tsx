@@ -20,9 +20,10 @@ type DrawPanelProps = {
   onChange: (settings: DrawSettings) => void
   onClearAll: () => void
   onOpenChange: (open: boolean) => void // tells App when this tab opens and closes
+  recentColors: string[]
 }
 
-function DrawPanel({ settings, hasDrawing, onChange, onClearAll, onOpenChange }: DrawPanelProps) {
+function DrawPanel({ settings, hasDrawing, onChange, onClearAll, onOpenChange, recentColors }: DrawPanelProps) {
   // Tell App the Draw tab is open, so taps on nails draw instead of choosing nails.
   useEffect(() => {
     onOpenChange(true)
@@ -83,6 +84,7 @@ function DrawPanel({ settings, hasDrawing, onChange, onClearAll, onOpenChange }:
         label="Pen colours"
         value={settings.color}
         onChange={(color) => onChange({ ...settings, color, tool: 'pen' })}
+        recent={recentColors}
         extraPresets={[
           { name: 'Gold', hex: '#D4AF37' },
           { name: 'Silver', hex: '#C0C0C0' },

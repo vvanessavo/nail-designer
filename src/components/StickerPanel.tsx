@@ -24,6 +24,7 @@ type StickerPanelProps = {
   onColorChange: (color: string | null) => void
   onDelete: () => void // removes the selected sticker
   text: { text: string; font: TextFont } // the words in the text box, and their font
+  recentColors: string[]
   onTextChange: (text: { text: string; font: TextFont }) => void
 }
 
@@ -38,6 +39,7 @@ function StickerPanel({
   onDelete,
   text,
   onTextChange,
+  recentColors,
 }: StickerPanelProps) {
   // Tell App the Stickers tab is open. When this panel closes (the tab is closed or another
   // tab opens), put any picked sticker down, so tapping a nail goes back to choosing nails.
@@ -178,6 +180,7 @@ function StickerPanel({
             label="Sticker colours"
             value={isOriginalColor ? '' : (color ?? '')}
             onChange={onColorChange}
+            recent={recentColors}
             extraPresets={STICKER_EXTRA_COLOURS}
             compact
           />
