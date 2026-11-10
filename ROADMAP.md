@@ -18,10 +18,11 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 | 1.1 | E6: Richer design | More shapes, length, special bases, copy design, redo, freehand, text, autosave, mirror hands, recent colours | Done |
 | 1.2 | E7: Start and share | Starter designs, design recipe sheet, share link | Done |
 | 1.3 | E8: More nail art | French tip styles, gems and pearls, patterns, trending effects, pen types | Done |
+| 1.4 | E9: Studio extras | Textured finishes, skin undertone and grayscale hand, layers, 3D nail art, try on a hand photo | In progress |
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs), E6-S9 (mirror hands) and E6-S10 (recent colours): **E6 is done**. **E7 is done** (starter designs, recipe sheet, share link). E8-S1 (French tip styles), E8-S2 (gems and pearls), E8-S3 (patterns), E8-S4 (trending effects) and E8-S5 (pen types and ink sheerness, added at the owner's request) are done: **E8 is done**. Nothing is queued; the user test (E5-S5) is next when the owner wants it. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs), E6-S9 (mirror hands) and E6-S10 (recent colours): **E6 is done**. **E7 is done** (starter designs, recipe sheet, share link). E8-S1 (French tip styles), E8-S2 (gems and pearls), E8-S3 (patterns), E8-S4 (trending effects) and E8-S5 (pen types and ink sheerness, added at the owner's request) are done: **E8 is done**. The owner then asked for new features: **E9** (textured finishes, undertone and grayscale, layers, 3D nail art, try on a hand photo). E9-S1 (textured finishes) is done. Now: **E9-S2, skin undertone and grayscale hand**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -294,6 +295,35 @@ Built as: two optional fields on each line, `pen` and `opacity` (lines without t
 
 ---
 
+## E9: Studio extras (Release 1.4)
+
+Features the owner picked from the later releases on 2026-11-09, built in this order.
+
+### E9-S1: Textured finishes. P1. Done
+As a user, I can give my polish a textured finish, not just shiny or matte.
+Done when: the finish row offers Shiny, Matte, Satin (a soft, wide sheen), Velvet (a glowing middle with darker edges, like magnetic velvet) and Sugar (a gritty, sparkly texture); each works on every colour, effect and shape, shows in the exported picture and is named in the recipe.
+Built as: `Finish` has three more values (`satin`, `velvet`, `sugar`). Every finish is drawn by `src/components/NailFinish.tsx`, over everything on the nail like a top coat. Sugar's grains are the same every time for each nail (`src/random.ts`). The finish row is back on its own line in the Colour tab, so all five are visible.
+
+### E9-S2: Skin undertone and grayscale hand. P1. In progress
+As a user, I can fine-tune the skin to match mine, or show the hand in grey so the nails stand out.
+Done when: the Skin tone tab has an undertone switch (Warm, Neutral, Cool) that shifts every skin tone, and a Grayscale hand option that turns the hand grey while the nails keep their colours; both are saved with the design and show in the exported picture.
+
+### E9-S3: Layers. P1. Backlog
+As a user, I can choose what sits in front on a nail.
+Done when: with a sticker, gem or text selected, Bring to front and Send to back buttons move it in front of or behind the other stickers and the drawing on that nail; drawings can sit above or below stickers; the order is saved, undoable and shows in the exported picture.
+Depends on: E3-S4, E6-S6.
+
+### E9-S4: 3D nail art. P2. Backlog
+As a user, I can add raised, sculpted nail art.
+Done when: a 3D section in the Stickers tab offers at least a bow, a flower, a heart and a charm that look raised (shading, highlight and a soft shadow on the nail); they place, move, resize, turn, recolour and delete like other stickers and show in the exported picture.
+Depends on: E8-S2.
+
+### E9-S5: Try on a hand photo. P2. Backlog
+As a user, I can see my design on a photo of my own hand.
+Done when: I can pick a photo of my hand, place the five nails of one hand on my fingertips (drag each nail onto a nail in the photo, resize and turn it), and see and save the result; the photo never leaves the browser.
+
+---
+
 ## Decisions log
 
 | Date | Decision |
@@ -313,6 +343,7 @@ Built as: two optional fields on each line, `pen` and `opacity` (lines without t
 | 2026-11-09 | The finish switch lives in the Colour tab rather than its own tab: it's part of the polish, and fewer tabs fit better on a phone |
 | 2026-11-09 | Added E8-S5 at the owner's request: pen types for drawing (fine liner, fountain pen, brush, dotting tool) and an adjustable ink sheerness. Polish sheerness is the jelly effect's slider (E8-S4) |
 | 2026-11-09 | The background is white instead of blush, in the app and the exported picture, at the owner's request. The rose accent and Nunito stay |
-| 2026-11-09 | Compact toolbar at the owner's request: open panels capped at 36% of the screen (was 45%), tighter spacing, and rows that share a line on wider screens (mirror links beside Each/All, Length on one line, effect beside finish, the two Draw sliders side by side) |
+| 2026-11-09 | Compact toolbar at the owner's request: open panels capped at 36% of the screen (was 45%), tighter spacing, and rows that share a line on wider screens (mirror links beside Each/All, Length on one line, the two Draw sliders side by side) |
 | 2026-11-09 | Easier sticker editing at the owner's request: a newly placed sticker shows its handles straight away, and placed stickers can be tapped and dragged even while a sticker is picked (a tap on empty nail still places one). The handles sit further out so a small sticker can always be grabbed in the middle |
+| 2026-11-09 | The owner asked for new features after E8 and picked E9: textured finishes, undertone and grayscale hand, layers, 3D nail art and try on a hand photo. Accounts and cloud save, and side-by-side comparison stay later |
 | 2026-11-09 | Zoom lives in the hands area (buttons bottom-right), not the toolbar, so it's available in every tab. While zoomed, a one-finger drag pans; stickers are moved by dragging them directly |

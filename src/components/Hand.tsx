@@ -8,10 +8,11 @@
 
 import type Konva from 'konva'
 import { useState } from 'react'
-import { Circle, Group, Path, Rect, Text } from 'react-konva'
+import { Circle, Group, Path, Text } from 'react-konva'
 import type { Nail, PenType, StickerChanges, Stroke } from '../state/nailState'
 import { darken, lighten } from '../colour'
 import NailEffect from './NailEffect'
+import NailFinish from './NailFinish'
 import PenStroke from './PenStroke'
 import { freeEdgeLength, frenchTipPath, nailShapePath } from '../shapes'
 import {
@@ -26,10 +27,6 @@ import { paint, STICKER_DESIGNS, STICKER_SIZE, TEXT_FONTS, TEXT_SIZE } from '../
 
 const NAIL_EDGE = 'rgba(150, 90, 80, 0.5)'
 const DOT_COLOR = '#292524' // Tailwind stone-800
-// Matte polish looks a little paler and flatter: a faint white layer over the whole nail.
-const MATTE_HAZE = 'rgba(255, 255, 255, 0.14)'
-// Shiny polish catches the light: white streaks that fade out down the nail.
-const GLOSS_STOPS = [0, 'rgba(255, 255, 255, 0.7)', 1, 'rgba(255, 255, 255, 0)']
 
 // A sticker at scale 1 is this fraction of the nail's width: small, like real nail stickers,
 // so two or three fit on one nail.
@@ -542,38 +539,13 @@ function FingerShape({
             </Group>
           ))}
           {/* The finish goes over everything, like a top coat. */}
-          {nail.finish === 'matte' && (
-            <Path
-              data={nailOutline}
-              fill={MATTE_HAZE}
-              listening={false}
-            />
-          )}
-          {nail.finish === 'shiny' && (
-            <Group listening={false}>
-              {/* A long streak down the left side and a short one on the right. */}
-              <Rect
-                x={-nailWidth * 0.32}
-                y={nailTop * 0.7}
-                width={nailWidth * 0.13}
-                height={(bedLength - nailTop * 0.7) * 0.75}
-                cornerRadius={nailWidth * 0.065}
-                fillLinearGradientStartPoint={{ x: 0, y: 0 }}
-                fillLinearGradientEndPoint={{ x: 0, y: (bedLength - nailTop * 0.7) * 0.75 }}
-                fillLinearGradientColorStops={GLOSS_STOPS}
-              />
-              <Rect
-                x={nailWidth * 0.2}
-                y={nailTop * 0.6}
-                width={nailWidth * 0.08}
-                height={(bedLength - nailTop * 0.6) * 0.3}
-                cornerRadius={nailWidth * 0.04}
-                fillLinearGradientStartPoint={{ x: 0, y: 0 }}
-                fillLinearGradientEndPoint={{ x: 0, y: (bedLength - nailTop * 0.6) * 0.3 }}
-                fillLinearGradientColorStops={GLOSS_STOPS}
-              />
-            </Group>
-          )}
+          <NailFinish
+            nail={nail}
+            outline={nailOutline}
+            top={nailTop}
+            bottom={bedLength}
+            width={nailWidth}
+          />
         </Group>
         {/* The nail's edge, drawn last so the tip and stickers don't cover it. */}
         <Path

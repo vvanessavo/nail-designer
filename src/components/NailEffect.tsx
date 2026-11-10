@@ -8,6 +8,7 @@ import type Konva from 'konva'
 import { Path, Shape } from 'react-konva'
 import { darken, lighten, mix } from '../colour'
 import type { Nail } from '../state/nailState'
+import { seeded } from '../random'
 
 type NailEffectProps = {
   nail: Nail
@@ -15,16 +16,6 @@ type NailEffectProps = {
   top: number // the tip of the nail
   bottom: number // the cuticle
   width: number // the nail's width
-}
-
-// A pseudo-random number generator that always gives the same numbers for the same seed, so
-// a nail's glitter doesn't jump around every time something is redrawn.
-function seeded(seed: number) {
-  let value = seed * 9301 + 49297
-  return () => {
-    value = (value * 9301 + 49297) % 233280
-    return value / 233280
-  }
 }
 
 // A fully see-through version of a colour. Fading to this (rather than to see-through black)
