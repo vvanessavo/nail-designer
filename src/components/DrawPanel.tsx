@@ -175,25 +175,32 @@ function DrawPanel({
       </label>
       </div>
       {/* Whether lines sit behind the stickers on a nail, or in front of them. */}
-      <div
-        role="group"
-        aria-label="Lines and stickers"
-        className="flex items-center rounded-full bg-stone-100 p-1"
-      >
-        <span className="px-2 text-xs font-semibold text-stone-500">Lines go</span>
-        {[false, true].map((over) => (
-          <button
-            key={String(over)}
-            type="button"
-            aria-pressed={linesOverStickers === over}
-            onClick={() => onLinesOverStickersChange(over)}
-            className={`cursor-pointer rounded-full px-3 py-1.5 text-sm font-semibold transition ${
-              linesOverStickers === over ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-800'
-            }`}
-          >
-            {over ? 'Over stickers' : 'Under stickers'}
-          </button>
-        ))}
+      <div className="flex items-center gap-2">
+        <span
+          id="lines-label"
+          className="text-sm font-semibold text-stone-700"
+        >
+          Lines go
+        </span>
+        <div
+          role="group"
+          aria-labelledby="lines-label"
+          className="flex items-center rounded-full bg-stone-100 p-1"
+        >
+          {[false, true].map((over) => (
+            <button
+              key={String(over)}
+              type="button"
+              aria-pressed={linesOverStickers === over}
+              onClick={() => onLinesOverStickersChange(over)}
+              className={`cursor-pointer rounded-full px-3 py-1.5 text-sm font-semibold transition ${
+                linesOverStickers === over ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-800'
+              }`}
+            >
+              {over ? 'Over stickers' : 'Under stickers'}
+            </button>
+          ))}
+        </div>
       </div>
       <ColourPicker
         label="Pen colours"
