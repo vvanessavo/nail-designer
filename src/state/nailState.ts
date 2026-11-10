@@ -343,6 +343,8 @@ const NOT_UNDOABLE: Action['type'][] = ['SELECT_NAIL', 'CLEAR_SELECTION', 'SET_A
 // Changes of the same kind that come quicker than this (dragging the colour picker or the
 // thickness slider) are saved as one step, so one undo takes back the whole drag.
 const MERGE_WITHIN_MS = 600
+// Big one-off changes are always their own undo step, however quickly they follow each other.
+const NEVER_MERGED: Action['type'][] = ['LOAD_DESIGN', 'CLEAR_STROKES']
 // How many steps back undo can go.
 const MAX_UNDO_STEPS = 50
 
@@ -406,7 +408,10 @@ export function historyReducer(history: History, historyAction: HistoryAction): 
 
   const key = changeKey(action)
   const continuesLastChange =
-    lastChange !== null && lastChange.key === key && time - lastChange.time < MERGE_WITHIN_MS
+    !NEVER_MERGED.includes(action.type) &&
+    lastChange !== null &&
+    lastChange.key === key &&
+    time - lastChange.time < MERGE_WITHIN_MS
   return {
     // Save the design from before this change, unless it continues the last one
     // (that one already saved the design from before it started).

@@ -1,8 +1,11 @@
-// The My designs tab: keep the current design under a name, and open, rename or delete
-// designs kept earlier. Everything stays in this browser (see src/storage.ts).
+// The My designs tab: start from a ready-made look, keep the current design under a name,
+// and open, rename or delete designs kept earlier. Everything stays in this browser
+// (see src/storage.ts).
 
 import { useState } from 'react'
+import { STARTERS } from '../starters'
 import type { SavedDesign } from '../storage'
+import NailPreview from './NailPreview'
 
 type MyDesignsPanelProps = {
   designs: SavedDesign[]
@@ -12,13 +15,44 @@ type MyDesignsPanelProps = {
   onRename: (id: string, name: string) => void
   onDelete: (id: string) => void
   onNew: () => void
+  onStarter: (starterId: string) => void
 }
 
-function MyDesignsPanel({ designs, storageWorks, onAdd, onOpen, onRename, onDelete, onNew }: MyDesignsPanelProps) {
+function MyDesignsPanel({
+  designs,
+  storageWorks,
+  onAdd,
+  onOpen,
+  onRename,
+  onDelete,
+  onNew,
+  onStarter,
+}: MyDesignsPanelProps) {
   const [name, setName] = useState('')
 
   return (
     <div className="flex flex-col items-center gap-4">
+      {/* Ready-made looks: one row that scrolls sideways. */}
+      <div className="flex w-full max-w-md flex-col gap-2">
+        <span className="text-sm font-semibold text-stone-700">Start from a look</span>
+        <div
+          role="group"
+          aria-label="Starter designs"
+          className="flex max-w-full gap-2 overflow-x-auto p-1"
+        >
+          {STARTERS.map((starter) => (
+            <button
+              key={starter.id}
+              type="button"
+              onClick={() => onStarter(starter.id)}
+              className="flex w-28 shrink-0 cursor-pointer flex-col items-center gap-1 rounded-xl border border-stone-200 bg-white p-2 text-xs font-semibold text-stone-700 transition hover:border-stone-400 active:scale-95"
+            >
+              <NailPreview nails={starter.nails} />
+              {starter.name}
+            </button>
+          ))}
+        </div>
+      </div>
       <form
         className="flex w-full max-w-md gap-2"
         onSubmit={(event) => {
