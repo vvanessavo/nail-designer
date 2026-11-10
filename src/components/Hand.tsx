@@ -18,7 +18,7 @@ import {
   THUMB_INDEX,
   type Finger,
 } from '../handGeometry'
-import { STICKER_SIZE, STICKERS } from '../stickers'
+import { paint, STICKER_DESIGNS, STICKER_SIZE } from '../stickers'
 
 const NAIL_EDGE = 'rgba(150, 90, 80, 0.5)'
 const DOT_COLOR = '#292524' // Tailwind stone-800
@@ -27,19 +27,19 @@ const MATTE_HAZE = 'rgba(255, 255, 255, 0.14)'
 // Shiny polish catches the light: white streaks that fade out down the nail.
 const GLOSS_STOPS = [0, 'rgba(255, 255, 255, 0.7)', 1, 'rgba(255, 255, 255, 0)']
 
-// A sticker at scale 1 is this fraction of the nail's width.
-const STICKER_WIDTH_RATIO = 0.7
-// Smallest and largest a sticker can be resized to, compared with its default size.
-const MIN_STICKER_SCALE = 0.3
-const MAX_STICKER_SCALE = 1.6
+// A sticker at scale 1 is this fraction of the nail's width: small, like real nail stickers,
+// so two or three fit on one nail.
+const STICKER_WIDTH_RATIO = 0.35
+// Smallest and largest a sticker can be resized to, compared with its default size
+// (from about a sixth of the nail's width to just over the whole width).
+const MIN_STICKER_SCALE = 0.5
+const MAX_STICKER_SCALE = 3.2
 // Stickers respond to taps within this many screen pixels of their middle (a 32px circle).
 const STICKER_TAP_RADIUS = 16
 
 // A small off-screen drawing surface, used only to ask "is this point inside this outline?".
 const outlineChecker = document.createElement('canvas').getContext('2d')
 
-// The outline for each sticker type, looked up by name.
-const STICKER_PATHS = Object.fromEntries(STICKERS.map((sticker) => [sticker.type, sticker.path]))
 
 // Where one side of a finger crosses the height `y`, in the hand's coordinates.
 // side: -1 for the finger's left edge, 1 for its right edge.
@@ -103,9 +103,13 @@ type FingerShapeProps = {
   nail: Nail
   skinTone: string
   isTargeted: boolean // changes will apply to this nail, shown with a dot
-  onSelectNail: (nailId: number) => void
+  onSelectNail: OnNailTap
   stickerEditing: StickerEditing | null
 }
+
+// A tap on a finger: which nail, and where on the nail (offset from its middle, in the same
+// units as a sticker's x and y). `at` is missing when the tap wasn't on the nail itself.
+export type OnNailTap = (nailId: number, at?: { x: number; y: number }) => void
 
 // Shows a pointing-hand cursor while the mouse is over a finger.
 function setCursor(event: Konva.KonvaEventObject<MouseEvent>, cursor: string) {
@@ -158,6 +162,26 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
     return toScreen.point(onNail)
   }
 
+  // Tap areas are at least fingertip-sized, so on a small screen the tap areas of stickers
+  // that sit close together overlap. Konva gives the tap to the sticker on top; instead, find
+  // the sticker whose middle is closest to the finger. `node` is the sticker Konva chose.
+  const closestStickerTo = (node: Konva.Node): string => {
+    const pointer = node.getStage()?.getPointerPosition()
+    const nailGroup = node.getParent()
+    if (!pointer || !nailGroup) return node.id()
+    const finger = nailGroup.getAbsoluteTransform().copy().invert().point(pointer)
+    let closest = node.id()
+    let closestDistance = Infinity
+    for (const sticker of nail.stickers) {
+      const distance = Math.hypot(sticker.x - finger.x, nailCentreY + sticker.y - finger.y)
+      if (distance < closestDistance) {
+        closest = sticker.id
+        closestDistance = distance
+      }
+    }
+    return closest
+  }
+
   // After a drag or a resize / turn, save where the sticker ended up. The Konva node's
   // position is relative to the nail's group, so convert it back to "offset from the
   // nail's centre" and "size relative to the default".
@@ -180,7 +204,14 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
       x={x}
       y={y}
       rotation={angle}
-      onPointerClick={() => onSelectNail(nail.id)}
+      onPointerClick={(event) => {
+        // Where on the nail the tap was, so a new sticker can go exactly there.
+        const nailArea = (event.currentTarget as Konva.Group).findOne('.nail-area')
+        const pointer = event.target.getStage()?.getPointerPosition()
+        if (!nailArea || !pointer) return onSelectNail(nail.id)
+        const local = nailArea.getAbsoluteTransform().copy().invert().point(pointer)
+        onSelectNail(nail.id, isOnNail(local) ? { x: local.x, y: local.y - nailCentreY } : undefined)
+      }}
       onMouseEnter={(event) => setCursor(event, 'pointer')}
       onMouseLeave={(event) => setCursor(event, 'default')}
     >
@@ -188,7 +219,10 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
         data={fingerPath(finger)}
         fill={skinTone}
       />
-      <Group y={fingertipLine}>
+      <Group
+        name="nail-area"
+        y={fingertipLine}
+      >
         <Path
           id={`nail-${nail.id}`}
           nailShape={nail.shape}
@@ -209,51 +243,84 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
             />
           )}
           {nail.stickers.map((sticker) => (
-            <Path
+            // Each sticker is a group of layers (see src/stickers.ts). The group is what moves,
+            // resizes and turns; its layers just draw.
+            <Group
               key={sticker.id}
               id={sticker.id}
               name="sticker"
               stickerType={sticker.type}
-              data={STICKER_PATHS[sticker.type]}
+              mainColor={sticker.color}
               x={sticker.x}
               y={nailCentreY + sticker.y}
-              // offset moves the outline's middle (12, 12) onto the sticker's position,
+              // offset moves the design's middle (12, 12) onto the sticker's position,
               // so it also turns around its middle.
               offsetX={STICKER_SIZE / 2}
               offsetY={STICKER_SIZE / 2}
               scaleX={stickerScale * sticker.scale}
               scaleY={stickerScale * sticker.scale}
               rotation={sticker.rotation}
-              fill={sticker.color}
               // Stickers only respond to taps and drags while they can be edited. Otherwise
               // taps pass through to the finger and choose the nail as usual.
               listening={stickerEditing !== null}
               draggable={stickerEditing !== null}
-              // The area that responds to taps: a circle around the sticker, at least
-              // STICKER_TAP_RADIUS screen pixels, so even a tiny sticker is easy to tap with a
-              // fingertip. getAbsoluteScale is how big one sticker unit is on screen right now
-              // (it changes with the sticker's size and the zoom).
-              hitFunc={(context, shape) => {
-                const unitsPerPixel = 1 / Math.abs(shape.getAbsoluteScale().x)
-                const radius = Math.max(STICKER_SIZE * 0.6, STICKER_TAP_RADIUS * unitsPerPixel)
-                context.beginPath()
-                context.arc(STICKER_SIZE / 2, STICKER_SIZE / 2, radius, 0, Math.PI * 2)
-                context.closePath()
-                context.fillStrokeShape(shape)
-              }}
               onPointerClick={(event) => {
                 event.cancelBubble = true // don't also count as a tap on the finger
-                stickerEditing?.onSelect(sticker.id)
+                const group = event.target.findAncestor('.sticker', true) ?? event.target
+                stickerEditing?.onSelect(closestStickerTo(group))
               }}
               onDragStart={(event) => {
                 const node: Konva.Node = event.target
+                // If the finger is closer to another sticker, drag that one instead.
+                const closest = closestStickerTo(node)
+                const other = closest !== node.id() ? node.getParent()?.findOne(`#${closest}`) : null
+                if (other) {
+                  node.stopDrag()
+                  other.setAttr('lastOnNail', other.position())
+                  other.startDrag()
+                  stickerEditing?.onSelect(closest)
+                  return
+                }
                 node.setAttr('lastOnNail', node.position())
                 stickerEditing?.onSelect(sticker.id)
               }}
               dragBoundFunc={keepOnNail}
               onDragEnd={(event) => saveSticker(sticker.id, event.target)}
               onTransformEnd={(event) => saveSticker(sticker.id, event.target)}
-            />
+            >
+              {STICKER_DESIGNS[sticker.type].layers.map((layer, index) => (
+                <Path
+                  key={index}
+                  data={layer.d}
+                  fill={paint(layer.fill, sticker.color)}
+                  stroke={paint(layer.stroke, sticker.color)}
+                  strokeWidth={layer.strokeWidth}
+                  lineCap="round"
+                  lineJoin="round"
+                  opacity={layer.opacity}
+                  listening={false}
+                />
+              ))}
+              {/* The area that responds to taps. It covers the sticker's 24 x 24 square, and
+                  its hitFunc makes the tap area a circle at least STICKER_TAP_RADIUS screen
+                  pixels wide, so even a tiny sticker is easy to tap with a fingertip.
+                  getAbsoluteScale is how big one sticker unit is on screen right now (it
+                  changes with the sticker's size and the zoom). */}
+              <Circle
+                x={STICKER_SIZE / 2}
+                y={STICKER_SIZE / 2}
+                radius={STICKER_SIZE / 2}
+                fill="transparent"
+                hitFunc={(context, shape) => {
+                  const unitsPerPixel = 1 / Math.abs(shape.getAbsoluteScale().x)
+                  const radius = Math.max(STICKER_SIZE * 0.6, STICKER_TAP_RADIUS * unitsPerPixel)
+                  context.beginPath()
+                  context.arc(0, 0, radius, 0, Math.PI * 2)
+                  context.closePath()
+                  context.fillStrokeShape(shape)
+                }}
+              />
+            </Group>
           ))}
           {/* The finish goes over everything, like a top coat. */}
           {nail.finish === 'matte' && (
@@ -322,7 +389,7 @@ type HandProps = {
   skinTone: string
   nails: Nail[]
   targetedNailIds: number[]
-  onSelectNail: (nailId: number) => void
+  onSelectNail: OnNailTap
   stickerEditing: StickerEditing | null
 }
 

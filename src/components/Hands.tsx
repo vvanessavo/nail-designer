@@ -11,7 +11,7 @@
 import Konva from 'konva'
 import { useEffect, useRef, useState, type Ref } from 'react'
 import { Group, Layer, Rect, Stage, Transformer } from 'react-konva'
-import Hand, { type StickerEditing } from './Hand'
+import Hand, { type OnNailTap, type StickerEditing } from './Hand'
 import { drawingTop, HAND_BOTTOM, HANDS_WIDTH, RIGHT_HAND_X } from '../handGeometry'
 import { isTargeted, type AppState } from '../state/nailState'
 
@@ -23,7 +23,7 @@ type HandsProps = {
   stageRef: Ref<Konva.Stage> // lets App reach the Konva stage, to export an image of it
   state: AppState
   showTargets: boolean // show the dots that mark where shape and colour changes will go
-  onSelectNail: (nailId: number) => void
+  onSelectNail: OnNailTap
   onTapBackground: () => void // a tap on empty space, not on a hand
   stickerEditing: StickerEditing | null
 }
@@ -189,8 +189,8 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
 
   // Taps that are really the end of a pinch, or come during one, are ignored.
   const isGestureTap = () => pinch.current !== null || Date.now() - lastGestureEnd.current < 300
-  const handleSelectNail = (nailId: number) => {
-    if (!isGestureTap()) onSelectNail(nailId)
+  const handleSelectNail: OnNailTap = (nailId, at) => {
+    if (!isGestureTap()) onSelectNail(nailId, at)
   }
 
   return (
@@ -312,12 +312,15 @@ function Hands({ stageRef, state, showTargets, onSelectNail, onTapBackground, st
                 padding={8}
                 shouldOverdrawWholeArea={true}
                 // The limits are in screen pixels, so they grow with the zoom.
-                boundBoxFunc={(oldBox, newBox) =>
-                  Math.abs(newBox.width) < MIN_STICKER_PX * view.zoom ||
-                  Math.abs(newBox.width) > MAX_STICKER_PX * view.zoom
-                    ? oldBox
-                    : newBox
-                }
+                // Stop a resize that goes further below the smallest or above the largest size.
+                // A sticker that starts out of range (e.g. tiny on a phone) can still grow back.
+                boundBoxFunc={(oldBox, newBox) => {
+                  const oldWidth = Math.abs(oldBox.width)
+                  const newWidth = Math.abs(newBox.width)
+                  const tooSmall = newWidth < MIN_STICKER_PX * view.zoom && newWidth < oldWidth
+                  const tooBig = newWidth > MAX_STICKER_PX * view.zoom && newWidth > oldWidth
+                  return tooSmall || tooBig ? oldBox : newBox
+                }}
               />
             </Layer>
           </Stage>
