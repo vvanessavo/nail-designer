@@ -30,7 +30,7 @@ const SWATCH =
 const SELECTED_RING = 'ring-2 ring-rose-600 ring-offset-2 ring-offset-white'
 
 type ColourPickerProps = {
-  value: string // hex, e.g. "#f6dcd6"
+  value: string // hex, e.g. "#f6dcd6"; empty = nothing chosen
   onChange: (hex: string) => void
   label?: string // what screen readers call the group of swatches
   extraPresets?: Preset[] // more swatches before the standard ones, e.g. gold for stickers
@@ -88,7 +88,7 @@ function ColourPicker({
           aria-expanded={customOpen}
           title="Custom colour"
           className={`${SWATCH} bg-[conic-gradient(red,yellow,lime,cyan,blue,magenta,red)] ${
-            !disabled && (!isPreset || showCustom) ? SELECTED_RING : ''
+            !disabled && ((value !== '' && !isPreset) || showCustom) ? SELECTED_RING : ''
           }`}
         />
       </div>

@@ -41,7 +41,7 @@ Goal for the MVP: a user can visualise a complete nail set without Photoshop or 
 - 4 nail shapes: round, square, almond, coffin
 - Solid base colour
 - Select one, several, or all nails; apply to all
-- 2D stickers: star, heart, dot, sparkle, line, flower, with move, resize, and rotate
+- 2D stickers with move, resize, and rotate (since 2026-11-09: real nail-art motifs, see Release 1.1)
 - French tip overlay with adjustable colour and thickness
 - PNG export
 - Works with touch
@@ -64,6 +64,7 @@ Pulled forward from the later releases below (roadmap epic E6):
 - Autosave in the browser and a My designs list (no accounts; nothing leaves the device)
 - Mirror one hand's design onto the other
 - Recent colours
+- Real nail-art stickers: daisy, cherry blossom, rose, leaf vine, bow, cherries, strawberry, butterfly, smiley, heart, evil eye, moon and stars, twinkle star, swirl
 
 ### Release 1.2: start and share (owner asked, 2026-11-09)
 - Starter designs to begin from
@@ -105,7 +106,8 @@ type NailShape = 'round' | 'square' | 'almond' | 'coffin' | 'stiletto' | 'squova
 
 type Sticker = {
   id: string
-  type: 'heart' | 'star' | 'dot' | 'sparkle' | 'line' | 'flower'
+  type: 'daisy' | 'blossom' | 'rose' | 'vine' | 'bow' | 'cherries' | 'strawberry'
+      | 'butterfly' | 'smiley' | 'heart' | 'evil-eye' | 'moon' | 'twinkle' | 'swirl'
   x: number              // offset from the centre of the nail (0, 0 = centred)
   y: number
   scale: number           // 1 = default size, about 70% of the nail's width (0.3 to 1.6)

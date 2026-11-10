@@ -21,7 +21,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) is done. Next: **E6-S3, special bases**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done. Next: **E6-S3, special bases**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -218,6 +218,11 @@ Done when: the current design is saved in the browser (localStorage) after every
 As a user, I can copy one hand's design onto the other hand, so both hands match.
 Done when: "Copy left hand to right" and "Copy right hand to left" put each finger's design on the matching finger of the other hand (thumb to thumb, pinky to pinky), with stickers, drawings and text flipped left to right, in one undo step.
 Depends on: E6-S4.
+
+### E6-S11: Real nail-art stickers. P1. Done
+As a user, the stickers look like designs people actually get on their nails.
+Done when: the basic shapes are replaced by real nail-art motifs, drawn like decals in several colours, recolourable without losing their details, small by default so several fit on a nail, and placed where I tap.
+Built as: 14 stickers in `src/stickers.ts` (daisy, cherry blossom, rose, leaf vine, bow, cherries, strawberry, butterfly, smiley, outlined heart, evil eye, moon and stars, twinkle star, swirl), each a stack of layers on a 24 x 24 grid in either the sticker's main colour or a fixed detail colour. They start in their own colours ("Original"); the colour row changes the main colour. Default size is about a third of the nail's width (0.5x to 3.2x). A new sticker goes where you tap the nail (the middle if you tap the finger), and when tap areas overlap the sticker closest to your finger is chosen. The sticker row scrolls sideways. Built before E6-S3 because the owner said the old stickers didn't look like real nail designs.
 
 ### E6-S10: Recent colours. P1. Backlog
 As a user, I can reuse colours I've just used, so matching nails is one tap.

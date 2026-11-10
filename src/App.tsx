@@ -22,10 +22,8 @@ import {
 } from './state/nailState'
 import { exportDesign } from './exportImage'
 import { drawingSize } from './handGeometry'
-import type { StickerType } from './stickers'
+import { STICKER_DESIGNS, type StickerType } from './stickers'
 
-// Stickers start in gold, which shows up on most polish colours.
-const FIRST_STICKER_COLOR = '#D4AF37'
 
 // A unique id for each sticker, so React and Konva can tell them apart.
 function newStickerId(): string {
@@ -55,7 +53,8 @@ function App() {
   // The placed sticker showing its move / resize / turn handles, if any.
   const [selectedStickerId, setSelectedStickerId] = useState<string | null>(null)
   // The colour new stickers are placed in: the last colour chosen in the Stickers tab.
-  const [stickerColor, setStickerColor] = useState(FIRST_STICKER_COLOR)
+  // null = each sticker comes in its own original colours (a white daisy, a pink bow...).
+  const [stickerColor, setStickerColor] = useState<string | null>(null)
 
   // useCallback keeps these functions the same between renders, because StickerPanel
   // runs an effect that depends on them.
@@ -68,7 +67,8 @@ function App() {
     if (!open) setSelectedStickerId(null)
   }, [])
 
-  const handleNailTap = (nailId: number) => {
+  // `at` is where on the nail the tap was (missing if it was on the finger, not the nail).
+  const handleNailTap = (nailId: number, at?: { x: number; y: number }) => {
     if (pickedSticker) {
       dispatch({
         type: 'ADD_STICKER',
@@ -76,11 +76,12 @@ function App() {
         sticker: {
           id: newStickerId(),
           type: pickedSticker,
-          x: 0,
-          y: 0,
+          // Where you tapped, or the middle of the nail if you tapped the finger.
+          x: at?.x ?? 0,
+          y: at?.y ?? 0,
           scale: 1,
           rotation: 0,
-          color: stickerColor,
+          color: stickerColor ?? STICKER_DESIGNS[pickedSticker].defaultColor,
         },
       })
     } else if (stickersTabOpen) {
@@ -254,8 +255,13 @@ function App() {
         <StickerPanel
           picked={pickedSticker}
           // With a sticker selected the colours show and change its colour; otherwise they
-          // choose the colour for the next stickers placed.
+          // choose the colour for the next stickers placed (null = their original colours).
           color={selectedSticker?.color ?? stickerColor}
+          isOriginalColor={
+            selectedSticker
+              ? selectedSticker.color === STICKER_DESIGNS[selectedSticker.type].defaultColor
+              : stickerColor === null
+          }
           hasSelectedSticker={selectedSticker !== undefined}
           onPick={handlePickSticker}
           onOpenChange={handleStickersTabOpen}
@@ -266,7 +272,7 @@ function App() {
                 type: 'UPDATE_STICKER',
                 nailId: selectedNail.id,
                 stickerId: selectedSticker.id,
-                changes: { color },
+                changes: { color: color ?? STICKER_DESIGNS[selectedSticker.type].defaultColor },
               })
             }
           }}

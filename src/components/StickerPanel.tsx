@@ -3,7 +3,7 @@
 // With nothing picked, tapping a placed sticker shows handles to move, resize and turn it.
 
 import { useEffect } from 'react'
-import { STICKER_SIZE, STICKERS, type StickerType } from '../stickers'
+import { paint, STICKER_SIZE, STICKERS, type StickerType } from '../stickers'
 import ColourPicker, { type Preset } from './ColourPicker'
 
 // Metallic colours that suit stickers, offered on top of the usual polish colours.
@@ -14,17 +14,20 @@ const STICKER_EXTRA_COLOURS: Preset[] = [
 
 type StickerPanelProps = {
   picked: StickerType | null // the sticker waiting to be placed, if any
-  color: string // the selected sticker's colour, or the colour for new stickers
+  color: string | null // the selected sticker's colour, or the colour for new stickers (null = original)
+  isOriginalColor: boolean // the colour shown is the sticker's own original colour
   hasSelectedSticker: boolean // a placed sticker is showing its handles
   onPick: (type: StickerType | null) => void
   onOpenChange: (open: boolean) => void // tells App when this tab opens and closes
-  onColorChange: (color: string) => void // recolours the selected sticker, and sets new stickers' colour
+  // Recolours the selected sticker and sets new stickers' colour (null = original colours).
+  onColorChange: (color: string | null) => void
   onDelete: () => void // removes the selected sticker
 }
 
 function StickerPanel({
   picked,
   color,
+  isOriginalColor,
   hasSelectedSticker,
   onPick,
   onOpenChange,
@@ -45,12 +48,14 @@ function StickerPanel({
 
   return (
     <div className="flex flex-col items-center gap-4">
+      {/* One row that scrolls sideways; p-1 leaves room for the ring around the picked one.
+          Each preview shows the sticker in the colour it will be placed in. */}
       <div
         role="group"
         aria-label="Stickers"
-        className="grid grid-cols-6 gap-2"
+        className="flex max-w-full gap-2 overflow-x-auto p-1"
       >
-        {STICKERS.map(({ type, label, path }) => {
+        {STICKERS.map(({ type, label, layers, defaultColor }) => {
           const isPicked = type === picked
           return (
             <button
@@ -60,7 +65,7 @@ function StickerPanel({
               aria-pressed={isPicked}
               aria-label={label}
               title={label}
-              className={`flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border bg-white transition active:scale-95 ${
+              className={`flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-xl border bg-white transition active:scale-95 ${
                 isPicked
                   ? 'border-rose-600 ring-1 ring-rose-600'
                   : 'border-stone-200 hover:border-stone-400'
@@ -68,13 +73,21 @@ function StickerPanel({
             >
               <svg
                 viewBox={`0 0 ${STICKER_SIZE} ${STICKER_SIZE}`}
-                className="h-6 w-6 text-stone-700"
+                className="h-8 w-8"
                 aria-hidden="true"
               >
-                <path
-                  d={path}
-                  fill="currentColor"
-                />
+                {layers.map((layer, index) => (
+                  <path
+                    key={index}
+                    d={layer.d}
+                    fill={paint(layer.fill, (!isOriginalColor && color) || defaultColor) ?? 'none'}
+                    stroke={paint(layer.stroke, (!isOriginalColor && color) || defaultColor)}
+                    strokeWidth={layer.strokeWidth}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    opacity={layer.opacity}
+                  />
+                ))}
               </svg>
             </button>
           )
@@ -87,15 +100,29 @@ function StickerPanel({
           ? `Tap a nail to add the ${pickedLabel.toLowerCase()}. Tap the ${pickedLabel.toLowerCase()} again when you're done.`
           : hasSelectedSticker
             ? 'Drag the sticker to move it. Drag a corner to resize it, or the top handle to turn it.'
-            : 'Choose a colour and a sticker, then tap a nail. Tap a sticker on a nail to change it.'}
+            : 'Choose a sticker, then tap a nail. Pick a colour first to change it. Tap a sticker on a nail to edit it.'}
       </p>
       {/* Colour (for the selected sticker, or for new ones) and delete (greyed out until a
           sticker is tapped). Always shown, for the same reason: the panel keeps its height. */}
       <div className="flex w-full max-w-xl items-start gap-2 border-t border-stone-100 pt-3">
+        {/* Back to the sticker's own colours (a white daisy, a pink bow...). */}
+        <button
+          type="button"
+          onClick={() => onColorChange(null)}
+          aria-pressed={isOriginalColor}
+          title="Each sticker's original colours"
+          className={`mt-1.5 h-9 shrink-0 cursor-pointer rounded-full border px-3 text-xs font-semibold transition ${
+            isOriginalColor
+              ? 'border-rose-600 text-rose-700 ring-1 ring-rose-600'
+              : 'border-stone-200 text-stone-600 hover:border-stone-400'
+          }`}
+        >
+          Original
+        </button>
         <div className="min-w-0 flex-1">
           <ColourPicker
             label="Sticker colours"
-            value={color}
+            value={isOriginalColor ? '' : (color ?? '')}
             onChange={onColorChange}
             extraPresets={STICKER_EXTRA_COLOURS}
             compact

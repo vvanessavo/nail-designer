@@ -6,12 +6,26 @@ export type NailShape = 'round' | 'square' | 'almond' | 'coffin' | 'stiletto' | 
 
 export type Sticker = {
   id: string
-  type: 'heart' | 'star' | 'dot' | 'sparkle' | 'line' | 'flower'
+  type:
+    | 'daisy'
+    | 'blossom'
+    | 'rose'
+    | 'vine'
+    | 'bow'
+    | 'cherries'
+    | 'strawberry'
+    | 'butterfly'
+    | 'smiley'
+    | 'heart'
+    | 'evil-eye'
+    | 'moon'
+    | 'twinkle'
+    | 'swirl'
   x: number // offset from the centre of the nail, in drawing units (0 = centred)
   y: number
-  scale: number // 1 = the default size, about 70% of the nail's width
+  scale: number // 1 = the default size, about a third of the nail's width
   rotation: number // degrees, turning clockwise
-  color: string
+  color: string // the sticker's main colour (details like a daisy's centre keep their own)
 }
 
 export type Nail = {

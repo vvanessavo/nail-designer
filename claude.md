@@ -66,11 +66,12 @@ https://nail-designer-phi.vercel.app, hosted on Vercel and connected to the GitH
 
 ```
 src/
-  assets/          hand.svg and sticker SVGs
+  assets/          hand.svg (stickers are drawn in src/stickers.ts)
   components/      UI components (Hands, Hand, Toolbar, StickerPanel, etc.)
   state/           nailState.ts: types and reducer
   handGeometry.ts  finger positions, nail sizes, drawing size (shared by Hand, Hands, export)
   shapes.ts        nail outlines and the French tip outline
+  stickers.ts      the sticker designs (layers on a 24 x 24 grid, with a recolourable main colour)
   exportImage.ts   saves the design as a PNG
   App.tsx
   main.tsx
