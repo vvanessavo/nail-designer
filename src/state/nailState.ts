@@ -81,7 +81,15 @@ export type Stroke = {
   color: string
   width: number
   points: number[] // [x1, y1, x2, y2, ...]
+  // Lines drawn before pen types existed have neither: they show as a solid fine liner.
+  pen?: PenType
+  opacity?: number // 0.15 (very sheer) to 1 (solid)
 }
+
+// The pens in the Draw tab. Fine liner: an even line. Fountain pen: thick or thin depending
+// on direction, like a slanted calligraphy nib. Brush: full at the start, tapering to a point.
+// Dotting tool: a row of round dots along the line, like a nail artist's dotting tool.
+export type PenType = 'fine' | 'fountain' | 'brush' | 'dots'
 
 export type Nail = {
   id: number // matches the SVG id: nail-0 ... nail-9

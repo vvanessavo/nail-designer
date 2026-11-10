@@ -2,7 +2,7 @@
 // can recreate the set. Nails with the same design are grouped ("All nails", "Both ring
 // fingers"...). Drawn under the hands when saving "Picture + recipe".
 
-import { nailName, type Design, type Nail } from './state/nailState'
+import { nailName, type Design, type Nail, type PenType } from './state/nailState'
 import { STICKERS } from './stickers'
 
 export type RecipeGroup = {
@@ -66,6 +66,13 @@ function lengthName(length: number): string {
   return 'long'
 }
 
+const PEN_NAMES: Record<PenType, string> = {
+  fine: 'fine liner',
+  fountain: 'fountain pen',
+  brush: 'brush',
+  dots: 'dotting tool',
+}
+
 const STICKER_LABELS = Object.fromEntries(STICKERS.map((s) => [s.type, s.label.toLowerCase()]))
 const GEM_TYPES = new Set<string>(STICKERS.filter((s) => s.group === 'Gems').map((s) => s.type))
 
@@ -110,7 +117,11 @@ function describe(nail: Nail): string[] {
     lines.push(`Text: "${s.text}" (${s.font === 'bold' ? 'bold' : 'script'}, ${colourName(s.color)})`)
   }
   if (nail.strokes.length > 0) {
-    lines.push(`Hand-painted art: ${nail.strokes.length} ${nail.strokes.length === 1 ? 'line' : 'lines'} (see picture)`)
+    const tools = [...new Set(nail.strokes.map((s) => PEN_NAMES[s.pen ?? 'fine']))]
+    const sheer = nail.strokes.some((s) => (s.opacity ?? 1) < 0.8) ? ', some sheer' : ''
+    lines.push(
+      `Hand-painted art: ${nail.strokes.length} ${nail.strokes.length === 1 ? 'line' : 'lines'} with ${tools.join(', ')}${sheer} (see picture)`,
+    )
   }
   return lines
 }

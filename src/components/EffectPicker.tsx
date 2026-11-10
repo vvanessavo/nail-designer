@@ -1,5 +1,6 @@
-// Chooses the polish effect: plain, ombre, chrome, pearl, glitter or a pattern (marble,
-// tortoiseshell, leopard, checkerboard, floral). Each button has a small preview dot. One row that scrolls sideways if it doesn't fit.
+// Chooses the polish effect: plain, ombre, chrome, pearl, glitter, a pattern (marble,
+// tortoiseshell, leopard, checkerboard, floral) or a trending effect (cat-eye, aura, jelly).
+// Each button has a small preview dot. One row that scrolls sideways if it doesn't fit.
 
 import type { BaseEffect } from '../state/nailState'
 
@@ -43,6 +44,11 @@ const EFFECTS: { effect: BaseEffect; label: string; preview: string }[] = [
     preview: 'bg-[conic-gradient(#1c1c1c_25%,#fff_25%_50%,#1c1c1c_50%_75%,#fff_75%)] bg-[length:8px_8px]',
   },
   {
+    effect: 'floral',
+    label: 'Floral',
+    preview: 'bg-[radial-gradient(#f6c945_15%,#fff_20%,#fff_35%,transparent_40%)] bg-[length:8px_8px] bg-[#f6dcd6]',
+  },
+  {
     effect: 'cat-eye',
     label: 'Cat-eye',
     preview: 'bg-[linear-gradient(100deg,#2e1a47_35%,#d9d3f2_50%,#2e1a47_65%)]',
@@ -56,11 +62,6 @@ const EFFECTS: { effect: BaseEffect; label: string; preview: string }[] = [
     effect: 'jelly',
     label: 'Jelly',
     preview: 'bg-[#e8384f]/50',
-  },
-  {
-    effect: 'floral',
-    label: 'Floral',
-    preview: 'bg-[radial-gradient(#f6c945_15%,#fff_20%,#fff_35%,transparent_40%)] bg-[length:8px_8px] bg-[#f6dcd6]',
   },
 ]
 
