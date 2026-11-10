@@ -43,6 +43,10 @@ export type Sticker = {
     | 'gem-square'
     | 'pearl'
     | 'stud'
+    | '3d-heart'
+    | '3d-bow'
+    | '3d-flower'
+    | '3d-star'
     | 'text' // words or initials; see `text` and `font`
   x: number // offset from the centre of the nail, in drawing units (0 = centred)
   y: number

@@ -68,12 +68,13 @@ function StickerPanel({
         className="flex max-w-full gap-2 overflow-x-auto p-1"
       >
         {STICKERS.map(({ type, label, layers, defaultColor, group }, index) => {
-          // A thin line between the gems and the decal stickers.
-          const afterGems = index > 0 && STICKERS[index - 1].group === 'Gems' && group !== 'Gems'
+          // A thin line after the gems and after the 3D art, before the flat decal stickers.
+          const previous = STICKERS[index - 1]
+          const newGroup = index > 0 && previous.group !== group && ['Gems', '3D'].includes(previous.group)
           const isPicked = type === picked
           return (
             <Fragment key={type}>
-              {afterGems && (
+              {newGroup && (
                 <span
                   aria-hidden="true"
                   className="w-px shrink-0 self-stretch bg-stone-200"
@@ -100,6 +101,7 @@ function StickerPanel({
                     <path
                       key={index}
                       d={layer.d}
+                      transform={layer.shift && `translate(${layer.shift[0]} ${layer.shift[1]})`}
                       fill={paint(layer.fill, (!isOriginalColor && color) || defaultColor) ?? 'none'}
                       stroke={paint(layer.stroke, (!isOriginalColor && color) || defaultColor)}
                       strokeWidth={layer.strokeWidth}
@@ -168,7 +170,7 @@ function StickerPanel({
           : pickedLabel
           ? hasSelectedSticker
             ? 'Drag it to move it, a corner to resize, the top handle to turn. Tap a nail to add another.'
-            : `Tap a nail to add the ${pickedLabel.toLowerCase()}. Tap a placed sticker to move it.`
+            : `Tap a nail to add the ${pickedLabel.toLowerCase().replace("3d", "3D")}. Tap a placed sticker to move it.`
           : hasSelectedSticker
             ? 'Drag the sticker to move it. Drag a corner to resize it, or the top handle to turn it.'
             : 'Choose a sticker, then tap a nail. Pick a colour first to change it. Tap a sticker on a nail to edit it.'}

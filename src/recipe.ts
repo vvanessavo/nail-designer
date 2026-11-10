@@ -83,6 +83,7 @@ const PEN_NAMES: Record<PenType, string> = {
 
 const STICKER_LABELS = Object.fromEntries(STICKERS.map((s) => [s.type, s.label.toLowerCase()]))
 const GEM_TYPES = new Set<string>(STICKERS.filter((s) => s.group === 'Gems').map((s) => s.type))
+const ART_3D_TYPES = new Set<string>(STICKERS.filter((s) => s.group === '3D').map((s) => s.type))
 
 // The recipe lines for one nail. Positions don't matter here, only what's there.
 function describe(nail: Nail): string[] {
@@ -118,8 +119,10 @@ function describe(nail: Nail): string[] {
     return [...counts].map(([key, count]) => (count > 1 ? `${count} × ${key}` : key)).join(', ')
   }
   const gems = nail.stickers.filter((s) => GEM_TYPES.has(s.type))
-  const stickers = nail.stickers.filter((s) => s.type !== 'text' && !GEM_TYPES.has(s.type))
+  const art3d = nail.stickers.filter((s) => ART_3D_TYPES.has(s.type))
+  const stickers = nail.stickers.filter((s) => s.type !== 'text' && !GEM_TYPES.has(s.type) && !ART_3D_TYPES.has(s.type))
   if (gems.length > 0) lines.push(`Gems: ${countUp(gems)}`)
+  if (art3d.length > 0) lines.push(`3D art (sculpted gel or acrylic): ${countUp(art3d)}`)
   if (stickers.length > 0) lines.push(`Stickers: ${countUp(stickers)}`)
   for (const s of nail.stickers.filter((s) => s.type === 'text')) {
     lines.push(`Text: "${s.text}" (${s.font === 'bold' ? 'bold' : 'script'}, ${colourName(s.color)})`)

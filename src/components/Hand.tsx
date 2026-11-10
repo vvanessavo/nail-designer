@@ -513,6 +513,8 @@ function FingerShape({
                   <Path
                     key={index}
                     data={layer.d}
+                    x={layer.shift?.[0]}
+                    y={layer.shift?.[1]}
                     fill={paint(layer.fill, sticker.color)}
                     stroke={paint(layer.stroke, sticker.color)}
                     strokeWidth={layer.strokeWidth}
