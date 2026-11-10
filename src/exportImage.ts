@@ -3,6 +3,7 @@
 // PNG; designThumbnail makes a small picture for the My designs list.
 
 import type Konva from 'konva'
+import type { RecipeGroup } from './recipe'
 
 // Pixels per drawing unit. The drawing is about 500 units wide, so the picture is about
 // 2000 px wide: at least twice the size the hands ever show on screen, so it stays sharp.
@@ -58,9 +59,89 @@ export function designThumbnail(stage: Konva.Stage, size: Size): string {
   return renderDesign(stage, size, 0.4)?.toDataURL('image/jpeg', 0.8) ?? ''
 }
 
-export function exportDesign(stage: Konva.Stage, size: Size, fileName = 'my-nail-design.png') {
-  const picture = renderDesign(stage, size, PIXELS_PER_UNIT)
-  if (!picture) return
+// The recipe's look, in picture pixels.
+const RECIPE = {
+  margin: 80,
+  title: '700 48px Nunito, sans-serif',
+  heading: '700 32px Nunito, sans-serif',
+  body: '400 30px Nunito, sans-serif',
+  lineHeight: 44,
+  groupGap: 28,
+  ink: '#44403C', // Tailwind stone-700
+  accent: '#BE123C', // Tailwind rose-700
+}
+
+// Breaks text into lines no wider than `width` pixels.
+function wrap(context: CanvasRenderingContext2D, text: string, width: number): string[] {
+  const lines: string[] = []
+  let line = ''
+  for (const word of text.split(' ')) {
+    const tryLine = line ? `${line} ${word}` : word
+    if (line && context.measureText(tryLine).width > width) {
+      lines.push(line)
+      line = word
+    } else {
+      line = tryLine
+    }
+  }
+  if (line) lines.push(line)
+  return lines
+}
+
+// A new, taller picture: the design on top, the recipe written underneath.
+function addRecipe(picture: HTMLCanvasElement, recipe: RecipeGroup[]): HTMLCanvasElement {
+  const width = picture.width - RECIPE.margin * 2
+  const measure = document.createElement('canvas').getContext('2d')
+  if (!measure) return picture
+  // Work out every line first, to know how tall the picture needs to be.
+  const blocks = recipe.map((group) => {
+    measure.font = RECIPE.body
+    return { heading: group.nails, lines: group.lines.flatMap((line) => wrap(measure, line, width)) }
+  })
+  const recipeHeight =
+    RECIPE.lineHeight * 2 +
+    blocks.reduce((total, block) => total + RECIPE.lineHeight * (block.lines.length + 1) + RECIPE.groupGap, 0) +
+    RECIPE.margin
+  const sheet = document.createElement('canvas')
+  sheet.width = picture.width
+  sheet.height = picture.height + recipeHeight
+  const context = sheet.getContext('2d')
+  if (!context) return picture
+  context.fillStyle = BACKGROUND
+  context.fillRect(0, 0, sheet.width, sheet.height)
+  context.drawImage(picture, 0, 0)
+  context.textBaseline = 'top'
+  let y = picture.height
+  context.fillStyle = RECIPE.accent
+  context.font = RECIPE.title
+  context.fillText('Nail recipe', RECIPE.margin, y)
+  y += RECIPE.lineHeight * 2
+  for (const block of blocks) {
+    context.fillStyle = RECIPE.accent
+    context.font = RECIPE.heading
+    context.fillText(block.heading, RECIPE.margin, y)
+    y += RECIPE.lineHeight
+    context.fillStyle = RECIPE.ink
+    context.font = RECIPE.body
+    for (const line of block.lines) {
+      context.fillText(line, RECIPE.margin, y)
+      y += RECIPE.lineHeight
+    }
+    y += RECIPE.groupGap
+  }
+  return sheet
+}
+
+// Downloads the design as a PNG, with the recipe underneath if one is given.
+export function exportDesign(
+  stage: Konva.Stage,
+  size: Size,
+  recipe?: RecipeGroup[],
+  fileName = recipe ? 'my-nail-design-recipe.png' : 'my-nail-design.png',
+) {
+  const drawn = renderDesign(stage, size, PIXELS_PER_UNIT)
+  if (!drawn) return
+  const picture = recipe ? addRecipe(drawn, recipe) : drawn
 
   // Download it: make a temporary link to the picture and click it.
   picture.toBlob((blob) => {

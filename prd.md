@@ -156,5 +156,5 @@ The app shows two hands side by side with 10 nails, numbered left to right on sc
 
 - Assumption: the product is delivered as a mobile-first web app for the MVP. A native app is a later decision.
 - Decided: the MVP shows both hands (10 nails) so a full set can be designed and exported.
-- Open question: should the exported image be only the hand, or include a shareable design sheet (shapes, colours used)?
+- Decided (2026-11-09): Save offers both: the picture alone, or the picture with a recipe sheet listing what's on each nail (E7-S2).
 - Open question: how much undertone control is needed beyond a set of skin tone swatches?

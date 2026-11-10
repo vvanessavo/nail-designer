@@ -30,6 +30,7 @@ import {
   type TextFont,
 } from './state/nailState'
 import { designThumbnail, exportDesign } from './exportImage'
+import { designRecipe } from './recipe'
 import { STARTERS } from './starters'
 import {
   loadCurrentDesign,
@@ -511,8 +512,10 @@ function App() {
         tabs={tabs}
         actions={
           <SaveButton
-            onSave={() => {
-              if (stageRef.current) exportDesign(stageRef.current, drawingSize(state.nails))
+            onSave={(withRecipe) => {
+              if (!stageRef.current) return
+              const recipe = withRecipe ? designRecipe(state) : undefined
+              exportDesign(stageRef.current, drawingSize(state.nails), recipe)
             }}
           />
         }

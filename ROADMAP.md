@@ -21,7 +21,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs), E6-S9 (mirror hands) and E6-S10 (recent colours): **E6 is done**. E7-S1 (starter designs) is done. Next: **E7-S2, design recipe sheet**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs), E6-S9 (mirror hands) and E6-S10 (recent colours): **E6 is done**. E7-S1 (starter designs) and E7-S2 (recipe sheet) are done. Next: **E7-S3, share link**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -248,10 +248,11 @@ Done when: a Start from a design option shows 6 to 8 starter looks with previews
 Depends on: E6 (uses its shapes and effects).
 Built as: 8 looks in `src/starters.ts` (Classic French, Glazed donut, Red almond, Milky white, Baby boomer, Lavender chrome, Cherry accent, Midnight stars) in a "Start from a look" row at the top of My designs, each with a three-nail SVG preview (`src/components/NailPreview.tsx`). Picking one keeps your skin tone. Leopard waits for patterns (E8-S3). Loading a design, and clearing all drawings, are now always their own undo step.
 
-### E7-S2: Design recipe sheet. P1. Backlog
+### E7-S2: Design recipe sheet. P1. Done
 As a user, I can save a sheet that tells my nail artist exactly how to recreate the set.
 Done when: Save offers "Picture" and "Picture + recipe"; the recipe version adds, under the hands, a list per nail of shape, length, base colour (name and hex), effect, finish, tip, stickers, gems and text, grouping nails that are the same.
 Answers the PRD open question about a design sheet.
+Built as: Save opens a menu (Picture / Picture + recipe). `src/recipe.ts` describes each nail in plain words (shape and length, polish colour by name and code, effect, finish, French tip, stickers counted by kind and colour, text, number of hand-painted lines) and groups matching nails ("All nails", "Both ring fingers"); `exportImage.ts` writes it under the picture (`my-nail-design-recipe.png`). Gems will be added to the recipe with E8-S2.
 
 ### E7-S3: Share link. P1. Backlog
 As a user, I can send my artist a link that opens my exact design.

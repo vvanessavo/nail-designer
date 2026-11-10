@@ -75,6 +75,7 @@ src/
   exportImage.ts   saves the design as a PNG, and makes the small My designs pictures
   storage.ts       autosave and My designs, kept in the browser (localStorage)
   starters.ts      the ready-made starter designs
+  recipe.ts        the plain-language nail recipe written under a saved picture
   colour.ts        colour mixing helpers (chrome, glitter)
   App.tsx
   main.tsx
