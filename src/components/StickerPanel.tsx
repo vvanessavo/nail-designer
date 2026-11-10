@@ -2,7 +2,7 @@
 // The picked sticker stays picked so it can go on several nails; tap it again to put it down.
 // With nothing picked, tapping a placed sticker shows handles to move, resize and turn it.
 
-import { useEffect } from 'react'
+import { Fragment, useEffect } from 'react'
 import { paint, STICKER_SIZE, STICKERS, TEXT_MAX_LENGTH, type StickerType } from '../stickers'
 import type { TextFont } from '../state/nailState'
 import ColourPicker, { type Preset } from './ColourPicker'
@@ -63,41 +63,50 @@ function StickerPanel({
         aria-label="Stickers"
         className="flex max-w-full gap-2 overflow-x-auto p-1"
       >
-        {STICKERS.map(({ type, label, layers, defaultColor }) => {
+        {STICKERS.map(({ type, label, layers, defaultColor, group }, index) => {
+          // A thin line between the gems and the decal stickers.
+          const afterGems = index > 0 && STICKERS[index - 1].group === 'Gems' && group !== 'Gems'
           const isPicked = type === picked
           return (
-            <button
-              key={type}
-              type="button"
-              onClick={() => onPick(isPicked ? null : type)}
-              aria-pressed={isPicked}
-              aria-label={label}
-              title={label}
-              className={`flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-xl border bg-white transition active:scale-95 ${
-                isPicked
-                  ? 'border-rose-600 ring-1 ring-rose-600'
-                  : 'border-stone-200 hover:border-stone-400'
-              }`}
-            >
-              <svg
-                viewBox={`0 0 ${STICKER_SIZE} ${STICKER_SIZE}`}
-                className="h-8 w-8"
-                aria-hidden="true"
+            <Fragment key={type}>
+              {afterGems && (
+                <span
+                  aria-hidden="true"
+                  className="w-px shrink-0 self-stretch bg-stone-200"
+                />
+              )}
+              <button
+                type="button"
+                onClick={() => onPick(isPicked ? null : type)}
+                aria-pressed={isPicked}
+                aria-label={label}
+                title={label}
+                className={`flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-xl border bg-white transition active:scale-95 ${
+                  isPicked
+                    ? 'border-rose-600 ring-1 ring-rose-600'
+                    : 'border-stone-200 hover:border-stone-400'
+                }`}
               >
-                {layers.map((layer, index) => (
-                  <path
-                    key={index}
-                    d={layer.d}
-                    fill={paint(layer.fill, (!isOriginalColor && color) || defaultColor) ?? 'none'}
-                    stroke={paint(layer.stroke, (!isOriginalColor && color) || defaultColor)}
-                    strokeWidth={layer.strokeWidth}
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    opacity={layer.opacity}
-                  />
-                ))}
-              </svg>
-            </button>
+                <svg
+                  viewBox={`0 0 ${STICKER_SIZE} ${STICKER_SIZE}`}
+                  className="h-8 w-8"
+                  aria-hidden="true"
+                >
+                  {layers.map((layer, index) => (
+                    <path
+                      key={index}
+                      d={layer.d}
+                      fill={paint(layer.fill, (!isOriginalColor && color) || defaultColor) ?? 'none'}
+                      stroke={paint(layer.stroke, (!isOriginalColor && color) || defaultColor)}
+                      strokeWidth={layer.strokeWidth}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      opacity={layer.opacity}
+                    />
+                  ))}
+                </svg>
+              </button>
+            </Fragment>
           )
         })}
       </div>
