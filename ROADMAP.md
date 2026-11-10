@@ -21,7 +21,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done. Next: **E6-S3, special bases**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, and E6-S3 (special bases). Next: **E6-S4, copy a design to other nails**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -189,9 +189,10 @@ Done when: a length slider plus Short / Medium / Long presets in the Shape tab c
 Depends on: E6-S1.
 Built as: a `length` field per nail (1 = the shape's usual length, 0.5 to 2), `SET_LENGTH`, and a Length row in the Shape tab with Short (0.6) / Medium (1) / Long (1.5) and a slider. Every outline in `src/shapes.ts` scales with it. The drawing's top moves up when nails get long (`drawingTop` in the new `src/handGeometry.ts`), so tips and dots are never cut off, on screen or in saved pictures; with usual-length nails the layout is unchanged.
 
-### E6-S3: Special bases. P1. Backlog
+### E6-S3: Special bases. P1. Done
 As a user, I can choose an ombre, chrome, pearl or glitter base, so I can try popular effects.
 Done when: the Colour tab offers Plain, Ombre (fades from the base colour to a second colour I pick), Chrome (mirror-like metal shine), Pearl (soft shimmer) and Glitter (sparkly specks), stored per nail, visible on screen and in the exported picture.
+Built as: `baseEffect` and `effectColor` per nail, `SET_BASE_EFFECT` / `SET_EFFECT_COLOR`, and an effect row in the Colour tab (Plain, Ombre, Chrome, Pearl, Glitter) with a second colour row for ombre ("Fades to") and glitter. Ombre and chrome are gradients on the nail's own fill; pearl (a see-through rainbow sheen) and glitter (70 specks in three shades, always in the same places per nail) are drawn by `src/components/NailEffect.tsx`. Colour mixing helpers are in `src/colour.ts`.
 
 ### E6-S4: Copy a design to other nails. P1. Backlog
 As a user, I can copy one nail's whole design onto other nails, so I don't rebuild it nail by nail.

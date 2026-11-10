@@ -2,6 +2,7 @@
 // Keep these types in sync with the data model in PRD.md.
 
 export type Finish = 'matte' | 'shiny'
+export type BaseEffect = 'plain' | 'ombre' | 'chrome' | 'pearl' | 'glitter'
 export type NailShape = 'round' | 'square' | 'almond' | 'coffin' | 'stiletto' | 'squoval' | 'natural'
 
 export type Sticker = {
@@ -33,6 +34,8 @@ export type Nail = {
   shape: NailShape
   length: number // 1 = the shape's usual length, 0.5 = half as long, 2 = twice as long
   baseColor: string // hex
+  baseEffect: BaseEffect
+  effectColor: string // ombre: the colour it fades to at the tip; glitter: the glitter's colour
   finish: Finish
   hasFrenchTip: boolean
   frenchTipColor: string
@@ -60,6 +63,8 @@ export type Action =
   | { type: 'SET_SHAPE'; shape: NailShape }
   | { type: 'SET_LENGTH'; length: number }
   | { type: 'SET_BASE_COLOR'; color: string }
+  | { type: 'SET_BASE_EFFECT'; effect: BaseEffect }
+  | { type: 'SET_EFFECT_COLOR'; color: string }
   | { type: 'SET_FRENCH_TIP'; on: boolean }
   | { type: 'SET_FINISH'; finish: Finish }
   | { type: 'SET_FRENCH_TIP_COLOR'; color: string }
@@ -91,6 +96,8 @@ function createNail(id: number): Nail {
     shape: 'round',
     length: 1,
     baseColor: '#F6DCD6', // natural pink
+    baseEffect: 'plain',
+    effectColor: '#FFFFFF',
     finish: 'shiny',
     hasFrenchTip: false,
     frenchTipColor: '#FFFFFF',
@@ -194,6 +201,20 @@ export function nailReducer(state: AppState, action: Action): AppState {
         ...state,
         nails: state.nails.map((nail) =>
           isTargeted(state, nail.id) ? { ...nail, hasFrenchTip: action.on } : nail,
+        ),
+      }
+    case 'SET_BASE_EFFECT':
+      return {
+        ...state,
+        nails: state.nails.map((nail) =>
+          isTargeted(state, nail.id) ? { ...nail, baseEffect: action.effect } : nail,
+        ),
+      }
+    case 'SET_EFFECT_COLOR':
+      return {
+        ...state,
+        nails: state.nails.map((nail) =>
+          isTargeted(state, nail.id) ? { ...nail, effectColor: action.color } : nail,
         ),
       }
     case 'SET_FINISH':

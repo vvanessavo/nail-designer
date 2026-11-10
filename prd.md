@@ -120,6 +120,8 @@ type Nail = {
   shape: NailShape
   length: number          // 1 = the shape's usual length (0.5 to 2)
   baseColor: string       // hex
+  baseEffect: 'plain' | 'ombre' | 'chrome' | 'pearl' | 'glitter'
+  effectColor: string     // ombre: the colour at the tip; glitter: the glitter colour
   finish: Finish
   hasFrenchTip: boolean
   frenchTipColor: string
