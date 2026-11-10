@@ -7,8 +7,9 @@
 // translate(x y) -> x, y   rotate(a) -> rotation   scale(-1 1) -> scaleX={-1}
 
 import type Konva from 'konva'
-import { Circle, Group, Path, Rect } from 'react-konva'
-import type { Nail, StickerChanges } from '../state/nailState'
+import { useState } from 'react'
+import { Circle, Group, Line, Path, Rect } from 'react-konva'
+import type { Nail, StickerChanges, Stroke } from '../state/nailState'
 import { darken, lighten } from '../colour'
 import NailEffect from './NailEffect'
 import { freeEdgeLength, frenchTipPath, nailShapePath } from '../shapes'
@@ -107,6 +108,28 @@ type FingerShapeProps = {
   isTargeted: boolean // changes will apply to this nail, shown with a dot
   onSelectNail: OnNailTap
   stickerEditing: StickerEditing | null
+  drawing: DrawingTool | null
+}
+
+// Set while the Draw tab is open: the pen or eraser, and what to do with a finished line.
+export type DrawingTool = {
+  tool: 'pen' | 'eraser'
+  color: string
+  width: number // line thickness, in drawing units
+  onAddStroke: (nailId: number, stroke: Stroke) => void
+  onEraseStroke: (nailId: number, strokeId: string) => void
+}
+
+// How close (in screen pixels) the eraser has to get to a line to remove it.
+const ERASER_REACH = 6
+
+// The shortest distance from point p to the line segment a-b.
+function distanceToSegment(px: number, py: number, ax: number, ay: number, bx: number, by: number) {
+  const dx = bx - ax
+  const dy = by - ay
+  const lengthSquared = dx * dx + dy * dy
+  const t = lengthSquared === 0 ? 0 : Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / lengthSquared))
+  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy))
 }
 
 // A tap on a finger: which nail, and where on the nail (offset from its middle, in the same
@@ -156,7 +179,17 @@ function setCursor(event: Konva.KonvaEventObject<MouseEvent>, cursor: string) {
   if (stage) stage.container().style.cursor = cursor
 }
 
-function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, stickerEditing }: FingerShapeProps) {
+function FingerShape({
+  finger,
+  nail,
+  skinTone,
+  isTargeted,
+  onSelectNail,
+  stickerEditing,
+  drawing,
+}: FingerShapeProps) {
+  // The line being drawn right now (shown while the finger moves, saved when it lifts).
+  const [liveLine, setLiveLine] = useState<number[] | null>(null)
   const { x, y, angle, nailRatio } = finger
   const nailWidth = nailWidthOf(finger)
   const fingertipLine = fingertipLineOf(finger)
@@ -236,6 +269,78 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
     })
   }
 
+  // Draw tab: pressing on a nail starts a line (or, with the eraser, removes lines it touches).
+  // The finger can then move anywhere; the stage reports every move until it lifts. A second
+  // finger landing (a pinch) fires 'drawcancel', which throws the line away.
+  const startDrawing = (event: Konva.KonvaEventObject<PointerEvent>) => {
+    const tool = drawing
+    const stage = event.target.getStage()
+    const nailArea = (event.currentTarget as Konva.Group).findOne('.nail-area')
+    if (!tool || !stage || !nailArea) return
+    // The finger's position relative to the middle of the nail.
+    const fingerOnNail = () => {
+      const pointer = stage.getPointerPosition()
+      if (!pointer) return null
+      const local = nailArea.getAbsoluteTransform().copy().invert().point(pointer)
+      return { x: local.x, y: local.y - nailCentreY }
+    }
+    const first = fingerOnNail()
+    if (!first || !isOnNail({ x: first.x, y: first.y + nailCentreY })) return
+
+    const eraseAt = (point: { x: number; y: number }) => {
+      const reach = ERASER_REACH / Math.abs(nailArea.getAbsoluteScale().x)
+      for (const stroke of nail.strokes) {
+        const p = stroke.points
+        const touched =
+          p.length === 2
+            ? Math.hypot(point.x - p[0], point.y - p[1]) < reach + stroke.width / 2
+            : p.some(
+                (_, i) =>
+                  i % 2 === 0 &&
+                  i + 3 < p.length &&
+                  distanceToSegment(point.x, point.y, p[i], p[i + 1], p[i + 2], p[i + 3]) <
+                    reach + stroke.width / 2,
+              )
+        if (touched) tool.onEraseStroke(nail.id, stroke.id)
+      }
+    }
+
+    const points = [first.x, first.y]
+    if (tool.tool === 'eraser') eraseAt(first)
+    else setLiveLine(points.slice())
+
+    const stop = () => {
+      stage.off('.draw')
+      window.removeEventListener('pointerup', finish)
+    }
+    const finish = () => {
+      stop()
+      setLiveLine(null)
+      if (tool.tool !== 'pen') return
+      // A tap without moving makes a dot.
+      const line = points.length === 2 ? [...points, points[0] + 0.01, points[1]] : points
+      tool.onAddStroke(nail.id, {
+        id: `stroke-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        color: tool.color,
+        width: tool.width,
+        points: line,
+      })
+    }
+    stage.on('pointermove.draw', () => {
+      const point = fingerOnNail()
+      if (!point) return
+      if (tool.tool === 'eraser') return eraseAt(point)
+      points.push(point.x, point.y)
+      setLiveLine(points.slice())
+    })
+    stage.on('pointerup.draw pointercancel.draw', finish)
+    stage.on('drawcancel.draw', () => {
+      stop()
+      setLiveLine(null)
+    })
+    window.addEventListener('pointerup', finish) // in case the finger lifts off the canvas
+  }
+
   return (
     // The whole finger is clickable, so the target is big enough for a fingertip on a phone.
     // onPointerClick fires for mouse clicks, finger taps and pen taps alike.
@@ -251,7 +356,8 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
         const local = nailArea.getAbsoluteTransform().copy().invert().point(pointer)
         onSelectNail(nail.id, isOnNail(local) ? { x: local.x, y: local.y - nailCentreY } : undefined)
       }}
-      onMouseEnter={(event) => setCursor(event, 'pointer')}
+      onPointerDown={drawing ? startDrawing : undefined}
+      onMouseEnter={(event) => setCursor(event, drawing ? 'crosshair' : 'pointer')}
       onMouseLeave={(event) => setCursor(event, 'default')}
     >
       <Path
@@ -289,6 +395,22 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
               fill={nail.frenchTipColor}
               listening={false}
             />
+          )}
+          {/* Freehand lines go over the polish and tip, under the stickers. */}
+          {[...nail.strokes, ...(liveLine && drawing ? [{ id: 'live', color: drawing.color, width: drawing.width, points: liveLine }] : [])].map(
+            (stroke) => (
+              <Line
+                key={stroke.id}
+                y={nailCentreY}
+                points={stroke.points.length === 2 ? [...stroke.points, stroke.points[0] + 0.01, stroke.points[1]] : stroke.points}
+                stroke={stroke.color}
+                strokeWidth={stroke.width}
+                lineCap="round"
+                lineJoin="round"
+                tension={0.35}
+                listening={false}
+              />
+            ),
           )}
           {nail.stickers.map((sticker) => (
             // Each sticker is a group of layers (see src/stickers.ts). The group is what moves,
@@ -439,6 +561,7 @@ type HandProps = {
   targetedNailIds: number[]
   onSelectNail: OnNailTap
   stickerEditing: StickerEditing | null
+  drawing: DrawingTool | null
 }
 
 function Hand({
@@ -450,6 +573,7 @@ function Hand({
   targetedNailIds,
   onSelectNail,
   stickerEditing,
+  drawing,
 }: HandProps) {
   // Nails are numbered left to right on screen. A left hand reads pinky to thumb,
   // a flipped right hand reads thumb to pinky.
@@ -469,6 +593,7 @@ function Hand({
         isTargeted={targetedNailIds.includes(nail.id)}
         onSelectNail={onSelectNail}
         stickerEditing={stickerEditing}
+        drawing={drawing}
       />
     )
   }

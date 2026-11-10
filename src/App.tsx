@@ -3,6 +3,7 @@ import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import ApplyToToggle from './components/ApplyToToggle'
 import ColourPicker from './components/ColourPicker'
 import CopyBar from './components/CopyBar'
+import DrawPanel, { type DrawSettings } from './components/DrawPanel'
 import EffectPicker from './components/EffectPicker'
 import FinishPicker from './components/FinishPicker'
 import FrenchTipSwitch from './components/FrenchTipSwitch'
@@ -22,6 +23,7 @@ import {
   nailName,
   type Action,
   type StickerChanges,
+  type Stroke,
 } from './state/nailState'
 import { exportDesign } from './exportImage'
 import { drawingSize } from './handGeometry'
@@ -56,6 +58,13 @@ function App() {
   const [stickersTabOpen, setStickersTabOpen] = useState(false)
   // The placed sticker showing its move / resize / turn handles, if any.
   const [selectedStickerId, setSelectedStickerId] = useState<string | null>(null)
+  // Whether the Draw tab is open (taps on nails then draw), and the pen settings.
+  const [drawTabOpen, setDrawTabOpen] = useState(false)
+  const [drawSettings, setDrawSettings] = useState<DrawSettings>({
+    tool: 'pen',
+    color: '#1C1C1C',
+    width: 1,
+  })
   // While copying a nail's design: the nail being copied. Nail taps then paste its design.
   const [copyFrom, setCopyFrom] = useState<number | null>(null)
   // The colour new stickers are placed in: the last colour chosen in the Stickers tab.
@@ -75,7 +84,10 @@ function App() {
 
   // `at` is where on the nail the tap was (missing if it was on the finger, not the nail).
   const handleNailTap = (nailId: number, at?: { x: number; y: number }) => {
-    if (copyFrom !== null) {
+    if (drawTabOpen) {
+      // Drawing: taps draw dots (handled in Hand), they don't choose nails.
+      return
+    } else if (copyFrom !== null) {
       // Copy mode: a tap pastes the copied design onto that nail.
       dispatch({ type: 'PASTE_DESIGN', fromNailId: copyFrom, toNailIds: [nailId], stamp: Date.now() })
     } else if (pickedSticker) {
@@ -147,6 +159,16 @@ function App() {
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
   }, [deleteSelectedSticker, undo, redo])
+
+  // Set while the Draw tab is open: Hand uses it to draw and erase lines.
+  const drawing = drawTabOpen
+    ? {
+        ...drawSettings,
+        onAddStroke: (nailId: number, stroke: Stroke) => dispatch({ type: 'ADD_STROKE', nailId, stroke }),
+        onEraseStroke: (nailId: number, strokeId: string) =>
+          dispatch({ type: 'DELETE_STROKE', nailId, strokeId }),
+      }
+    : null
 
   // Stickers can be edited while the Stickers tab is open and no sticker is picked to place.
   const stickerEditing =
@@ -298,6 +320,19 @@ function App() {
       ),
     },
     {
+      id: 'draw',
+      label: 'Draw',
+      content: (
+        <DrawPanel
+          settings={drawSettings}
+          hasDrawing={state.nails.some((nail) => nail.strokes.length > 0)}
+          onChange={setDrawSettings}
+          onClearAll={() => dispatch({ type: 'CLEAR_STROKES' })}
+          onOpenChange={setDrawTabOpen}
+        />
+      ),
+    },
+    {
       id: 'stickers',
       label: 'Stickers',
       content: (
@@ -353,11 +388,12 @@ function App() {
           <Hands
             stageRef={stageRef}
             state={state}
-            // In the Stickers tab, taps place or edit stickers, so the nail selection dots are hidden.
-            showTargets={!stickersTabOpen}
+            // In the Stickers and Draw tabs, taps place stickers or draw, so the selection dots are hidden.
+            showTargets={!stickersTabOpen && !drawTabOpen}
             onSelectNail={handleNailTap}
             onTapBackground={() => setSelectedStickerId(null)}
             stickerEditing={stickerEditing}
+            drawing={drawing}
           />
           <UndoRedoButtons
             canUndo={canUndo}
