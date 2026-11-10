@@ -4,6 +4,8 @@ import ApplyToToggle from './components/ApplyToToggle'
 import ColourPicker from './components/ColourPicker'
 import CopyBar from './components/CopyBar'
 import DrawPanel, { type DrawSettings } from './components/DrawPanel'
+import TryOn, { type Placement } from './components/TryOn'
+import TryOnPanel, { type TryOnHand } from './components/TryOnPanel'
 import EffectAmountSlider from './components/EffectAmountSlider'
 import EffectPicker from './components/EffectPicker'
 import FinishPicker from './components/FinishPicker'
@@ -35,7 +37,7 @@ import {
   type Stroke,
   type TextFont,
 } from './state/nailState'
-import { designThumbnail, exportDesign } from './exportImage'
+import { designThumbnail, exportDesign, exportTryOn, nailPictures } from './exportImage'
 import { designRecipe } from './recipe'
 import { clearDesignFromLink, designFromLink, shareLinkFor } from './share'
 import { STARTERS } from './starters'
@@ -55,6 +57,15 @@ import { originalColorOf, TEXT_COLOR, type StickerType } from './stickers'
 // A unique id for each sticker, so React and Konva can tell them apart.
 function newStickerId(): string {
   return `sticker-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+}
+
+// Where the nails start: spread across the middle of the photo, the thumb a little lower.
+// Index 0 is the left-most nail on screen.
+function startPlacements(count: number, thumbFirst: boolean): Placement[] {
+  return Array.from({ length: count }, (_, i) => {
+    const isThumb = thumbFirst ? i === 0 : i === count - 1
+    return { x: 0.22 + i * 0.14, y: isThumb ? 0.55 : 0.38, scale: 1, rotation: 0 }
+  })
 }
 
 function App() {
@@ -96,6 +107,44 @@ function App() {
     width: 1,
     opacity: 1,
   })
+  // Try on: whether the tab is open, the hand photo, which hand it is, a picture of each of
+  // that hand's nails, and where each sits on the photo. Kept here so leaving the tab and
+  // coming back keeps everything. The photo is never saved or sent anywhere.
+  const [tryOnOpen, setTryOnOpen] = useState(false)
+  const [tryOnPhoto, setTryOnPhoto] = useState<HTMLImageElement | null>(null)
+  const [tryOnHand, setTryOnHand] = useState<TryOnHand>('left')
+  const [tryOnNails, setTryOnNails] = useState<HTMLCanvasElement[]>([])
+  const [tryOnPlacements, setTryOnPlacements] = useState<Placement[]>([])
+  const tryOnStageRef = useRef<Konva.Stage>(null)
+  // Pictures of the hand's nails as they are designed right now (the hands are still drawn,
+  // under the photo). The left hand is nails 0 to 4, the right hand 5 to 9.
+  const refreshTryOnNails = useCallback((hand: TryOnHand) => {
+    if (!stageRef.current) return
+    setTryOnNails(nailPictures(stageRef.current, hand === 'left' ? [0, 1, 2, 3, 4] : [5, 6, 7, 8, 9]))
+  }, [])
+  const handleTryOnOpen = useCallback(
+    (open: boolean) => {
+      setTryOnOpen(open)
+      if (open) refreshTryOnNails(tryOnHand) // the design may have changed in another tab
+    },
+    [refreshTryOnNails, tryOnHand],
+  )
+  const chooseTryOnPhoto = (file: File) => {
+    const photo = new window.Image()
+    photo.onload = () => {
+      if (tryOnPhoto) URL.revokeObjectURL(tryOnPhoto.src) // free the previous photo
+      setTryOnPhoto(photo)
+      setTryOnPlacements(startPlacements(5, tryOnHand === 'right'))
+    }
+    photo.onerror = () => setNotice({ message: "That photo couldn't be opened. Try a JPEG or PNG." })
+    photo.src = URL.createObjectURL(file)
+  }
+  const changeTryOnHand = (hand: TryOnHand) => {
+    setTryOnHand(hand)
+    refreshTryOnNails(hand)
+    setTryOnPlacements(startPlacements(5, hand === 'right'))
+  }
+
   // While copying a nail's design: the nail being copied. Nail taps then paste its design.
   const [copyFrom, setCopyFrom] = useState<number | null>(null)
   // The colour new stickers are placed in: the last colour chosen in the Stickers tab.
@@ -613,6 +662,20 @@ function App() {
         />
       ),
     },
+    {
+      id: 'try-on',
+      label: 'Try on',
+      content: (
+        <TryOnPanel
+          hasPhoto={tryOnPhoto !== null}
+          hand={tryOnHand}
+          onPhoto={chooseTryOnPhoto}
+          onHandChange={changeTryOnHand}
+          onSave={() => tryOnStageRef.current && exportTryOn(tryOnStageRef.current)}
+          onOpenChange={handleTryOnOpen}
+        />
+      ),
+    },
   ]
 
   return (
@@ -637,22 +700,36 @@ function App() {
       <main className="flex min-h-0 flex-1 items-center justify-center p-4">
         {/* Same size as the hands area, so the undo button lines up with the zoom buttons. */}
         <div className="relative flex h-full w-full max-w-2xl justify-center">
-          <Hands
-            stageRef={stageRef}
-            state={state}
-            // In the Stickers and Draw tabs, taps place stickers or draw, so the selection dots are hidden.
-            showTargets={!stickersTabOpen && !drawTabOpen}
-            onSelectNail={handleNailTap}
-            onTapBackground={() => setSelectedStickerId(null)}
-            stickerEditing={stickerEditing}
-            drawing={drawing}
-          />
-          <UndoRedoButtons
-            canUndo={canUndo}
-            canRedo={canRedo}
-            onUndo={undo}
-            onRedo={redo}
-          />
+          {/* While trying on, the hands and their buttons are hidden but still drawn: the
+              try-on nail pictures are made from them. "contents" leaves the layout as it is. */}
+          <div className={tryOnOpen && tryOnPhoto ? 'invisible contents' : 'contents'}>
+            <Hands
+              stageRef={stageRef}
+              state={state}
+              // In the Stickers and Draw tabs, taps place stickers or draw, so the selection dots are hidden.
+              showTargets={!stickersTabOpen && !drawTabOpen}
+              onSelectNail={handleNailTap}
+              onTapBackground={() => setSelectedStickerId(null)}
+              stickerEditing={stickerEditing}
+              drawing={drawing}
+            />
+            <UndoRedoButtons
+              canUndo={canUndo}
+              canRedo={canRedo}
+              onUndo={undo}
+              onRedo={redo}
+            />
+          </div>
+          {/* Try on: the hand photo with the nails on it, in place of the hands. */}
+          {tryOnOpen && tryOnPhoto && (
+            <TryOn
+              photo={tryOnPhoto}
+              nails={tryOnNails}
+              placements={tryOnPlacements}
+              onPlacementsChange={setTryOnPlacements}
+              stageRef={tryOnStageRef}
+            />
+          )}
           {notice && copyFrom === null && (
             <NoticeBar
               message={notice.message}

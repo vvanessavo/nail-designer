@@ -72,12 +72,13 @@ src/
   handGeometry.ts  finger positions, nail sizes, drawing size (shared by Hand, Hands, export)
   shapes.ts        nail outlines and the French tip outline
   stickers.ts      the sticker designs (layers on a 24 x 24 grid, with a recolourable main colour)
-  exportImage.ts   saves the design as a PNG, and makes the small My designs pictures
+  exportImage.ts   saves the design as a PNG, makes the small My designs pictures, the try-on nail pictures and the try-on PNG
   storage.ts       autosave and My designs, kept in the browser (localStorage)
   starters.ts      the ready-made starter designs
   recipe.ts        the plain-language nail recipe written under a saved picture
   share.ts         share links: the design packed into the link after #d=
-  colour.ts        colour mixing helpers (chrome, glitter)
+  colour.ts        colour mixing helpers (chrome, glitter, the hand's colour)
+  random.ts        a repeatable random number maker (glitter, sugar finish)
   App.tsx
   main.tsx
   index.css        Tailwind import, the theme (Nunito font) and the focus ring

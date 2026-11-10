@@ -1,8 +1,9 @@
 // Pictures of the design: both hands at full view, whatever the zoom, without the selection
-// dots or sticker handles, on the app's soft pink background. exportDesign downloads a sharp
-// PNG; designThumbnail makes a small picture for the My designs list.
+// dots or sticker handles, on the app's white background. exportDesign downloads a sharp
+// PNG; designThumbnail makes a small picture for the My designs list; nailPictures makes a
+// picture of each nail on its own, standing upright, for trying the design on a photo.
 
-import type Konva from 'konva'
+import Konva from 'konva'
 import type { RecipeGroup } from './recipe'
 
 // Pixels per drawing unit. The drawing is about 500 units wide, so the picture is about
@@ -42,7 +43,7 @@ function renderDesign(stage: Konva.Stage, size: Size, pixelsPerUnit: number): HT
     stage.scale({ x: view.scaleX, y: view.scaleY })
   }
 
-  // The drawing has a see-through background; paint it onto the pink.
+  // The drawing has a see-through background; paint it onto the white.
   const picture = document.createElement('canvas')
   picture.width = hands.width
   picture.height = hands.height
@@ -143,7 +144,11 @@ export function exportDesign(
   if (!drawn) return
   const picture = recipe ? addRecipe(drawn, recipe) : drawn
 
-  // Download it: make a temporary link to the picture and click it.
+  downloadPicture(picture, fileName)
+}
+
+// Downloads a picture as a PNG: make a temporary link to it and click it.
+export function downloadPicture(picture: HTMLCanvasElement, fileName: string) {
   picture.toBlob((blob) => {
     if (!blob) return
     const url = URL.createObjectURL(blob)
@@ -154,4 +159,48 @@ export function exportDesign(
     // Give the browser a moment to start the download before freeing the picture.
     setTimeout(() => URL.revokeObjectURL(url), 1000)
   }, 'image/png')
+}
+
+// A picture of each of these nails on its own: upright (not turned with its finger), with
+// everything on it, and with a see-through background around it. On the right hand the
+// drawing is a flipped copy of the left, so those nails are flipped back.
+export function nailPictures(stage: Konva.Stage, nailIds: number[], pixelRatio = 8): HTMLCanvasElement[] {
+  // A separate, unseen stage to draw the copies on, so the real one is never touched.
+  const scratch = new Konva.Stage({ container: document.createElement('div'), width: 1, height: 1 })
+  const layer = new Konva.Layer()
+  scratch.add(layer)
+  try {
+    return nailIds.flatMap((id) => {
+      // The nail's group: the nail itself, its polish, art and finish (see Hand.tsx).
+      const area = stage.findOne(`#nail-${id}`)?.getParent()
+      if (!area) return []
+      const copy = area.clone({ x: 0, y: 0, rotation: 0, scaleX: id >= 5 ? -1 : 1, scaleY: 1 }) as Konva.Group
+      copy.find('.target-dot').forEach((node) => node.destroy())
+      layer.add(copy)
+      const box = copy.getClientRect()
+      const picture = copy.toCanvas({ ...box, pixelRatio })
+      copy.destroy()
+      return [picture]
+    })
+  } finally {
+    scratch.destroy()
+  }
+}
+
+// Downloads the try-on picture: the hand photo with the nails on it, without the handles, at
+// the photo's own size (up to 3000 px wide). See TryOn.tsx.
+export function exportTryOn(stage: Konva.Stage) {
+  const area = stage.findOne('.photo-area')
+  if (!area) return
+  const handles = stage.find('Transformer').filter((node) => node.visible())
+  handles.forEach((node) => node.hide())
+  let picture: HTMLCanvasElement
+  try {
+    const box = area.getClientRect()
+    const pixelRatio = Math.min(1 / area.scaleX(), 3000 / box.width)
+    picture = stage.toCanvas({ ...box, pixelRatio })
+  } finally {
+    handles.forEach((node) => node.show())
+  }
+  downloadPicture(picture, 'my-nails-try-on.png')
 }
