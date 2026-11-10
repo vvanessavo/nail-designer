@@ -1,5 +1,5 @@
-// Chooses the polish effect: plain, ombre, chrome, pearl or glitter. Each button has a small
-// preview dot. One row that scrolls sideways if it doesn't fit.
+// Chooses the polish effect: plain, ombre, chrome, pearl, glitter or a pattern (marble,
+// tortoiseshell, leopard, checkerboard, floral). Each button has a small preview dot. One row that scrolls sideways if it doesn't fit.
 
 import type { BaseEffect } from '../state/nailState'
 
@@ -22,7 +22,33 @@ const EFFECTS: { effect: BaseEffect; label: string; preview: string }[] = [
     preview:
       'bg-[radial-gradient(#fff_20%,transparent_25%),radial-gradient(#d4af37_20%,transparent_25%)] bg-[length:5px_5px,7px_7px] bg-rose-400',
   },
+  {
+    effect: 'marble',
+    label: 'Marble',
+    preview: 'bg-[linear-gradient(120deg,#f7f5f2_40%,#9a9aa0_45%,#f7f5f2_50%,#f7f5f2_70%,#b8b8bd_73%,#f7f5f2_76%)]',
+  },
+  {
+    effect: 'tortoise',
+    label: 'Tortoiseshell',
+    preview: 'bg-[radial-gradient(circle_at_30%_35%,#3b1f0e_20%,transparent_45%),radial-gradient(circle_at_70%_70%,#3b1f0e_15%,transparent_40%)] bg-[#c8873a]',
+  },
+  {
+    effect: 'leopard',
+    label: 'Leopard',
+    preview: 'bg-[radial-gradient(#b08a66_25%,#2b1b12_30%,#2b1b12_40%,transparent_45%)] bg-[length:8px_8px] bg-[#d9b48f]',
+  },
+  {
+    effect: 'checker',
+    label: 'Checkerboard',
+    preview: 'bg-[conic-gradient(#1c1c1c_25%,#fff_25%_50%,#1c1c1c_50%_75%,#fff_75%)] bg-[length:8px_8px]',
+  },
+  {
+    effect: 'floral',
+    label: 'Floral',
+    preview: 'bg-[radial-gradient(#f6c945_15%,#fff_20%,#fff_35%,transparent_40%)] bg-[length:8px_8px] bg-[#f6dcd6]',
+  },
 ]
+
 
 type EffectPickerProps = {
   value: BaseEffect | null // the effect the target nails share, or null if they differ

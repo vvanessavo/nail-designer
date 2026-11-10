@@ -1,10 +1,12 @@
-// The special base effects drawn over a nail's polish: pearl shimmer and glitter.
-// (Plain, ombre and chrome are drawn by the nail's own fill; see baseFill in Hand.)
+// The special base effects drawn over a nail's polish: pearl shimmer, glitter and the
+// patterns (marble, tortoiseshell, leopard, checkerboard, floral). Plain, ombre and chrome are
+// drawn by the nail's own fill; see baseFill in Hand. Patterns use the polish colour as the
+// background and the effect colour for the pattern.
 // Drawn inside the nail's clip group, so nothing shows outside the nail.
 
 import type Konva from 'konva'
 import { Path, Shape } from 'react-konva'
-import { darken, lighten } from '../colour'
+import { darken, lighten, mix } from '../colour'
 import type { Nail } from '../state/nailState'
 
 type NailEffectProps = {
@@ -25,6 +27,117 @@ function seeded(seed: number) {
   }
 }
 
+type PatternArea = {
+  nail: Nail
+  top: number
+  bottom: number
+  width: number
+  random: () => number // the same numbers every time for this nail
+}
+
+// Each pattern paints on the canvas over the whole nail area (the clip trims it to the nail).
+const PATTERNS = {
+  // Soft wavy veins of different widths, some see-through.
+  marble: (ctx: CanvasRenderingContext2D, { nail, top, bottom, width, random }: PatternArea) => {
+    ctx.lineCap = 'round'
+    for (let i = 0; i < 7; i++) {
+      const x = (random() - 0.5) * width
+      ctx.beginPath()
+      ctx.moveTo(x, top - 2)
+      ctx.bezierCurveTo(
+        x + (random() - 0.5) * width,
+        top + (bottom - top) * 0.35,
+        x + (random() - 0.5) * width,
+        top + (bottom - top) * 0.65,
+        x + (random() - 0.5) * width * 0.6,
+        bottom + 2,
+      )
+      ctx.strokeStyle = nail.effectColor
+      ctx.globalAlpha = 0.25 + random() * 0.5
+      ctx.lineWidth = width * (0.01 + random() * 0.04)
+      ctx.stroke()
+    }
+    ctx.globalAlpha = 1
+  },
+  // Dark blotches that fade softly into the amber background.
+  tortoise: (ctx: CanvasRenderingContext2D, { nail, top, bottom, width, random }: PatternArea) => {
+    for (let i = 0; i < 14; i++) {
+      const x = (random() - 0.5) * width * 1.1
+      const y = top + random() * (bottom - top)
+      const r = width * (0.12 + random() * 0.18)
+      const fade = ctx.createRadialGradient(x, y, 0, x, y, r)
+      fade.addColorStop(0, nail.effectColor)
+      fade.addColorStop(0.55, nail.effectColor)
+      fade.addColorStop(1, 'rgba(0, 0, 0, 0)')
+      ctx.fillStyle = fade
+      ctx.globalAlpha = 0.55 + random() * 0.4
+      ctx.beginPath()
+      ctx.ellipse(x, y, r, r * (0.7 + random() * 0.5), random() * Math.PI, 0, Math.PI * 2)
+      ctx.fill()
+    }
+    ctx.globalAlpha = 1
+  },
+  // Spots: a slightly darker centre inside a broken ring.
+  leopard: (ctx: CanvasRenderingContext2D, { nail, top, bottom, width, random }: PatternArea) => {
+    const step = width * 0.32
+    for (let y = top; y < bottom + step; y += step) {
+      for (let x = -width / 2; x < width / 2 + step; x += step) {
+        const cx = x + (random() - 0.5) * step * 0.5
+        const cy = y + (random() - 0.5) * step * 0.5
+        const r = step * (0.24 + random() * 0.12)
+        ctx.fillStyle = mix(nail.baseColor, nail.effectColor, 0.3)
+        ctx.beginPath()
+        ctx.ellipse(cx, cy, r, r * 0.8, random() * Math.PI, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.strokeStyle = nail.effectColor
+        ctx.lineWidth = r * 0.45
+        ctx.lineCap = 'round'
+        // Two or three arcs around the centre, with gaps between them.
+        const start = random() * Math.PI * 2
+        for (let arc = 0; arc < 3; arc++) {
+          ctx.beginPath()
+          const from = start + (arc * Math.PI * 2) / 3
+          ctx.ellipse(cx, cy, r * 1.2, r, 0, from, from + Math.PI * (0.35 + random() * 0.25))
+          ctx.stroke()
+        }
+      }
+    }
+  },
+  // Squares in the pattern colour on every other square.
+  checker: (ctx: CanvasRenderingContext2D, { nail, top, bottom, width }: PatternArea) => {
+    const size = width / 4
+    ctx.fillStyle = nail.effectColor
+    for (let row = 0; top + row * size < bottom; row++) {
+      for (let column = 0; column < 4; column++) {
+        if ((row + column) % 2 === 0) ctx.fillRect(-width / 2 + column * size, top + row * size, size, size)
+      }
+    }
+  },
+  // Little five-petal flowers with yellow middles, scattered over the nail.
+  floral: (ctx: CanvasRenderingContext2D, { nail, top, bottom, width, random }: PatternArea) => {
+    const step = width * 0.42
+    for (let y = top + step / 2; y < bottom + step / 2; y += step) {
+      for (let x = -width / 2 + step / 2; x < width / 2 + step / 2; x += step) {
+        const cx = x + (random() - 0.5) * step * 0.6
+        const cy = y + (random() - 0.5) * step * 0.6
+        const r = step * 0.22
+        const spin = random() * Math.PI
+        ctx.fillStyle = nail.effectColor
+        for (let petal = 0; petal < 5; petal++) {
+          const angle = spin + (petal * Math.PI * 2) / 5
+          ctx.beginPath()
+          ctx.arc(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r, r * 0.75, 0, Math.PI * 2)
+          ctx.fill()
+        }
+        ctx.fillStyle = '#F6C945'
+        ctx.beginPath()
+        ctx.arc(cx, cy, r * 0.55, 0, Math.PI * 2)
+        ctx.fill()
+      }
+    }
+  },
+}
+
 function NailEffect({ nail, outline, top, bottom, width }: NailEffectProps) {
   if (nail.baseEffect === 'pearl') {
     // A soft, see-through rainbow sheen over the polish, like the inside of a shell.
@@ -41,6 +154,19 @@ function NailEffect({ nail, outline, top, bottom, width }: NailEffectProps) {
           0.8, 'rgba(255, 255, 255, 0.5)',
           1, 'rgba(255, 238, 215, 0.25)',
         ]}
+      />
+    )
+  }
+
+  const pattern = PATTERNS[nail.baseEffect as keyof typeof PATTERNS]
+  if (pattern) {
+    const random = seeded(nail.id + 7)
+    return (
+      <Shape
+        listening={false}
+        sceneFunc={(context: Konva.Context) =>
+          pattern(context._context, { nail, top, bottom, width, random })
+        }
       />
     )
   }

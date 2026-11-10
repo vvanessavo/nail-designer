@@ -3,7 +3,18 @@
 
 export type Finish = 'matte' | 'shiny'
 export type FrenchTipStyle = 'classic' | 'deep' | 'micro' | 'v' | 'side' | 'double' | 'reverse'
-export type BaseEffect = 'plain' | 'ombre' | 'chrome' | 'pearl' | 'glitter'
+export type BaseEffect =
+  | 'plain'
+  | 'ombre'
+  | 'chrome'
+  | 'pearl'
+  | 'glitter'
+  // Patterns: the polish colour is the background, effectColor the pattern
+  | 'marble'
+  | 'tortoise'
+  | 'leopard'
+  | 'checker'
+  | 'floral'
 export type NailShape = 'round' | 'square' | 'almond' | 'coffin' | 'stiletto' | 'squoval' | 'natural'
 
 export type Sticker = {
@@ -40,6 +51,15 @@ export type Sticker = {
 
 export type TextFont = 'script' | 'bold'
 
+// The colours a pattern starts in (background, pattern) when it's picked.
+export const PATTERN_COLORS: Partial<Record<BaseEffect, { base: string; effect: string }>> = {
+  marble: { base: '#F7F5F2', effect: '#8E8E93' },
+  tortoise: { base: '#C8873A', effect: '#3B1F0E' },
+  leopard: { base: '#D9B48F', effect: '#2B1B12' },
+  checker: { base: '#FFFFFF', effect: '#1C1C1C' },
+  floral: { base: '#F6DCD6', effect: '#FFFFFF' },
+}
+
 // A line drawn on a nail. Points are x, y pairs relative to the middle of the nail (like a
 // sticker's position), in the same units as the drawing.
 export type Stroke = {
@@ -55,7 +75,7 @@ export type Nail = {
   length: number // 1 = the shape's usual length, 0.5 = half as long, 2 = twice as long
   baseColor: string // hex
   baseEffect: BaseEffect
-  effectColor: string // ombre: the colour it fades to at the tip; glitter: the glitter's colour
+  effectColor: string // ombre: the colour at the tip; glitter: the glitter; patterns: the pattern
   finish: Finish
   hasFrenchTip: boolean
   frenchTipColor: string
@@ -87,7 +107,8 @@ export type Action =
   | { type: 'SET_SHAPE'; shape: NailShape }
   | { type: 'SET_LENGTH'; length: number }
   | { type: 'SET_BASE_COLOR'; color: string }
-  | { type: 'SET_BASE_EFFECT'; effect: BaseEffect }
+  // `colors` (optional) also sets the polish and effect colours, e.g. a pattern's usual colours.
+  | { type: 'SET_BASE_EFFECT'; effect: BaseEffect; colors?: { base: string; effect: string } }
   | { type: 'SET_EFFECT_COLOR'; color: string }
   | { type: 'SET_FRENCH_TIP'; on: boolean }
   | { type: 'SET_FINISH'; finish: Finish }
@@ -304,7 +325,13 @@ export function nailReducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         nails: state.nails.map((nail) =>
-          isTargeted(state, nail.id) ? { ...nail, baseEffect: action.effect } : nail,
+          isTargeted(state, nail.id)
+            ? {
+                ...nail,
+                baseEffect: action.effect,
+                ...(action.colors ? { baseColor: action.colors.base, effectColor: action.colors.effect } : {}),
+              }
+            : nail,
         ),
       }
     case 'SET_EFFECT_COLOR':

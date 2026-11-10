@@ -21,7 +21,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs), E6-S9 (mirror hands) and E6-S10 (recent colours): **E6 is done**. **E7 is done** (starter designs, recipe sheet, share link). E8-S1 (French tip styles) and E8-S2 (gems and pearls) are done. Next: **E8-S3, patterns**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design), E6-S5 (redo), E6-S6 (freehand drawing), E6-S7 (text), E6-S8 (autosave and My designs), E6-S9 (mirror hands) and E6-S10 (recent colours): **E6 is done**. **E7 is done** (starter designs, recipe sheet, share link). E8-S1 (French tip styles), E8-S2 (gems and pearls) and E8-S3 (patterns) are done. Next: **E8-S4, trending effects**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -275,10 +275,11 @@ As a user, I can add rhinestones, pearls and studs that look raised and catch th
 Done when: a Gems section offers at least round, teardrop and square rhinestones, pearls and metal studs, with a highlight and shadow so they look 3D; they place, move, resize, turn and delete like stickers and appear in the exported picture.
 Built as: five sticker types in `src/stickers.ts` (round, teardrop and square rhinestones, pearl, stud), each with a soft shadow, see-through light and dark facets (so any colour works) and a highlight. They come first in the sticker row, before a thin divider, and the recipe lists them on their own "Gems:" line.
 
-### E8-S3: Patterns. P1. Backlog
+### E8-S3: Patterns. P1. Done
 As a user, I can choose a patterned base.
 Done when: marble, tortoiseshell, leopard, checkerboard and a simple floral are offered as base effects, with the pattern's main colours adjustable, clipped to the nail, and visible in the exported picture.
 Depends on: E6-S3.
+Built as: five more base effects (`marble`, `tortoise`, `leopard`, `checker`, `floral`) in the Colour tab's effect row. The polish colour is the background and a "Pattern colour" row sets the pattern; picking a pattern starts it in its usual colours (`PATTERN_COLORS`), as one undo step. Drawn by `NailEffect.tsx` on the canvas, the same every time for each nail. The recipe names the pattern, and a "Leopard accent" starter design was added.
 
 ### E8-S4: Trending effects. P1. Backlog
 As a user, I can try cat-eye, aura and jelly nails.

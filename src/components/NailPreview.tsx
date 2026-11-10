@@ -88,6 +88,19 @@ function NailPreview({ nails }: NailPreviewProps) {
                   opacity="0.35"
                 />
               )}
+              {['marble', 'tortoise', 'leopard', 'checker', 'floral'].includes(nail.baseEffect) &&
+                [0.25, 0.75].flatMap((fx) =>
+                  [0.15, 0.45, 0.75].map((fy) => (
+                    <circle
+                      key={`p-${fx}-${fy}`}
+                      cx={(fx - 0.5) * WIDTH + (fy > 0.4 && fy < 0.5 ? 2 : 0)}
+                      cy={top + fy * (BED - top)}
+                      r="2"
+                      fill={nail.effectColor}
+                      opacity="0.85"
+                    />
+                  )),
+                )}
               {nail.baseEffect === 'glitter' &&
                 [0.2, 0.5, 0.8].flatMap((fx) =>
                   [0.15, 0.35, 0.55, 0.75].map((fy) => (
