@@ -6,6 +6,7 @@
 // wrapped in try / catch and the app keeps working without it.
 
 import { createNail, initialState, type Design, type Nail } from './state/nailState'
+import { RETIRED_STICKERS } from './stickers'
 
 const CURRENT_KEY = 'nail-designer.v1.current'
 const DESIGNS_KEY = 'nail-designer.v1.designs'
@@ -32,7 +33,15 @@ export function upgrade(value: unknown): Design | null {
       : initialState.undertone,
     grayscaleHand: saved.grayscaleHand === true,
     linesOverStickers: saved.linesOverStickers === true,
-    nails: saved.nails.map((nail: Partial<Nail>, id) => ({ ...createNail(id), ...nail, id })),
+    nails: saved.nails.map((nail: Partial<Nail>, id) => ({
+      ...createNail(id),
+      ...nail,
+      id,
+      // Stickers that were taken out of the app show as the piece that replaced them.
+      stickers: (nail.stickers ?? []).map((sticker) =>
+        sticker.type in RETIRED_STICKERS ? { ...sticker, type: RETIRED_STICKERS[sticker.type] } : sticker,
+      ),
+    })),
   }
 }
 

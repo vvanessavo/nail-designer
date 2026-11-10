@@ -23,7 +23,7 @@ import {
   THUMB_INDEX,
   type Finger,
 } from '../handGeometry'
-import { paint, STICKER_DESIGNS, STICKER_SIZE, TEXT_FONTS, TEXT_SIZE } from '../stickers'
+import { konvaPaint, STICKER_DESIGNS, STICKER_SIZE, TEXT_FONTS, TEXT_SIZE } from '../stickers'
 
 const NAIL_EDGE = 'rgba(150, 90, 80, 0.5)'
 const DOT_COLOR = '#292524' // Tailwind stone-800
@@ -515,8 +515,7 @@ function FingerShape({
                     data={layer.d}
                     x={layer.shift?.[0]}
                     y={layer.shift?.[1]}
-                    fill={paint(layer.fill, sticker.color)}
-                    stroke={paint(layer.stroke, sticker.color)}
+                    {...konvaPaint(layer, sticker.color)}
                     strokeWidth={layer.strokeWidth}
                     lineCap="round"
                     lineJoin="round"

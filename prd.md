@@ -106,10 +106,11 @@ type NailShape = 'round' | 'square' | 'almond' | 'coffin' | 'stiletto' | 'squova
 
 type Sticker = {
   id: string
-  type: 'daisy' | 'blossom' | 'rose' | 'vine' | 'bow' | 'cherries' | 'strawberry'
-      | 'butterfly' | 'smiley' | 'heart' | 'evil-eye' | 'moon' | 'twinkle' | 'swirl'
-      | 'gem-round' | 'gem-teardrop' | 'gem-square' | 'pearl' | 'stud'
-      | '3d-heart' | '3d-bow' | '3d-flower' | '3d-star' | 'text'
+  type: 'gem-round' | 'gem-teardrop' | 'gem-square' | 'gem-cluster' | 'pearl' | 'stud'
+      | 'chrome-heart' | 'chrome-star' | 'chrome-blob' | 'chrome-swirl' | 'chrome-line' | 'charm-bow'
+      | 'water-drop' | 'gel-bow' | 'gel-flower' | 'pearl-cluster'
+      | 'daisy' | 'dot-flower' | 'bloom' | 'blossom' | 'rose' | 'vine' | 'heart' | 'twinkle'
+      | 'stars' | 'swirl' | 'cherries' | 'strawberry' | 'bow' | 'text'
   x: number              // offset from the centre of the nail (0, 0 = centred)
   y: number
   scale: number           // 1 = default size, about 70% of the nail's width (0.3 to 1.6)

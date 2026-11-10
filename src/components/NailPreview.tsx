@@ -6,7 +6,8 @@ import { useId } from 'react'
 import { darken, lighten } from '../colour'
 import { freeEdgeLength, frenchTipPath, nailShapePath } from '../shapes'
 import type { Nail } from '../state/nailState'
-import { paint, STICKER_DESIGNS, STICKER_SIZE } from '../stickers'
+import { STICKER_DESIGNS, STICKER_SIZE } from '../stickers'
+import StickerArt from './StickerArt'
 
 const WIDTH = 20 // each nail's width
 const BED = 18 // how far each nail runs down the finger
@@ -129,18 +130,12 @@ function NailPreview({ nails }: NailPreviewProps) {
                       key={sticker.id}
                       transform={`translate(${sticker.x} ${centreY + sticker.y}) rotate(${sticker.rotation}) scale(${scale}) translate(-12 -12)`}
                     >
-                      {design?.layers.map((layer, layerIndex) => (
-                        <path
-                          key={layerIndex}
-                          d={layer.d}
-                          fill={paint(layer.fill, sticker.color) ?? 'none'}
-                          stroke={paint(layer.stroke, sticker.color)}
-                          strokeWidth={layer.strokeWidth}
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          opacity={layer.opacity}
+                      {design && (
+                        <StickerArt
+                          design={design}
+                          color={sticker.color}
                         />
-                      ))}
+                      )}
                     </g>
                   )
                 })}
