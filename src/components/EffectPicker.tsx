@@ -43,6 +43,21 @@ const EFFECTS: { effect: BaseEffect; label: string; preview: string }[] = [
     preview: 'bg-[conic-gradient(#1c1c1c_25%,#fff_25%_50%,#1c1c1c_50%_75%,#fff_75%)] bg-[length:8px_8px]',
   },
   {
+    effect: 'cat-eye',
+    label: 'Cat-eye',
+    preview: 'bg-[linear-gradient(100deg,#2e1a47_35%,#d9d3f2_50%,#2e1a47_65%)]',
+  },
+  {
+    effect: 'aura',
+    label: 'Aura',
+    preview: 'bg-[radial-gradient(circle,#e85a9b_25%,#f3e1ec_75%)]',
+  },
+  {
+    effect: 'jelly',
+    label: 'Jelly',
+    preview: 'bg-[#e8384f]/50',
+  },
+  {
     effect: 'floral',
     label: 'Floral',
     preview: 'bg-[radial-gradient(#f6c945_15%,#fff_20%,#fff_35%,transparent_40%)] bg-[length:8px_8px] bg-[#f6dcd6]',

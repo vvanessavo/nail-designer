@@ -125,8 +125,9 @@ type Nail = {
   length: number          // 1 = the shape's usual length (0.5 to 2)
   baseColor: string       // hex
   baseEffect: 'plain' | 'ombre' | 'chrome' | 'pearl' | 'glitter'
-    | 'marble' | 'tortoise' | 'leopard' | 'checker' | 'floral'
+    | 'marble' | 'tortoise' | 'leopard' | 'checker' | 'floral' | 'cat-eye' | 'aura' | 'jelly'
   effectColor: string     // ombre: the colour at the tip; glitter: the glitter; patterns: the pattern
+  effectAmount: number    // 0 to 1: cat-eye band position, aura glow size, jelly polish strength
   finish: Finish
   hasFrenchTip: boolean
   frenchTipColor: string

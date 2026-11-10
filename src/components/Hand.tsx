@@ -145,6 +145,9 @@ function distanceToSegment(px: number, py: number, ax: number, ay: number, bx: n
 // units as a sticker's x and y). `at` is missing when the tap wasn't on the nail itself.
 export type OnNailTap = (nailId: number, at?: { x: number; y: number }) => void
 
+// The colour of a bare nail, seen through jelly polish.
+const NATURAL_NAIL = '#F4D9D2'
+
 // How the polish itself is painted. Plain is one colour (the nail's fill). Ombre fades from
 // the effect colour at the tip to the polish colour at the cuticle. Chrome is the polish
 // colour in bands of light and dark, like polished metal. Pearl is a slightly paler polish
@@ -177,6 +180,9 @@ function baseFill(nail: Nail, width: number, top: number, bottom: number): Parti
     }
     case 'pearl':
       return { fill: lighten(nail.baseColor, 0.18) }
+    case 'jelly':
+      // The natural nail underneath; the see-through polish is drawn on top by NailEffect.
+      return { fill: NATURAL_NAIL }
     default:
       return {}
   }

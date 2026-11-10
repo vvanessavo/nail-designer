@@ -4,6 +4,7 @@ import ApplyToToggle from './components/ApplyToToggle'
 import ColourPicker from './components/ColourPicker'
 import CopyBar from './components/CopyBar'
 import DrawPanel, { type DrawSettings } from './components/DrawPanel'
+import EffectAmountSlider from './components/EffectAmountSlider'
 import EffectPicker from './components/EffectPicker'
 import FinishPicker from './components/FinishPicker'
 import FrenchTipSwitch from './components/FrenchTipSwitch'
@@ -25,7 +26,8 @@ import {
   initialState,
   isTargeted,
   nailName,
-  PATTERN_COLORS,
+  EFFECT_AMOUNT_LABELS,
+  EFFECT_START_COLORS,
   type Action,
   type Design,
   type StickerChanges,
@@ -419,17 +421,29 @@ function App() {
           <EffectPicker
             value={sharedEffect}
             // Picking a pattern also sets its usual colours (one undo step); change them after.
-            onChange={(effect) => dispatch({ type: 'SET_BASE_EFFECT', effect, colors: PATTERN_COLORS[effect] })}
+            onChange={(effect) => dispatch({ type: 'SET_BASE_EFFECT', effect, colors: EFFECT_START_COLORS[effect] })}
           />
-          {/* Ombre, glitter and patterns use a second colour. */}
-          {firstTarget && sharedEffect && !['plain', 'chrome', 'pearl'].includes(sharedEffect) && (
+          {/* Cat-eye, aura and jelly have a slider (band position, glow size, strength). */}
+          {firstTarget && sharedEffect && EFFECT_AMOUNT_LABELS[sharedEffect] && (
+            <EffectAmountSlider
+              labels={EFFECT_AMOUNT_LABELS[sharedEffect]}
+              value={firstTarget.effectAmount}
+              onChange={(amount) => dispatch({ type: 'SET_EFFECT_AMOUNT', amount })}
+            />
+          )}
+          {/* Ombre, glitter, patterns, cat-eye and aura use a second colour. */}
+          {firstTarget && sharedEffect && !['plain', 'chrome', 'pearl', 'jelly'].includes(sharedEffect) && (
             <div className="flex w-full flex-col items-center gap-1">
               <span className="text-xs font-semibold text-stone-500">
                 {sharedEffect === 'ombre'
                   ? 'Fades to (at the tip)'
                   : sharedEffect === 'glitter'
                     ? 'Glitter colour'
-                    : 'Pattern colour'}
+                    : sharedEffect === 'cat-eye'
+                      ? 'Shimmer colour'
+                      : sharedEffect === 'aura'
+                        ? 'Glow colour'
+                        : 'Pattern colour'}
               </span>
               <ColourPicker
                 label={
