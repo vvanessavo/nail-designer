@@ -2,6 +2,7 @@ import type Konva from 'konva'
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import ApplyToToggle from './components/ApplyToToggle'
 import ColourPicker from './components/ColourPicker'
+import CopyBar from './components/CopyBar'
 import EffectPicker from './components/EffectPicker'
 import FinishPicker from './components/FinishPicker'
 import FrenchTipSwitch from './components/FrenchTipSwitch'
@@ -18,6 +19,7 @@ import {
   historyReducer,
   initialHistory,
   isTargeted,
+  nailName,
   type Action,
   type StickerChanges,
 } from './state/nailState'
@@ -53,6 +55,8 @@ function App() {
   const [stickersTabOpen, setStickersTabOpen] = useState(false)
   // The placed sticker showing its move / resize / turn handles, if any.
   const [selectedStickerId, setSelectedStickerId] = useState<string | null>(null)
+  // While copying a nail's design: the nail being copied. Nail taps then paste its design.
+  const [copyFrom, setCopyFrom] = useState<number | null>(null)
   // The colour new stickers are placed in: the last colour chosen in the Stickers tab.
   // null = each sticker comes in its own original colours (a white daisy, a pink bow...).
   const [stickerColor, setStickerColor] = useState<string | null>(null)
@@ -70,7 +74,10 @@ function App() {
 
   // `at` is where on the nail the tap was (missing if it was on the finger, not the nail).
   const handleNailTap = (nailId: number, at?: { x: number; y: number }) => {
-    if (pickedSticker) {
+    if (copyFrom !== null) {
+      // Copy mode: a tap pastes the copied design onto that nail.
+      dispatch({ type: 'PASTE_DESIGN', fromNailId: copyFrom, toNailIds: [nailId], stamp: Date.now() })
+    } else if (pickedSticker) {
       dispatch({
         type: 'ADD_STICKER',
         nailId,
@@ -115,10 +122,13 @@ function App() {
   // the keys keep their usual meaning):
   // - Delete or Backspace removes the selected sticker
   // - Cmd+Z (Mac) or Ctrl+Z (Windows) undoes the last change
+  // - Escape leaves copy mode
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
       if (event.target instanceof HTMLInputElement) return
-      if (event.key === 'Delete' || event.key === 'Backspace') {
+      if (event.key === 'Escape') {
+        setCopyFrom(null) // leave copy mode
+      } else if (event.key === 'Delete' || event.key === 'Backspace') {
         deleteSelectedSticker()
       } else if (event.key.toLowerCase() === 'z' && (event.metaKey || event.ctrlKey) && !event.shiftKey) {
         event.preventDefault()
@@ -165,6 +175,7 @@ function App() {
       selectedCount={state.selectedNailIds.length}
       onChange={(applyToAll) => dispatch({ type: 'SET_APPLY_TO_ALL', applyToAll })}
       onClear={() => dispatch({ type: 'CLEAR_SELECTION' })}
+      onCopyDesign={() => setCopyFrom(state.selectedNailIds[0] ?? null)}
     />
   )
 
@@ -343,6 +354,20 @@ function App() {
             disabled={!canUndo}
             onUndo={undo}
           />
+          {copyFrom !== null && (
+            <CopyBar
+              fromName={nailName(copyFrom)}
+              onPasteAll={() =>
+                dispatch({
+                  type: 'PASTE_DESIGN',
+                  fromNailId: copyFrom,
+                  toNailIds: state.nails.map((nail) => nail.id),
+                  stamp: Date.now(),
+                })
+              }
+              onDone={() => setCopyFrom(null)}
+            />
+          )}
         </div>
       </main>
     </div>
