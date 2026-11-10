@@ -27,6 +27,10 @@ export function upgrade(value: unknown): Design | null {
   if (!Array.isArray(saved.nails) || saved.nails.length !== initialState.nails.length) return null
   return {
     skinTone: typeof saved.skinTone === 'string' ? saved.skinTone : initialState.skinTone,
+    undertone: ['warm', 'neutral', 'cool'].includes(saved.undertone ?? '')
+      ? (saved.undertone as Design['undertone'])
+      : initialState.undertone,
+    grayscaleHand: saved.grayscaleHand === true,
     nails: saved.nails.map((nail: Partial<Nail>, id) => ({ ...createNail(id), ...nail, id })),
   }
 }

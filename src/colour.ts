@@ -1,4 +1,5 @@
-// Small helpers for mixing colours, used to shade chrome and glitter from the polish colour.
+// Small helpers for mixing colours, used to shade chrome and glitter from the polish colour,
+// and to work out the hand's colour from the skin tone, undertone and grayscale setting.
 
 function toRgb(hex: string): [number, number, number] {
   const value = hex.replace('#', '')
@@ -16,4 +17,14 @@ export function mix(hex: string, other: string, amount: number): string {
 }
 
 export const lighten = (hex: string, amount: number) => mix(hex, '#ffffff', amount)
+// The colour the hand is drawn in. Warm leans golden, cool leans pink, neutral is the tone as
+// picked. Grayscale keeps how light or dark the skin is, without its colour.
+export function handColour(skinTone: string, undertone: 'warm' | 'neutral' | 'cool', grayscale: boolean): string {
+  const tone = undertone === 'warm' ? mix(skinTone, '#E0A84A', 0.18) : undertone === 'cool' ? mix(skinTone, '#D07A8E', 0.18) : skinTone
+  if (!grayscale) return tone
+  const [r, g, b] = toRgb(tone)
+  const grey = Math.round(0.299 * r + 0.587 * g + 0.114 * b)
+  return mix('#000000', '#ffffff', grey / 255)
+}
+
 export const darken = (hex: string, amount: number) => mix(hex, '#000000', amount)

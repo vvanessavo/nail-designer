@@ -21,6 +21,7 @@ import SaveButton from './components/SaveButton'
 import Toolbar, { type ToolbarTab } from './components/Toolbar'
 import UndoRedoButtons from './components/UndoRedoButtons'
 import {
+  designOf,
   historyReducer,
   initialHistory,
   initialState,
@@ -105,10 +106,10 @@ function App() {
   const [storageWorks, setStorageWorks] = useState(true)
   useEffect(() => {
     const timer = setTimeout(() => {
-      setStorageWorks(saveCurrentDesign({ skinTone: state.skinTone, nails: state.nails }))
+      setStorageWorks(saveCurrentDesign(designOf(state)))
     }, 300)
     return () => clearTimeout(timer)
-  }, [state.skinTone, state.nails])
+  }, [state])
 
   // Recent colours: the last 6 colours used anywhere (newest first), shown at the start of
   // every colour row. A colour is remembered once it has been kept for a moment, so dragging
@@ -140,7 +141,7 @@ function App() {
       name,
       savedAt: Date.now(),
       thumbnail: stage ? designThumbnail(stage, drawingSize(state.nails)) : '',
-      design: { skinTone: state.skinTone, nails: state.nails },
+      design: designOf(state),
     }
     updateSavedDesigns([saved, ...savedDesigns])
   }
@@ -157,7 +158,7 @@ function App() {
   useEffect(() => {
     let cancelled = false
     const timer = setTimeout(() => {
-      shareLinkFor({ skinTone: state.skinTone, nails: state.nails }).then((url) => {
+      shareLinkFor(designOf(state)).then((url) => {
         if (!cancelled) setShareUrl(url)
       })
     }, 400)
@@ -165,7 +166,7 @@ function App() {
       cancelled = true
       clearTimeout(timer)
     }
-  }, [state.skinTone, state.nails])
+  }, [state])
 
   const shareDesign = () => {
     if (!shareUrl) return
@@ -370,11 +371,11 @@ function App() {
             updateSavedDesigns(savedDesigns.map((item) => (item.id === id ? { ...item, name } : item)))
           }
           onDelete={(id) => updateSavedDesigns(savedDesigns.filter((item) => item.id !== id))}
-          onNew={() => openDesign({ skinTone: initialState.skinTone, nails: initialState.nails })}
+          onNew={() => openDesign(designOf(initialState))}
           onStarter={(starterId) => {
             const starter = STARTERS.find((item) => item.id === starterId)
             // A starter keeps the skin tone you chose.
-            if (starter) openDesign({ skinTone: state.skinTone, nails: starter.nails })
+            if (starter) openDesign({ ...designOf(state), nails: starter.nails })
           }}
         />
       ),
@@ -385,7 +386,11 @@ function App() {
       content: (
         <SkinTonePicker
           value={state.skinTone}
+          undertone={state.undertone}
+          grayscale={state.grayscaleHand}
           onChange={(skinTone) => dispatch({ type: 'SET_SKIN_TONE', skinTone })}
+          onUndertoneChange={(undertone) => dispatch({ type: 'SET_UNDERTONE', undertone })}
+          onGrayscaleChange={(on) => dispatch({ type: 'SET_GRAYSCALE_HAND', on })}
         />
       ),
     },

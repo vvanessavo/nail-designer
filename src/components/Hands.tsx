@@ -12,6 +12,7 @@ import Konva from 'konva'
 import { useEffect, useRef, useState, type Ref } from 'react'
 import { Group, Layer, Rect, Stage, Transformer } from 'react-konva'
 import Hand, { type DrawingTool, type OnNailTap, type StickerEditing } from './Hand'
+import { handColour } from '../colour'
 import { drawingTop, HAND_BOTTOM, HANDS_WIDTH, RIGHT_HAND_X } from '../handGeometry'
 import { isTargeted, type AppState } from '../state/nailState'
 
@@ -100,6 +101,8 @@ function Hands({
   // the selected sticker changes, attach it to that sticker (or to nothing).
   const transformerRef = useRef<Konva.Transformer>(null)
   const selectedStickerId = stickerEditing?.selectedId ?? null
+  // The colour the hands are drawn in (skin tone, undertone and grayscale).
+  const skin = handColour(state.skinTone, state.undertone, state.grayscaleHand)
   useEffect(() => {
     const transformer = transformerRef.current
     if (!transformer) return
@@ -274,7 +277,7 @@ function Hands({
                   firstNail={0}
                   mirrored={false}
                   x={0}
-                  skinTone={state.skinTone}
+                  skinTone={skin}
                   nails={state.nails}
                   targetedNailIds={targetedNailIds}
                   onSelectNail={handleSelectNail}
@@ -285,7 +288,7 @@ function Hands({
                   firstNail={5}
                   mirrored={true}
                   x={RIGHT_HAND_X}
-                  skinTone={state.skinTone}
+                  skinTone={skin}
                   nails={state.nails}
                   targetedNailIds={targetedNailIds}
                   onSelectNail={handleSelectNail}
