@@ -309,9 +309,10 @@ function Hands({
               {/* Handles for the selected sticker: corners resize it from its middle (keeping its proportions),
                   the handle on top turns it, snapping to straight when close. Drawn after the
                   wrist fade so the fade never hides them.
-                  Stickers can be tiny on a phone, so the corner handles sit a few pixels out
-                  (padding) instead of on top of the sticker, and the whole area inside the box
-                  can be grabbed to move it (shouldOverdrawWholeArea). */}
+                  Stickers can be tiny on a phone, so the corner handles sit well out (padding,
+                  more than a handle's grab area) instead of on top of the sticker: pressing the
+                  sticker itself always moves it, and the whole area inside the box can be
+                  grabbed to move it too (shouldOverdrawWholeArea). */}
               <Transformer
                 ref={transformerRef}
                 enabledAnchors={['top-left', 'top-right', 'bottom-left', 'bottom-right']}
@@ -328,8 +329,10 @@ function Hands({
                 anchorStroke="#E11D48"
                 anchorFill="white"
                 borderStroke="#E11D48"
-                rotateAnchorOffset={16}
-                padding={8}
+                // Konva places the turn handle this far above the sticker, minus the padding,
+                // so 40 puts it 8px above the box.
+                rotateAnchorOffset={40}
+                padding={16}
                 shouldOverdrawWholeArea={true}
                 // The limits are in screen pixels, so they grow with the zoom.
                 // Stop a resize that goes further below the smallest or above the largest size.

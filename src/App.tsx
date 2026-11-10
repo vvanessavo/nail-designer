@@ -225,11 +225,12 @@ function App() {
     } else if (pickedSticker) {
       const isText = pickedSticker === 'text'
       if (isText && textDraft.text.trim() === '') return // nothing typed yet
+      const id = newStickerId()
       dispatch({
         type: 'ADD_STICKER',
         nailId,
         sticker: {
-          id: newStickerId(),
+          id,
           type: pickedSticker,
           // Where you tapped, or the middle of the nail if you tapped the finger.
           x: at?.x ?? 0,
@@ -240,6 +241,9 @@ function App() {
           ...(isText ? { text: textDraft.text.trim(), font: textDraft.font } : {}),
         },
       })
+      // Show the new sticker's handles straight away, so it can be moved, resized or turned
+      // without any extra step. The sticker stays picked, so tapping the nails adds more.
+      setSelectedStickerId(id)
     } else if (stickersTabOpen) {
       // In sticker mode, tapping a nail (not a sticker) just puts the handles away.
       setSelectedStickerId(null)
@@ -305,9 +309,11 @@ function App() {
       }
     : null
 
-  // Stickers can be edited while the Stickers tab is open and no sticker is picked to place.
+  // Placed stickers can be tapped and dragged whenever the Stickers tab is open, even while a
+  // sticker is picked to place: a tap on a sticker edits it, a tap anywhere else on a nail
+  // places a new one.
   const stickerEditing =
-    stickersTabOpen && pickedSticker === null
+    stickersTabOpen
       ? {
           selectedId: selectedStickerId,
           onSelect: setSelectedStickerId,

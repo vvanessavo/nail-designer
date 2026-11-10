@@ -159,10 +159,12 @@ function StickerPanel({
       <p className="min-h-12 text-center text-xs text-stone-500 sm:min-h-8">
         {picked === 'text'
           ? text.text.trim()
-            ? 'Tap a nail to add your text. Tap Aa again when you\'re done.'
+            ? 'Tap a nail to add your text. Tap placed text to move it.'
             : 'Type your text, then tap a nail to add it.'
           : pickedLabel
-          ? `Tap a nail to add the ${pickedLabel.toLowerCase()}. Tap the ${pickedLabel.toLowerCase()} again when you're done.`
+          ? hasSelectedSticker
+            ? 'Drag it to move it, a corner to resize, the top handle to turn. Tap a nail to add another.'
+            : `Tap a nail to add the ${pickedLabel.toLowerCase()}. Tap a placed sticker to move it.`
           : hasSelectedSticker
             ? 'Drag the sticker to move it. Drag a corner to resize it, or the top handle to turn it.'
             : 'Choose a sticker, then tap a nail. Pick a colour first to change it. Tap a sticker on a nail to edit it.'}
