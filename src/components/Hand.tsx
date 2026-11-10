@@ -9,6 +9,8 @@
 import type Konva from 'konva'
 import { Circle, Group, Path, Rect } from 'react-konva'
 import type { Nail, StickerChanges } from '../state/nailState'
+import { darken, lighten } from '../colour'
+import NailEffect from './NailEffect'
 import { freeEdgeLength, frenchTipPath, nailShapePath } from '../shapes'
 import {
   FINGERS,
@@ -110,6 +112,43 @@ type FingerShapeProps = {
 // A tap on a finger: which nail, and where on the nail (offset from its middle, in the same
 // units as a sticker's x and y). `at` is missing when the tap wasn't on the nail itself.
 export type OnNailTap = (nailId: number, at?: { x: number; y: number }) => void
+
+// How the polish itself is painted. Plain is one colour (the nail's fill). Ombre fades from
+// the effect colour at the tip to the polish colour at the cuticle. Chrome is the polish
+// colour in bands of light and dark, like polished metal. Pearl is a slightly paler polish
+// (its shimmer is drawn on top by NailEffect). The fill stays set to the polish colour.
+function baseFill(nail: Nail, width: number, top: number, bottom: number): Partial<Konva.PathConfig> {
+  switch (nail.baseEffect) {
+    case 'ombre':
+      return {
+        fillPriority: 'linear-gradient',
+        fillLinearGradientStartPoint: { x: 0, y: top },
+        fillLinearGradientEndPoint: { x: 0, y: bottom },
+        fillLinearGradientColorStops: [0, nail.effectColor, 0.2, nail.effectColor, 0.85, nail.baseColor, 1, nail.baseColor],
+      }
+    case 'chrome': {
+      const base = nail.baseColor
+      return {
+        fillPriority: 'linear-gradient',
+        fillLinearGradientStartPoint: { x: -width / 2, y: top },
+        fillLinearGradientEndPoint: { x: width / 2, y: bottom },
+        fillLinearGradientColorStops: [
+          0, darken(base, 0.45),
+          0.22, base,
+          0.4, lighten(base, 0.8),
+          0.5, lighten(base, 0.35),
+          0.7, darken(base, 0.35),
+          0.88, lighten(base, 0.5),
+          1, darken(base, 0.25),
+        ],
+      }
+    }
+    case 'pearl':
+      return { fill: lighten(nail.baseColor, 0.18) }
+    default:
+      return {}
+  }
+}
 
 // Shows a pointing-hand cursor while the mouse is over a finger.
 function setCursor(event: Konva.KonvaEventObject<MouseEvent>, cursor: string) {
@@ -229,11 +268,20 @@ function FingerShape({ finger, nail, skinTone, isTargeted, onSelectNail, sticker
           targeted={isTargeted}
           data={nailOutline}
           fill={nail.baseColor}
+          {...baseFill(nail, nailWidth, nailTop, bedLength)}
         />
         {/* Stickers are clipped to the nail's exact outline, so nothing shows outside the
             nail, even while a sticker is being dragged or resized near the edge. clipFunc
             returns the same outline as the nail shape (an SVG path, as a Path2D). */}
         <Group clipFunc={() => [new Path2D(nailOutline)]}>
+          {/* Pearl and glitter go over the polish, under the tip and stickers. */}
+          <NailEffect
+            nail={nail}
+            outline={nailOutline}
+            top={nailTop}
+            bottom={bedLength}
+            width={nailWidth}
+          />
           {/* The French tip goes under the stickers, and is clipped to the nail like them. */}
           {nail.hasFrenchTip && (
             <Path

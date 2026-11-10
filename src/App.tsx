@@ -2,6 +2,7 @@ import type Konva from 'konva'
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import ApplyToToggle from './components/ApplyToToggle'
 import ColourPicker from './components/ColourPicker'
+import EffectPicker from './components/EffectPicker'
 import FinishPicker from './components/FinishPicker'
 import FrenchTipSwitch from './components/FrenchTipSwitch'
 import TipThicknessSlider from './components/TipThicknessSlider'
@@ -148,6 +149,12 @@ function App() {
       ? firstTarget.shape
       : null
 
+  // The effect every target nail shares, or null if they differ.
+  const sharedEffect =
+    firstTarget && targetNails.every((nail) => nail.baseEffect === firstTarget.baseEffect)
+      ? firstTarget.baseEffect
+      : null
+
   // Shown as on only if every target nail already has a tip.
   const targetsHaveTip = targetNails.length > 0 && targetNails.every((nail) => nail.hasFrenchTip)
 
@@ -206,6 +213,28 @@ function App() {
             onChange={(color) => dispatch({ type: 'SET_BASE_COLOR', color })}
             compact
           />
+          <EffectPicker
+            value={sharedEffect}
+            onChange={(effect) => dispatch({ type: 'SET_BASE_EFFECT', effect })}
+          />
+          {/* Ombre and glitter use a second colour. */}
+          {firstTarget && (sharedEffect === 'ombre' || sharedEffect === 'glitter') && (
+            <div className="flex w-full flex-col items-center gap-1">
+              <span className="text-xs font-semibold text-stone-500">
+                {sharedEffect === 'ombre' ? 'Fades to (at the tip)' : 'Glitter colour'}
+              </span>
+              <ColourPicker
+                label={sharedEffect === 'ombre' ? 'Ombre tip colours' : 'Glitter colours'}
+                value={firstTarget.effectColor}
+                onChange={(color) => dispatch({ type: 'SET_EFFECT_COLOR', color })}
+                extraPresets={[
+                  { name: 'Gold', hex: '#D4AF37' },
+                  { name: 'Silver', hex: '#C0C0C0' },
+                ]}
+                compact
+              />
+            </div>
+          )}
           <FinishPicker
             // Highlight a finish only if every target nail already has it.
             value={
