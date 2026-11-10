@@ -10,6 +10,7 @@ import FrenchTipSwitch from './components/FrenchTipSwitch'
 import TipThicknessSlider from './components/TipThicknessSlider'
 import Hands from './components/Hands'
 import LengthPicker from './components/LengthPicker'
+import MyDesignsPanel from './components/MyDesignsPanel'
 import ShapePicker from './components/ShapePicker'
 import SkinTonePicker from './components/SkinTonePicker'
 import StickerPanel from './components/StickerPanel'
@@ -19,14 +20,23 @@ import UndoRedoButtons from './components/UndoRedoButtons'
 import {
   historyReducer,
   initialHistory,
+  initialState,
   isTargeted,
   nailName,
   type Action,
+  type Design,
   type StickerChanges,
   type Stroke,
   type TextFont,
 } from './state/nailState'
-import { exportDesign } from './exportImage'
+import { designThumbnail, exportDesign } from './exportImage'
+import {
+  loadCurrentDesign,
+  loadSavedDesigns,
+  saveCurrentDesign,
+  storeSavedDesigns,
+  type SavedDesign,
+} from './storage'
 import { drawingSize } from './handGeometry'
 import { originalColorOf, TEXT_COLOR, type StickerType } from './stickers'
 
@@ -40,10 +50,15 @@ function App() {
   // useReducer keeps all the app's state in one object and changes it only through
   // actions, e.g. dispatch({ type: 'SELECT_NAIL', nailId: 3 }). The state sits inside an
   // undo history (see historyReducer), and `state` is its current design.
-  const [history, dispatchHistory] = useReducer(historyReducer, initialHistory)
+  // The design starts as it was left last time (autosave), or fresh on a first visit.
+  const [history, dispatchHistory] = useReducer(historyReducer, initialHistory, (start) => {
+    const saved = loadCurrentDesign()
+    return saved ? { ...start, present: { ...start.present, ...saved } } : start
+  })
   const state = history.present
   // The Konva stage the hands are drawn on, used to export a picture of them.
   const stageRef = useRef<Konva.Stage>(null)
+
   const canUndo = history.past.length > 0
   const canRedo = history.future.length > 0
   // Every change is stamped with the time, so quick runs of the same change undo together.
@@ -73,6 +88,27 @@ function App() {
   // The colour new stickers are placed in: the last colour chosen in the Stickers tab.
   // null = each sticker comes in its own original colours (a white daisy, a pink bow...).
   const [stickerColor, setStickerColor] = useState<string | null>(null)
+
+  // Autosave: shortly after every change, keep the design in this browser.
+  const [storageWorks, setStorageWorks] = useState(true)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setStorageWorks(saveCurrentDesign({ skinTone: state.skinTone, nails: state.nails }))
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [state.skinTone, state.nails])
+
+  // My designs: designs kept under a name, newest first.
+  const [savedDesigns, setSavedDesigns] = useState<SavedDesign[]>(() => loadSavedDesigns())
+  const updateSavedDesigns = (designs: SavedDesign[]) => {
+    setSavedDesigns(designs)
+    setStorageWorks(storeSavedDesigns(designs))
+  }
+  const openDesign = (design: Design) => {
+    dispatch({ type: 'LOAD_DESIGN', design })
+    setSelectedStickerId(null)
+    setCopyFrom(null)
+  }
 
   // useCallback keeps these functions the same between renders, because StickerPanel
   // runs an effect that depends on them.
@@ -218,6 +254,36 @@ function App() {
 
   // One entry per tab in the toolbar. New features (shape, colour, stickers...) go here.
   const tabs: ToolbarTab[] = [
+    {
+      id: 'designs',
+      label: 'My designs',
+      content: (
+        <MyDesignsPanel
+          designs={savedDesigns}
+          storageWorks={storageWorks}
+          onAdd={(name) => {
+            const stage = stageRef.current
+            const saved: SavedDesign = {
+              id: `design-${Date.now()}`,
+              name,
+              savedAt: Date.now(),
+              thumbnail: stage ? designThumbnail(stage, drawingSize(state.nails)) : '',
+              design: { skinTone: state.skinTone, nails: state.nails },
+            }
+            updateSavedDesigns([saved, ...savedDesigns])
+          }}
+          onOpen={(id) => {
+            const saved = savedDesigns.find((item) => item.id === id)
+            if (saved) openDesign(saved.design)
+          }}
+          onRename={(id, name) =>
+            updateSavedDesigns(savedDesigns.map((item) => (item.id === id ? { ...item, name } : item)))
+          }
+          onDelete={(id) => updateSavedDesigns(savedDesigns.filter((item) => item.id !== id))}
+          onNew={() => openDesign({ skinTone: initialState.skinTone, nails: initialState.nails })}
+        />
+      ),
+    },
     {
       id: 'skin-tone',
       label: 'Skin tone',

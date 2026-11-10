@@ -94,6 +94,7 @@ export type Action =
   | { type: 'ADD_STROKE'; nailId: number; stroke: Stroke }
   | { type: 'DELETE_STROKE'; nailId: number; strokeId: string }
   | { type: 'CLEAR_STROKES' } // removes the drawing from every nail
+  | { type: 'LOAD_DESIGN'; design: Design } // opens a saved design, or a fresh one
   // Copies one nail's whole design onto other nails. `stamp` (e.g. the time) makes the copied
   // stickers' ids unique.
   | { type: 'PASTE_DESIGN'; fromNailId: number; toNailIds: number[]; stamp: number }
@@ -113,7 +114,7 @@ export const LENGTH_PRESETS = [
 export const MIN_TIP_THICKNESS = 0.3
 export const MAX_TIP_THICKNESS = 1.3
 
-function createNail(id: number): Nail {
+export function createNail(id: number): Nail {
   return {
     id,
     shape: 'round',
@@ -202,6 +203,8 @@ export function nailReducer(state: AppState, action: Action): AppState {
             : nail,
         ),
       }
+    case 'LOAD_DESIGN':
+      return { ...state, ...action.design, selectedNailIds: [] }
     case 'ADD_STROKE':
       return {
         ...state,
@@ -329,7 +332,7 @@ const MERGE_WITHIN_MS = 600
 const MAX_UNDO_STEPS = 50
 
 // The parts of the state that undo puts back. The nail selection stays as it is.
-type Design = Pick<AppState, 'skinTone' | 'nails'>
+export type Design = Pick<AppState, 'skinTone' | 'nails'>
 
 export type History = {
   past: Design[]
