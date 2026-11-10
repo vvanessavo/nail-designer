@@ -24,29 +24,39 @@ export type NailShape = 'round' | 'square' | 'almond' | 'coffin' | 'stiletto' | 
 export type Sticker = {
   id: string
   type:
-    | 'daisy'
-    | 'blossom'
-    | 'rose'
-    | 'vine'
-    | 'bow'
-    | 'cherries'
-    | 'strawberry'
-    | 'butterfly'
-    | 'smiley'
-    | 'heart'
-    | 'evil-eye'
-    | 'moon'
-    | 'twinkle'
-    | 'swirl'
+    // Gems
     | 'gem-round'
     | 'gem-teardrop'
     | 'gem-square'
+    | 'gem-cluster'
     | 'pearl'
     | 'stud'
-    | '3d-heart'
-    | '3d-bow'
-    | '3d-flower'
-    | '3d-star'
+    // 3D chrome and metal
+    | 'chrome-heart'
+    | 'chrome-star'
+    | 'chrome-blob'
+    | 'chrome-swirl'
+    | 'chrome-line'
+    | 'charm-bow'
+    // 3D gel
+    | 'water-drop'
+    | 'gel-bow'
+    | 'gel-flower'
+    | 'pearl-cluster'
+    // Hand-painted
+    | 'daisy'
+    | 'dot-flower'
+    | 'bloom'
+    | 'blossom'
+    | 'rose'
+    | 'vine'
+    | 'heart'
+    | 'twinkle'
+    | 'stars'
+    | 'swirl'
+    | 'cherries'
+    | 'strawberry'
+    | 'bow'
     | 'text' // words or initials; see `text` and `font`
   x: number // offset from the centre of the nail, in drawing units (0 = centred)
   y: number

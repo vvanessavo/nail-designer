@@ -71,7 +71,7 @@ src/
   state/           nailState.ts: types and reducer
   handGeometry.ts  finger positions, nail sizes, drawing size (shared by Hand, Hands, export)
   shapes.ts        nail outlines and the French tip outline
-  stickers.ts      the sticker designs (layers on a 24 x 24 grid, with a recolourable main colour)
+  stickers.ts      the nail art designs: gems, chrome, gel, painted (layers on a 24 x 24 grid, recolourable, with gradients)
   exportImage.ts   saves the design as a PNG, makes the small My designs pictures, the try-on nail pictures and the try-on PNG
   storage.ts       autosave and My designs, kept in the browser (localStorage)
   starters.ts      the ready-made starter designs
