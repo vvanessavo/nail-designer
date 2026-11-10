@@ -48,31 +48,34 @@ function ApplyToToggle({
           )
         })}
       </div>
-      {!applyToAll && (
-        <p className="flex flex-wrap items-center justify-center gap-x-2 text-center text-xs text-stone-500">
-          {selectedCount === 0
-            ? 'Tap nails to choose them'
-            : `${selectedCount} ${selectedCount === 1 ? 'nail' : 'nails'} chosen · tap a nail again to remove it`}
-          {selectedCount > 0 && (
-            <button
-              type="button"
-              onClick={onClear}
-              className="cursor-pointer font-semibold text-rose-700 underline underline-offset-2"
-            >
-              Clear
-            </button>
-          )}
-          {selectedCount === 1 && onCopyDesign && (
-            <button
-              type="button"
-              onClick={onCopyDesign}
-              className="cursor-pointer font-semibold text-rose-700 underline underline-offset-2"
-            >
-              Copy design
-            </button>
-          )}
-        </p>
-      )}
+      {/* Always shown, and always room for two lines, so the panel keeps its height when you
+          switch modes or choose nails. (A taller panel would shrink the hands and move them
+          under your finger.) */}
+      <p className="flex min-h-8 flex-wrap items-center justify-center gap-x-2 text-center text-xs text-stone-500">
+        {applyToAll
+          ? 'Changes go to every nail. Tap a nail to work on it alone.'
+          : selectedCount === 0
+          ? 'Tap nails to choose them'
+          : `${selectedCount} ${selectedCount === 1 ? 'nail' : 'nails'} chosen · tap a nail again to remove it`}
+        {!applyToAll && selectedCount > 0 && (
+          <button
+            type="button"
+            onClick={onClear}
+            className="cursor-pointer font-semibold text-rose-700 underline underline-offset-2"
+          >
+            Clear
+          </button>
+        )}
+        {!applyToAll && selectedCount === 1 && onCopyDesign && (
+          <button
+            type="button"
+            onClick={onCopyDesign}
+            className="cursor-pointer font-semibold text-rose-700 underline underline-offset-2"
+          >
+            Copy design
+          </button>
+        )}
+      </p>
       {/* Mirror: copy one hand's whole design onto the other, as a mirror image. */}
       {onMirror && (
         <p className="flex flex-wrap items-center justify-center gap-x-2 text-xs text-stone-500">
