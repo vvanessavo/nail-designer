@@ -106,7 +106,84 @@ const blossomPetal = (degrees: number) =>
 
 // --- The stickers ----------------------------------------------------------------------------
 
+// --- Gems: rhinestones, pearls and studs, drawn to look raised ---------------------------
+// Each has a soft shadow below and to the right, the stone in its main colour, see-through
+// light and dark facets (so they work in any colour), and a bright highlight.
+
+const GEM_SHADOW = 'rgba(0, 0, 0, 0.28)'
+const FACET_LIGHT = 'rgba(255, 255, 255, 0.4)'
+const FACET_DARK = 'rgba(0, 0, 0, 0.2)'
+const FACET_LINE = 'rgba(255, 255, 255, 0.55)'
+
+// The corners of a regular polygon around (12, 12), starting at the top.
+function polygonPoints(sides: number, radius: number, offsetDegrees = 0): Point[] {
+  return Array.from({ length: sides }, (_, i) => turn([12, 12 - radius], (360 / sides) * i + offsetDegrees))
+}
+const polygon = (points: Point[]) => `M ${points.map((p) => p.map(fmt).join(' ')).join(' L ')} Z`
+const lines = (pairs: [Point, Point][]) =>
+  pairs.map(([a, b]) => `M ${a.map(fmt).join(' ')} L ${b.map(fmt).join(' ')}`).join(' ')
+
+// A round brilliant-cut rhinestone: an octagon "table" in the middle, facet lines out to the
+// edge, the lower right a little darker.
+const roundTable = polygonPoints(8, 4.4, 22.5)
+const roundEdge = polygonPoints(8, 8.6, 22.5)
+const GEM_ROUND: StickerLayer[] = [
+  { d: circle(12.9, 13.1, 8.8), fill: GEM_SHADOW },
+  { d: circle(12, 12, 8.8), fill: 'main' },
+  { d: 'M 12 12 L 20.8 12 A 8.8 8.8 0 0 1 12 20.8 Z', fill: FACET_DARK },
+  { d: polygon(roundTable), fill: FACET_LIGHT },
+  { d: lines(roundTable.map((p, i) => [p, roundEdge[i]])), stroke: FACET_LINE, strokeWidth: 0.4 },
+  { d: circle(12, 12, 8.8), stroke: 'rgba(255, 255, 255, 0.6)', strokeWidth: 0.5 },
+  { d: ellipse(9, 8.4, 1.3, 2, 40), fill: WHITE, opacity: 0.9 },
+  { d: twinkle(15.6, 8.4, 1.6), fill: WHITE },
+]
+
+const TEARDROP = 'M 12 2.6 C 15.6 8 19.2 11.8 19.2 15.2 A 7.2 7.2 0 0 1 4.8 15.2 C 4.8 11.8 8.4 8 12 2.6 Z'
+const GEM_TEARDROP: StickerLayer[] = [
+  { d: 'M 12.9 3.4 C 16.5 8.8 20.1 12.6 20.1 16 A 7.2 7.2 0 0 1 5.7 16 C 5.7 12.6 9.3 8.8 12.9 3.4 Z', fill: GEM_SHADOW },
+  { d: TEARDROP, fill: 'main' },
+  { d: 'M 12 15.2 L 19.2 15.2 A 7.2 7.2 0 0 1 12 22.4 Z', fill: FACET_DARK },
+  { d: 'M 12 8 C 14 11 15.6 13 15.6 15 A 3.6 3.6 0 0 1 8.4 15 C 8.4 13 10 11 12 8 Z', fill: FACET_LIGHT },
+  { d: 'M 12 2.6 L 12 8 M 4.8 15.2 L 8.4 15 M 19.2 15.2 L 15.6 15 M 12 22.4 L 12 18.6', stroke: FACET_LINE, strokeWidth: 0.4 },
+  { d: TEARDROP, stroke: 'rgba(255, 255, 255, 0.6)', strokeWidth: 0.5 },
+  { d: ellipse(9.6, 12.4, 1, 1.8, 25), fill: WHITE, opacity: 0.9 },
+]
+
+// A square "princess cut" stone: an inner square table and lines to each corner.
+const GEM_SQUARE: StickerLayer[] = [
+  { d: 'M 4.4 4.4 L 20.6 4.4 L 20.6 20.6 L 4.4 20.6 Z', fill: GEM_SHADOW },
+  { d: 'M 3.6 3.6 L 20.4 3.6 L 20.4 20.4 L 3.6 20.4 Z', fill: 'main' },
+  { d: 'M 20.4 3.6 L 20.4 20.4 L 3.6 20.4 Z', fill: FACET_DARK },
+  { d: 'M 8.2 8.2 L 15.8 8.2 L 15.8 15.8 L 8.2 15.8 Z', fill: FACET_LIGHT },
+  { d: 'M 3.6 3.6 L 8.2 8.2 M 20.4 3.6 L 15.8 8.2 M 20.4 20.4 L 15.8 15.8 M 3.6 20.4 L 8.2 15.8', stroke: FACET_LINE, strokeWidth: 0.4 },
+  { d: 'M 3.6 3.6 L 20.4 3.6 L 20.4 20.4 L 3.6 20.4 Z', stroke: 'rgba(255, 255, 255, 0.6)', strokeWidth: 0.5 },
+  { d: ellipse(7, 6.6, 1, 1.8, 45), fill: WHITE, opacity: 0.9 },
+]
+
+// A pearl: smooth, with a soft shade on the lower right and a gentle glow at the top left.
+const PEARL: StickerLayer[] = [
+  { d: circle(12.8, 13, 8.4), fill: GEM_SHADOW },
+  { d: circle(12, 12, 8.4), fill: 'main' },
+  { d: 'M 20.4 12 A 8.4 8.4 0 0 1 12 20.4 A 8.4 8.4 0 0 1 4.4 15.6 C 8 18.6 15.6 18.6 20.4 12 Z', fill: 'rgba(0, 0, 0, 0.12)' },
+  { d: ellipse(9.4, 9, 3, 3.8, 40), fill: WHITE, opacity: 0.55 },
+  { d: circle(8.8, 8.4, 1.1), fill: WHITE, opacity: 0.95 },
+]
+
+// A small round metal stud: a domed disc with a bright rim highlight.
+const STUD: StickerLayer[] = [
+  { d: circle(12.7, 12.8, 6.4), fill: GEM_SHADOW },
+  { d: circle(12, 12, 6.4), fill: 'main' },
+  { d: 'M 18.4 12 A 6.4 6.4 0 0 1 5.6 12 C 8 16.6 16 16.6 18.4 12 Z', fill: 'rgba(0, 0, 0, 0.22)' },
+  { d: circle(12, 12, 6.4), stroke: 'rgba(0, 0, 0, 0.25)', strokeWidth: 0.4 },
+  { d: ellipse(10, 9.4, 1.4, 2.4, 50), fill: WHITE, opacity: 0.85 },
+]
+
 export const STICKERS: StickerDesign[] = [
+  { type: 'gem-round', label: 'Round rhinestone', group: 'Gems', defaultColor: '#E6F1FA', layers: GEM_ROUND },
+  { type: 'gem-teardrop', label: 'Teardrop rhinestone', group: 'Gems', defaultColor: '#F2C6D6', layers: GEM_TEARDROP },
+  { type: 'gem-square', label: 'Square rhinestone', group: 'Gems', defaultColor: '#BFD8F2', layers: GEM_SQUARE },
+  { type: 'pearl', label: 'Pearl', group: 'Gems', defaultColor: '#F6F0E6', layers: PEARL },
+  { type: 'stud', label: 'Stud', group: 'Gems', defaultColor: '#D4AF37', layers: STUD },
   {
     type: 'daisy',
     label: 'Daisy',

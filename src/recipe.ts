@@ -59,6 +59,7 @@ function lengthName(length: number): string {
 }
 
 const STICKER_LABELS = Object.fromEntries(STICKERS.map((s) => [s.type, s.label.toLowerCase()]))
+const GEM_TYPES = new Set<string>(STICKERS.filter((s) => s.group === 'Gems').map((s) => s.type))
 
 // The recipe lines for one nail. Positions don't matter here, only what's there.
 function describe(nail: Nail): string[] {
@@ -76,16 +77,19 @@ function describe(nail: Nail): string[] {
     const depth = nail.frenchTipThickness < 0.6 ? 'thin' : nail.frenchTipThickness > 1 ? 'thick' : 'medium'
     lines.push(`French tip: ${TIP_STYLE_NAMES[nail.frenchTipStyle]}, ${colourName(nail.frenchTipColor)}, ${depth}`)
   }
-  const stickers = nail.stickers.filter((s) => s.type !== 'text')
-  if (stickers.length > 0) {
-    // Count each kind of sticker in each colour, e.g. "2 × cherries (Red)".
+  // Count each kind of sticker or gem in each colour, e.g. "2 × cherries (Red)".
+  const countUp = (items: Nail['stickers']) => {
     const counts = new Map<string, number>()
-    for (const s of stickers) {
+    for (const s of items) {
       const key = `${STICKER_LABELS[s.type]} (${colourName(s.color)})`
       counts.set(key, (counts.get(key) ?? 0) + 1)
     }
-    lines.push(`Stickers: ${[...counts].map(([key, count]) => (count > 1 ? `${count} × ${key}` : key)).join(', ')}`)
+    return [...counts].map(([key, count]) => (count > 1 ? `${count} × ${key}` : key)).join(', ')
   }
+  const gems = nail.stickers.filter((s) => GEM_TYPES.has(s.type))
+  const stickers = nail.stickers.filter((s) => s.type !== 'text' && !GEM_TYPES.has(s.type))
+  if (gems.length > 0) lines.push(`Gems: ${countUp(gems)}`)
+  if (stickers.length > 0) lines.push(`Stickers: ${countUp(stickers)}`)
   for (const s of nail.stickers.filter((s) => s.type === 'text')) {
     lines.push(`Text: "${s.text}" (${s.font === 'bold' ? 'bold' : 'script'}, ${colourName(s.color)})`)
   }
