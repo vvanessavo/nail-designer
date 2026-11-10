@@ -116,6 +116,7 @@ type FingerShapeProps = {
   stickerEditing: StickerEditing | null
   drawing: DrawingTool | null
   mirrored: boolean // on the right hand, which is drawn as a flipped copy of the left
+  linesOverStickers: boolean // drawn lines go in front of the stickers, not behind them
 }
 
 // Set while the Draw tab is open: the pen or eraser, and what to do with a finished line.
@@ -203,6 +204,7 @@ function FingerShape({
   stickerEditing,
   drawing,
   mirrored,
+  linesOverStickers,
 }: FingerShapeProps) {
   // The line being drawn right now (shown while the finger moves, saved when it lifts).
   const [liveLine, setLiveLine] = useState<number[] | null>(null)
@@ -359,6 +361,20 @@ function FingerShape({
     window.addEventListener('pointerup', finish) // in case the finger lifts off the canvas
   }
 
+  // The drawn lines (and the one being drawn right now).
+  const lines = [
+    ...nail.strokes,
+    ...(liveLine && drawing
+      ? [{ id: 'live', color: drawing.color, width: drawing.width, pen: drawing.pen, opacity: drawing.opacity, points: liveLine }]
+      : []),
+  ].map((stroke) => (
+    <PenStroke
+      key={stroke.id}
+      stroke={stroke}
+      y={nailCentreY}
+    />
+  ))
+
   return (
     // The whole finger is clickable, so the target is big enough for a fingertip on a phone.
     // onPointerClick fires for mouse clicks, finger taps and pen taps alike.
@@ -421,19 +437,9 @@ function FingerShape({
               listening={false}
             />
           )}
-          {/* Freehand lines go over the polish and tip, under the stickers. */}
-          {[
-            ...nail.strokes,
-            ...(liveLine && drawing
-              ? [{ id: 'live', color: drawing.color, width: drawing.width, pen: drawing.pen, opacity: drawing.opacity, points: liveLine }]
-              : []),
-          ].map((stroke) => (
-            <PenStroke
-              key={stroke.id}
-              stroke={stroke}
-              y={nailCentreY}
-            />
-          ))}
+          {/* Freehand lines go over the polish and tip, and under the stickers unless the
+              design puts them over. */}
+          {!linesOverStickers && lines}
           {nail.stickers.map((sticker) => (
             // Each sticker is a group of layers (see src/stickers.ts). The group is what moves,
             // resizes and turns; its layers just draw.
@@ -538,6 +544,7 @@ function FingerShape({
               />
             </Group>
           ))}
+          {linesOverStickers && lines}
           {/* The finish goes over everything, like a top coat. */}
           <NailFinish
             nail={nail}
@@ -583,6 +590,7 @@ type HandProps = {
   onSelectNail: OnNailTap
   stickerEditing: StickerEditing | null
   drawing: DrawingTool | null
+  linesOverStickers: boolean
 }
 
 function Hand({
@@ -595,6 +603,7 @@ function Hand({
   onSelectNail,
   stickerEditing,
   drawing,
+  linesOverStickers,
 }: HandProps) {
   // Nails are numbered left to right on screen. A left hand reads pinky to thumb,
   // a flipped right hand reads thumb to pinky.
@@ -616,6 +625,7 @@ function Hand({
         stickerEditing={stickerEditing}
         drawing={drawing}
         mirrored={mirrored}
+        linesOverStickers={linesOverStickers}
       />
     )
   }

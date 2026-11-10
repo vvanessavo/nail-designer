@@ -278,6 +278,7 @@ function Hands({
                   mirrored={false}
                   x={0}
                   skinTone={skin}
+                  linesOverStickers={state.linesOverStickers}
                   nails={state.nails}
                   targetedNailIds={targetedNailIds}
                   onSelectNail={handleSelectNail}
@@ -289,6 +290,7 @@ function Hands({
                   mirrored={true}
                   x={RIGHT_HAND_X}
                   skinTone={skin}
+                  linesOverStickers={state.linesOverStickers}
                   nails={state.nails}
                   targetedNailIds={targetedNailIds}
                   onSelectNail={handleSelectNail}

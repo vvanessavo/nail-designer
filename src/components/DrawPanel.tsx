@@ -66,11 +66,22 @@ type DrawPanelProps = {
   hasDrawing: boolean // any nail has a drawing (for "Clear all drawings")
   onChange: (settings: DrawSettings) => void
   onClearAll: () => void
+  linesOverStickers: boolean // lines in front of stickers (false: behind)
+  onLinesOverStickersChange: (on: boolean) => void
   onOpenChange: (open: boolean) => void // tells App when this tab opens and closes
   recentColors: string[]
 }
 
-function DrawPanel({ settings, hasDrawing, onChange, onClearAll, onOpenChange, recentColors }: DrawPanelProps) {
+function DrawPanel({
+  settings,
+  hasDrawing,
+  onChange,
+  onClearAll,
+  onOpenChange,
+  recentColors,
+  linesOverStickers,
+  onLinesOverStickersChange,
+}: DrawPanelProps) {
   // Tell App the Draw tab is open, so taps on nails draw instead of choosing nails.
   useEffect(() => {
     onOpenChange(true)
@@ -162,6 +173,27 @@ function DrawPanel({ settings, hasDrawing, onChange, onClearAll, onOpenChange, r
         />
         Solid
       </label>
+      </div>
+      {/* Whether lines sit behind the stickers on a nail, or in front of them. */}
+      <div
+        role="group"
+        aria-label="Lines and stickers"
+        className="flex items-center rounded-full bg-stone-100 p-1"
+      >
+        <span className="px-2 text-xs font-semibold text-stone-500">Lines go</span>
+        {[false, true].map((over) => (
+          <button
+            key={String(over)}
+            type="button"
+            aria-pressed={linesOverStickers === over}
+            onClick={() => onLinesOverStickersChange(over)}
+            className={`cursor-pointer rounded-full px-3 py-1.5 text-sm font-semibold transition ${
+              linesOverStickers === over ? 'bg-white text-stone-900 shadow-sm' : 'text-stone-500 hover:text-stone-800'
+            }`}
+          >
+            {over ? 'Over stickers' : 'Under stickers'}
+          </button>
+        ))}
       </div>
       <ColourPicker
         label="Pen colours"
