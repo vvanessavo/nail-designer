@@ -21,7 +21,7 @@ Build the epics in order. Within an epic, build stories in order unless a story 
 
 ## Now
 
-E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, and E6-S3 (special bases). Next: **E6-S4, copy a design to other nails**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
+E5-S4 (deploy) is done: the app is live at https://nail-designer-phi.vercel.app. E6-S2 (nail length) and E6-S11 (real nail-art stickers, done out of order at the owner's request) are done, E6-S3 (special bases), E6-S4 (copy a design) and E6-S5 (redo). Next: **E6-S6, freehand drawing**. Order: E6, then E7, then E8. The user test (E5-S5) is on hold until the owner asks for it.
 
 ---
 
@@ -194,14 +194,16 @@ As a user, I can choose an ombre, chrome, pearl or glitter base, so I can try po
 Done when: the Colour tab offers Plain, Ombre (fades from the base colour to a second colour I pick), Chrome (mirror-like metal shine), Pearl (soft shimmer) and Glitter (sparkly specks), stored per nail, visible on screen and in the exported picture.
 Built as: `baseEffect` and `effectColor` per nail, `SET_BASE_EFFECT` / `SET_EFFECT_COLOR`, and an effect row in the Colour tab (Plain, Ombre, Chrome, Pearl, Glitter) with a second colour row for ombre ("Fades to") and glitter. Ombre and chrome are gradients on the nail's own fill; pearl (a see-through rainbow sheen) and glitter (70 specks in three shades, always in the same places per nail) are drawn by `src/components/NailEffect.tsx`. Colour mixing helpers are in `src/colour.ts`.
 
-### E6-S4: Copy a design to other nails. P1. Backlog
+### E6-S4: Copy a design to other nails. P1. Done
 As a user, I can copy one nail's whole design onto other nails, so I don't rebuild it nail by nail.
 Done when: with one nail chosen, a Copy design action lets me tap other nails (or all) to paste its shape, length, colours, base effect, tip, finish, stickers and drawings onto them, in one undo step.
+Built as: with one nail chosen (Each nail mode), a "Copy design" link appears next to "1 nail chosen". Copy mode shows a bar over the hands ("Copying the left middle finger"); each tapped nail gets the whole design (`PASTE_DESIGN`, copied stickers get new ids), each paste is its own undo step, "Paste to all" is one step, and Done or Escape ends copy mode. Drawings and text (E6-S6, E6-S7) must be copied too when they're added.
 
-### E6-S5: Redo. P1. Backlog
+### E6-S5: Redo. P1. Done
 As a user, I can redo something I undid.
 Done when: a Redo button next to Undo, plus Cmd+Shift+Z / Ctrl+Y, steps forward again; making a new change after undoing clears the redo steps.
 Depends on: E4-S5.
+Built as: a `future` list in `historyReducer` (UNDO moves the current design onto it, REDO brings it back, any new design change empties it), a Redo arrow button joined to Undo (`src/components/UndoRedoButtons.tsx`), and Cmd+Shift+Z / Ctrl+Shift+Z / Ctrl+Y.
 
 ### E6-S6: Freehand drawing. P1. Backlog
 As a user, I can draw on a nail with my finger or mouse, so I can make designs no sticker covers.

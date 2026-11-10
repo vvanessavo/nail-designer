@@ -275,10 +275,11 @@ export function nailReducer(state: AppState, action: Action): AppState {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Undo history
+// Undo and redo history
 //
 // The app keeps a list of earlier designs ("past") next to the current state ("present").
-// Every design change saves the design before it; UNDO puts the last saved design back.
+// Every design change saves the design before it; UNDO puts the last saved design back and
+// keeps the current one in "future", so REDO can bring it back. A new change clears "future".
 
 // Changing which nails are chosen isn't a design change, so it isn't saved or undone.
 const NOT_UNDOABLE: Action['type'][] = ['SELECT_NAIL', 'CLEAR_SELECTION', 'SET_APPLY_TO_ALL']
@@ -294,14 +295,18 @@ type Design = Pick<AppState, 'skinTone' | 'nails'>
 export type History = {
   past: Design[]
   present: AppState
+  future: Design[] // designs that were undone, the most recently undone last
   lastChange: { key: string; time: number } | null // the most recent saved change
 }
 
 export type HistoryAction =
   | { type: 'DO'; action: Action; time: number } // time: when it happened (Date.now())
   | { type: 'UNDO' }
+  | { type: 'REDO' }
 
-export const initialHistory: History = { past: [], present: initialState, lastChange: null }
+export const initialHistory: History = { past: [], present: initialState, future: [], lastChange: null }
+
+const designOf = (state: AppState): Design => ({ skinTone: state.skinTone, nails: state.nails })
 
 // Two changes with the same key, close together, count as one undo step: same action,
 // and for stickers the same sticker. Each paste of a copied design is its own step.
@@ -311,7 +316,7 @@ function changeKey(action: Action): string {
 }
 
 export function historyReducer(history: History, historyAction: HistoryAction): History {
-  const { past, present, lastChange } = history
+  const { past, present, future, lastChange } = history
 
   if (historyAction.type === 'UNDO') {
     const previous = past.at(-1)
@@ -319,7 +324,19 @@ export function historyReducer(history: History, historyAction: HistoryAction): 
     return {
       past: past.slice(0, -1),
       present: { ...present, ...previous },
+      future: [...future, designOf(present)],
       lastChange: null, // the next change always starts a new step
+    }
+  }
+
+  if (historyAction.type === 'REDO') {
+    const next = future.at(-1)
+    if (!next) return history
+    return {
+      past: [...past, designOf(present)],
+      present: { ...present, ...next },
+      future: future.slice(0, -1),
+      lastChange: null,
     }
   }
 
@@ -335,8 +352,9 @@ export function historyReducer(history: History, historyAction: HistoryAction): 
     // (that one already saved the design from before it started).
     past: continuesLastChange
       ? past
-      : [...past, { skinTone: present.skinTone, nails: present.nails }].slice(-MAX_UNDO_STEPS),
+      : [...past, designOf(present)].slice(-MAX_UNDO_STEPS),
     present: next,
+    future: [], // a new change can't be redone into
     lastChange: { key, time },
   }
 }
